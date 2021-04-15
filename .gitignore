@@ -1,0 +1,6 @@
+/.spyproject/
+*.pyc
+*.h5
+*.npy
+*.npz
+*.csv
