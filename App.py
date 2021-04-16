@@ -15,7 +15,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from MainWindow import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
-from Utils import TableModel
+from AnalPvalComplexUI import AnalPvalComplexUI
+from AnalROCUI import AnalROCUI
+from AnalTSAUI import AnalTSAUI
+from Utils import TableModel, plot_protein_complex
 
 class TCPA_Main(QMainWindow, Ui_MainWindow):
     
@@ -32,10 +35,16 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
+        self.AnalPvalComplexUI = AnalPvalComplexUI()
+        self.AnalROCUI = AnalROCUI()
+        self.AnalTSAUI = AnalTSAUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionDatabase.triggered.connect(self.LoadProteinComplex)
+        self.action_CETSA.triggered.connect(self.OpenAnalTSA)
+        self.actionCalcROC.triggered.connect(self.OpenAnalROC)
+        self.actionCalcPval.triggered.connect(self.OpenAnalPvalComplex)
         
         # button action
         self.ButtonGroup1.clicked.connect(self.SetProteinTable1)
@@ -45,11 +54,11 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonDatabaseRemove.clicked.connect(self.RemoveProteinComplex)
         self.ButtonClearDatabase.clicked.connect(self.ClearProteinComplex)
         
-        self.ButtonShowCurve.clicked.connect(self.SetColumns)
+        self.ButtonShowCurve.clicked.connect(self.ProteinComplexCurve)
         
         # server data
         self.UsedColumns = []
-    
+        
     
     def LoadProteinFile(self):
         options = QtWidgets.QFileDialog.Options()
@@ -134,19 +143,46 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                     self.tableProteinComplex.setItem(i, j, item)
     
     
-    def SetColumns(self):
+    def ProteinComplexCurve(self):
         all_cols = self.tableProtein1.model()._data.columns
         for c in all_cols:
             self.ColumnSelectUI.listWidget.addItem(c)
         self.ColumnSelectUI.show()
-        self.UsedColumns = self.ColumnSelectUI.UsedColumns
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.ColumnSelectUI.SelectColumns)
+        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.PlotProteinComplex)
         self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
-        print(self.UsedColumns)
+        
+    
+    def OpenAnalROC(self):
+        self.AnalROCUI.show()
+
+
+    def OpenAnalPvalComplex(self):
+        self.AnalPvalComplexUI.show()
+        
+    
+    def OpenAnalTSA(self):
+        self.AnalTSAUI.show()
+    
+    
+    def PlotProteinComplex(self):
+        colNames = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()] 
+        header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
+        # print(header)
+        i = self.tableProteinComplex.selectedItems()[0].row()
+        j = header.index('Subunits_UniProt_IDs')
+        proteinSubunit = self.tableProteinComplex.item(i, j).text()
+        # print(proteinSubunit)
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        # print(proteinData)
+        p1 = plot_protein_complex(proteinSubunit, proteinData1, colNames)
+        p2 = plot_protein_complex(proteinSubunit, proteinData2, colNames)
+        self.ColumnSelectUI.close
         
     
     
-        
+    
+    
 
 if __name__ == '__main__':
     import sys

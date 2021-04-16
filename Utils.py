@@ -42,12 +42,28 @@ class TableModel(QtCore.QAbstractTableModel):
     
 
 
-def plot_protein_complex(proteinSubunit, proteinData):
+def plot_protein_complex(proteinSubunit, proteinData, colNames):
     prots = proteinSubunit.split(',')
     prots = [p.replace('(', '') for p in prots]
     prots = [p.replace(')', '') for p in prots]
-    
-    # cols = 
-    
 
+    try:
+        temps = np.array([float(t.replace('T', '')) for t in colNames])
+    except:
+        raise ValueError('invalid column names')
+
+    pltData = dict()
+    for p in prots:
+        if p in list(proteinData['Accession']):
+            vals = proteinData.loc[proteinData.loc[:, 'Accession'] == p, colNames]
+            pltData[p] = vals.values[0,:]
+
+    plt.figure(dpi = 300)
+    for p, vec in pltData.items():
+        plt.plot(temps, vec, label = p)
+    plt.xlabel('temperature (℃)')
+    plt.ylabel('abundances')
+    plt.legend()
+    plt.show()
+    
     
