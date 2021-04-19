@@ -18,7 +18,8 @@ from ColumnSelectUI import ColumnSelectUI
 from AnalPvalComplexUI import AnalPvalComplexUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
-from Utils import TableModel, plot_protein_complex
+from MakeFigure import MakeFigure
+from Utils import TableModel
 
 class TCPA_Main(QMainWindow, Ui_MainWindow):
     
@@ -175,8 +176,21 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         # print(proteinData)
-        p1 = plot_protein_complex(proteinSubunit, proteinData1, colNames)
-        p2 = plot_protein_complex(proteinSubunit, proteinData2, colNames)
+        F_gr1 = MakeFigure(1.5, 2.5)
+        F_gr2 = MakeFigure(1.5, 2.5)
+        F_gr1.axes.cla()
+        F_gr2.axes.cla()
+        
+        F_gr1.ProteinComplexFigure(proteinSubunit, proteinData1, colNames)
+        F_gr2.ProteinComplexFigure(proteinSubunit, proteinData2, colNames)
+        F1 = QtWidgets.QGraphicsScene()
+        F1.addWidget(F_gr1)
+        F2 = QtWidgets.QGraphicsScene()
+        F2.addWidget(F_gr2)
+        
+        self.GraphicThermShift1.setScene(F1)
+        self.GraphicThermShift2.setScene(F2)
+        
         self.ColumnSelectUI.close
         
     
