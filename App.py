@@ -104,8 +104,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def RemoveProteinComplex(self):
         self.ListDatabase.takeItem(self.ListDatabase.currentItem())
     
+    
     def ClearProteinComplex(self):
         self.ListDatabase.clear()
+    
     
     def SelectProteinTable(self):
         selectItem = self.ListFile.currentItem()
@@ -163,6 +165,11 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def OpenAnalTSA(self):
         self.AnalTSAUI.show()
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        
+        
     
     
     def PlotProteinComplex(self):
@@ -193,9 +200,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         self.ColumnSelectUI.close
         
-    
-    
-    
     
 
 if __name__ == '__main__':
