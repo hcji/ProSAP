@@ -18,6 +18,7 @@ from matplotlib.figure import Figure
 class MakeFigure(FigureCanvas):
     def __init__(self,width=5, height=4, dpi=300):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.18,right=0.95)
         super(MakeFigure,self).__init__(self.fig) 
         self.axes = self.fig.add_subplot(111)
     
@@ -39,7 +40,9 @@ class MakeFigure(FigureCanvas):
 
         for p, vec in pltData.items():
             self.axes.plot(temps, vec, label = p)
-        self.axes.set_xlabel('temperature (℃)')
-        self.axes.set_ylabel('abundances')
-        self.axes.legend()
+            
+        self.axes.tick_params(labelsize=5)
+        self.axes.set_xlabel('Temperature (℃)', fontsize='xx-small')
+        self.axes.set_ylabel('Abundances', fontsize='xx-small')
+        self.axes.legend(fontsize=4)
         

@@ -176,8 +176,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         # print(proteinData)
-        F_gr1 = MakeFigure(1.5, 2.5)
-        F_gr2 = MakeFigure(1.5, 2.5)
+        F_gr1 = MakeFigure(2.2, 1.6)
+        F_gr2 = MakeFigure(2.2, 1.6)
         F_gr1.axes.cla()
         F_gr2.axes.cla()
         
