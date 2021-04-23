@@ -165,8 +165,13 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def OpenAnalTSA(self):
         self.AnalTSAUI.show()
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
+        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
+            pass
+        else:
+            proteinData1 = self.tableProtein1.model()._data
+            proteinData2 = self.tableProtein2.model()._data
+        
+        
         
         
         

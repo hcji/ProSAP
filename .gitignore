@@ -1,7 +1,14 @@
+/dist/
+/build/
 /.spyproject/
+/test/
 *.pyc
 *.h5
 *.npy
 *.npz
 *.csv
+*.spec
+*.Rproj
+*.Rhistory
 .Rproj.user
+
