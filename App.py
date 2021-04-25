@@ -18,8 +18,9 @@ from ColumnSelectUI import ColumnSelectUI
 from AnalPvalComplexUI import AnalPvalComplexUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
+from PreprocessUI import PreprocessUI
 from MakeFigure import MakeFigure
-from Utils import TableModel
+from Utils import TableModel, analTSA
 
 class TCPA_Main(QMainWindow, Ui_MainWindow):
     
@@ -55,10 +56,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonDatabaseRemove.clicked.connect(self.RemoveProteinComplex)
         self.ButtonClearDatabase.clicked.connect(self.ClearProteinComplex)
         
-        self.ButtonShowCurve.clicked.connect(self.ProteinComplexCurve)
+        self.ButtonShowCurve.clicked.connect(self.OpenColumnSelection)
         
         # server data
-        self.UsedColumns = []
+        self.columns = None
         
     
     def LoadProteinFile(self):
@@ -146,35 +147,13 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                     self.tableProteinComplex.setItem(i, j, item)
     
     
-    def ProteinComplexCurve(self):
+    def OpenColumnSelection(self):
         all_cols = self.tableProtein1.model()._data.columns
         for c in all_cols:
             self.ColumnSelectUI.listWidget.addItem(c)
         self.ColumnSelectUI.show()
         self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.PlotProteinComplex)
         self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
-        
-    
-    def OpenAnalROC(self):
-        self.AnalROCUI.show()
-
-
-    def OpenAnalPvalComplex(self):
-        self.AnalPvalComplexUI.show()
-        
-    
-    def OpenAnalTSA(self):
-        self.AnalTSAUI.show()
-        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
-            pass
-        else:
-            proteinData1 = self.tableProtein1.model()._data
-            proteinData2 = self.tableProtein2.model()._data
-        
-        
-        
-        
-        
     
     
     def PlotProteinComplex(self):
@@ -204,7 +183,81 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.GraphicThermShift2.setScene(F2)
         
         self.ColumnSelectUI.close
+    
+    def OpenAnalROC(self):
+        self.AnalROCUI.show()
+
+
+    def OpenAnalPvalComplex(self):
+        self.AnalPvalComplexUI.show()
         
+    
+    def OpenAnalTSA(self):
+        self.AnalTSAUI.show()
+        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
+            pass
+        else:
+            self.AnalTSAUI.ButtonConfirm.clicked.connect(self.DoAnalTSA)
+            self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
+            
+  
+    def DoAnalTSA(self):
+        all_cols = self.tableProtein1.model()._data.columns
+        for c in all_cols:
+            self.ColumnSelectUI.listWidget.addItem(c)
+        self.ColumnSelectUI.show()
+        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.ShowAnalTSA)
+        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
+    
+    
+    def ShowAnalTSA(self):
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        self.columns = columns
+        h_axis = self.AnalTSAUI.Boxhaxis.value()
+        minR2 = self.AnalTSAUI.BoxR2.value()
+        maxPlateau = self.AnalTSAUI.BoxPlateau.value()
+        
+        TSA_table = analTSA(proteinData1, proteinData2, columns=columns, minR2 = minR2, maxPlateau = maxPlateau, h_axis = h_axis)
+
+        self.AnalTSAUI.tableWidgetProteinList.setRowCount(TSA_table.shape[0])
+        self.AnalTSAUI.tableWidgetProteinList.setColumnCount(TSA_table.shape[1])
+        self.AnalTSAUI.tableWidgetProteinList.setHorizontalHeaderLabels(TSA_table.columns)
+        self.AnalTSAUI.tableWidgetProteinList.setVerticalHeaderLabels(TSA_table.index.astype(str))
+        for i in range(TSA_table.shape[0]):
+            for j in range(TSA_table.shape[1]):
+                item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
+                self.AnalTSAUI.tableWidgetProteinList.setItem(i, j, item)
+        
+        F = MakeFigure(1.2, 0.7)
+        F.axes.cla()
+        F.AverageTSAFigure(proteinData1, proteinData2, columns)
+        f = QtWidgets.QGraphicsScene()
+        f.addWidget(F)
+        self.AnalTSAUI.graphicsViewAvgCurve.setScene(f)
+        
+        self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
+
+    
+    def ShowTSACurve(self):
+        columns = self.columns
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        header = [self.AnalTSAUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.AnalTSAUI.tableWidgetProteinList.columnCount())]
+        i = self.AnalTSAUI.tableWidgetProteinList.selectedItems()[0].row()
+        j = header.index('Accession')
+        ProteinAccession = self.AnalTSAUI.tableWidgetProteinList.item(i, j).text()
+
+        F = MakeFigure(1.3, 1.3)
+        F.axes.cla()
+        F.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
+        f = QtWidgets.QGraphicsScene()
+        f.addWidget(F)
+        self.AnalTSAUI.graphicsViewTSACurve.setScene(f)
+    
     
 
 if __name__ == '__main__':

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>995</width>
-    <height>810</height>
+    <width>986</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,29 +15,8 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="1">
-     <widget class="QPushButton" name="ButtonDatabaseRemove">
-      <property name="text">
-       <string>Remove</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="2">
-     <widget class="QPushButton" name="ButtonClearDatabase">
-      <property name="text">
-       <string>Clear</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QPushButton" name="ButtonDatabaseConfirm">
-      <property name="text">
-       <string>Confirm</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QLabel" name="labelProteinComplex">
+    <item row="0" column="4">
+     <widget class="QLabel" name="labelProteinTable2">
       <property name="font">
        <font>
         <family>Arial</family>
@@ -45,96 +24,14 @@
        </font>
       </property>
       <property name="text">
-       <string>Protein Complex</string>
+       <string>Group2 Protein Table</string>
       </property>
      </widget>
-    </item>
-    <item row="7" column="0" colspan="3">
-     <widget class="QTableWidget" name="tableProteinComplex"/>
-    </item>
-    <item row="3" column="4">
-     <widget class="QLabel" name="labelThermalShift2">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Group2 Thermal Shift Curve</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="3">
-     <widget class="QListWidget" name="ListDatabase"/>
-    </item>
-    <item row="4" column="3" rowspan="4">
-     <widget class="QGraphicsView" name="GraphicThermShift1"/>
-    </item>
-    <item row="4" column="4" rowspan="4">
-     <widget class="QGraphicsView" name="GraphicThermShift2"/>
-    </item>
-    <item row="8" column="0">
-     <widget class="QPushButton" name="ButtonAddComplex">
-      <property name="text">
-       <string>Add</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QPushButton" name="ButtonRemoveComplex">
-      <property name="text">
-       <string>Remove</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="3">
-     <widget class="QTableView" name="tableProtein1"/>
     </item>
     <item row="2" column="0">
      <widget class="QPushButton" name="ButtonGroup1">
       <property name="text">
        <string>Set as G1</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="ButtonGroup2">
-      <property name="text">
-       <string>Set as G2</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2">
-     <widget class="QPushButton" name="ButtonClearFileList">
-      <property name="text">
-       <string>Clear</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3">
-     <widget class="QLabel" name="labelThermalShift1">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Group1 Thermal Shift Curve</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QLabel" name="labelDatabase">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Database List</string>
       </property>
      </widget>
     </item>
@@ -151,16 +48,10 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="labelProteinTable2">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="ButtonGroup2">
       <property name="text">
-       <string>Group2 Protein Table</string>
+       <string>Set as G2</string>
       </property>
      </widget>
     </item>
@@ -180,8 +71,110 @@
     <item row="1" column="0" colspan="3">
      <widget class="QListWidget" name="ListFile"/>
     </item>
+    <item row="1" column="3">
+     <widget class="QTableView" name="tableProtein1"/>
+    </item>
     <item row="1" column="4">
      <widget class="QTableView" name="tableProtein2"/>
+    </item>
+    <item row="5" column="2">
+     <widget class="QPushButton" name="ButtonClearDatabase">
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
+     <widget class="QLabel" name="labelThermalShift2">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Group2 Thermal Shift Curve</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QLabel" name="labelThermalShift1">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Group1 Thermal Shift Curve</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="2">
+     <widget class="QLabel" name="labelProteinComplex">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Protein Complex</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4" rowspan="4">
+     <widget class="QGraphicsView" name="GraphicThermShift2"/>
+    </item>
+    <item row="7" column="0" colspan="3">
+     <widget class="QTableWidget" name="tableProteinComplex"/>
+    </item>
+    <item row="8" column="0">
+     <widget class="QPushButton" name="ButtonAddComplex">
+      <property name="text">
+       <string>Add</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3" rowspan="4">
+     <widget class="QGraphicsView" name="GraphicThermShift1"/>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="ButtonClearFileList">
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="3">
+     <widget class="QListWidget" name="ListDatabase"/>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QLabel" name="labelDatabase">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Database List</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QPushButton" name="ButtonDatabaseConfirm">
+      <property name="text">
+       <string>Confirm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QPushButton" name="ButtonDatabaseRemove">
+      <property name="text">
+       <string>Remove</string>
+      </property>
+     </widget>
     </item>
     <item row="8" column="2">
      <widget class="QPushButton" name="ButtonShowCurve">
@@ -190,14 +183,22 @@
       </property>
      </widget>
     </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="ButtonRemoveComplex">
+      <property name="text">
+       <string>Remove</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>995</width>
+     <width>986</width>
      <height>26</height>
     </rect>
    </property>
@@ -213,6 +214,7 @@
     <property name="title">
      <string>Data</string>
     </property>
+    <addaction name="actionPreprocess"/>
     <addaction name="actionProteomics"/>
     <addaction name="actionDatabase"/>
    </widget>
@@ -237,7 +239,6 @@
    <addaction name="menuAnalysis"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="icon">
     <iconset>
@@ -312,6 +313,11 @@
   <action name="actionCheck_liences">
    <property name="text">
     <string>Check licence</string>
+   </property>
+  </action>
+  <action name="actionPreprocess">
+   <property name="text">
+    <string>Preprocess...</string>
    </property>
   </action>
  </widget>

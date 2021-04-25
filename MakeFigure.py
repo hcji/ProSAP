@@ -21,6 +21,11 @@ class MakeFigure(FigureCanvas):
         self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.18,right=0.95)
         super(MakeFigure,self).__init__(self.fig) 
         self.axes = self.fig.add_subplot(111)
+        self.axes.spines['bottom'].set_linewidth(0.5)
+        self.axes.spines['left'].set_linewidth(0.5)
+        self.axes.spines['right'].set_linewidth(0.5)
+        self.axes.spines['top'].set_linewidth(0.5)
+
     
     def ProteinComplexFigure(self, proteinSubunit, proteinData, colNames):
         prots = proteinSubunit.split(',')
@@ -45,4 +50,48 @@ class MakeFigure(FigureCanvas):
         self.axes.set_xlabel('Temperature (℃)', fontsize='xx-small')
         self.axes.set_ylabel('Abundances', fontsize='xx-small')
         self.axes.legend(fontsize=4)
+    
+    
+    def AverageTSAFigure(self, proteinData1, proteinData2, colNames):
+        try:
+            temps = np.array([float(t.replace('T', '')) for t in colNames])
+        except:
+            raise ValueError('invalid column names')
         
+        vec_1 = np.mean(proteinData1.loc[:, colNames], axis = 0)
+        vec_2 = np.mean(proteinData2.loc[:, colNames], axis = 0)
+        
+        self.axes.plot(temps, vec_1, label = 'Group 1')
+        self.axes.plot(temps, vec_2, label = 'Group 2')
+        
+        self.axes.tick_params(labelsize=4)
+        self.axes.set_xlabel('Temperature (℃)', fontsize=3)
+        self.axes.set_ylabel('Abundances', fontsize=3)
+        self.axes.legend(fontsize=3)        
+        
+    
+    def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession):
+        try:
+            temps = np.array([float(t.replace('T', '')) for t in colNames])
+        except:
+            raise ValueError('invalid column names')
+            
+        vec_1 = proteinData1.loc[proteinData1.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
+        vec_2 = proteinData2.loc[proteinData2.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
+        
+        self.axes.plot(temps, vec_1, label = 'Group 1_{}'.format(ProteinAccession))
+        self.axes.plot(temps, vec_2, label = 'Group 2_{}'.format(ProteinAccession))
+        
+        self.axes.tick_params(labelsize=4)
+        self.axes.set_xlabel('Temperature (℃)', fontsize=3)
+        self.axes.set_ylabel('Abundances', fontsize=3)
+        self.axes.legend(fontsize=3)        
+    
+    
+    def RSDHistFigure(self, rsdList):
+        self.axes.hist(rsdList, 100)
+        self.axes.tick_params(labelsize=3)
+        self.axes.set_xlabel('RSD', fontsize=3)
+        self.axes.set_ylabel('Number', fontsize=3)
+        
+    

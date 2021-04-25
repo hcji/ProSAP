@@ -6,15 +6,43 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>752</width>
-    <height>575</height>
+    <width>930</width>
+    <height>727</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="3">
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>maxPlateau</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Protein list sorted by scores:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
     <widget class="QLabel" name="label_4">
      <property name="font">
       <font>
@@ -27,7 +55,84 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>minR2</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QDoubleSpinBox" name="BoxPlateau">
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.300000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QDoubleSpinBox" name="BoxR2">
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.800000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>hAxis</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QDoubleSpinBox" name="Boxhaxis">
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.500000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="ButtonConfirm">
+     <property name="text">
+      <string>Confirm</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QPushButton" name="ButtonCancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="10" colspan="2">
+    <widget class="QGraphicsView" name="graphicsViewAvgCurve"/>
+   </item>
+   <item row="0" column="2">
     <widget class="QLabel" name="label_3">
      <property name="font">
       <font>
@@ -40,160 +145,13 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_1">
-     <property name="font">
-      <font>
-       <family>Times New Roman</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Curve fitting</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
+   <item row="12" column="0" colspan="2">
+    <widget class="QTableWidget" name="tableWidgetProteinList"/>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label_7">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Pl</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
+   <item row="12" column="2" colspan="2">
+    <widget class="QGraphicsView" name="graphicsViewTSACurve"/>
    </item>
-   <item row="1" column="2">
-    <widget class="QDoubleSpinBox" name="BoxPl"/>
-   </item>
-   <item row="1" column="3" rowspan="6">
-    <widget class="QGraphicsView" name="graphicsViewAvgCurve"/>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="label_9">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>a</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QDoubleSpinBox" name="BoxA"/>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="label_8">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>b</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="QDoubleSpinBox" name="BoxB"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="font">
-      <font>
-       <family>Times New Roman</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Curve filter</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLabel" name="label_6">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>minR2</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QLabel" name="label_10">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>maxPlateau</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>Confirm</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="2">
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="text">
-      <string>Save</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="3">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Protein list sorted by p-values:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="3">
+   <item row="11" column="2">
     <widget class="QLabel" name="label_2">
      <property name="font">
       <font>
@@ -206,17 +164,12 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="3">
-    <widget class="QTableWidget" name="tableWidgetProteinList"/>
-   </item>
-   <item row="8" column="3">
-    <widget class="QGraphicsView" name="graphicsViewTSACurve"/>
-   </item>
-   <item row="4" column="2">
-    <widget class="QDoubleSpinBox" name="BoxR2"/>
-   </item>
-   <item row="5" column="2">
-    <widget class="QDoubleSpinBox" name="BoxPlateau"/>
+   <item row="13" column="0">
+    <widget class="QPushButton" name="ButtonShow">
+     <property name="text">
+      <string>Show Curve</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
