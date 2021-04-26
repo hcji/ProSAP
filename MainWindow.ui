@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>986</width>
-    <height>755</height>
+    <width>1054</width>
+    <height>874</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,32 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="4">
-     <widget class="QLabel" name="labelProteinTable2">
+    <item row="8" column="0">
+     <widget class="QPushButton" name="ButtonAddComplex">
+      <property name="text">
+       <string>Add</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="ButtonRemoveComplex">
+      <property name="text">
+       <string>Remove</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="2">
+     <widget class="QPushButton" name="ButtonShowCurve">
+      <property name="text">
+       <string>Show Curve</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="3">
+     <widget class="QTableWidget" name="tableProteinComplex"/>
+    </item>
+    <item row="6" column="0" colspan="2">
+     <widget class="QLabel" name="labelProteinComplex">
       <property name="font">
        <font>
         <family>Arial</family>
@@ -24,9 +48,12 @@
        </font>
       </property>
       <property name="text">
-       <string>Group2 Protein Table</string>
+       <string>Protein Complex</string>
       </property>
      </widget>
+    </item>
+    <item row="1" column="0" colspan="3">
+     <widget class="QListWidget" name="ListFile"/>
     </item>
     <item row="2" column="0">
      <widget class="QPushButton" name="ButtonGroup1">
@@ -35,52 +62,19 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QLabel" name="labelProteinTable1">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Group1 Protein Table</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="ButtonGroup2">
-      <property name="text">
-       <string>Set as G2</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="labelFileList">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>File List</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="3">
-     <widget class="QListWidget" name="ListFile"/>
-    </item>
     <item row="1" column="3">
      <widget class="QTableView" name="tableProtein1"/>
     </item>
-    <item row="1" column="4">
-     <widget class="QTableView" name="tableProtein2"/>
-    </item>
-    <item row="5" column="2">
-     <widget class="QPushButton" name="ButtonClearDatabase">
+    <item row="3" column="0" colspan="2">
+     <widget class="QLabel" name="labelDatabase">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>Clear</string>
+       <string>Database List</string>
       </property>
      </widget>
     </item>
@@ -97,6 +91,9 @@
       </property>
      </widget>
     </item>
+    <item row="1" column="4">
+     <widget class="QTableView" name="tableProtein2"/>
+    </item>
     <item row="3" column="3">
      <widget class="QLabel" name="labelThermalShift1">
       <property name="font">
@@ -110,8 +107,8 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QLabel" name="labelProteinComplex">
+    <item row="0" column="0">
+     <widget class="QLabel" name="labelFileList">
       <property name="font">
        <font>
         <family>Arial</family>
@@ -119,25 +116,42 @@
        </font>
       </property>
       <property name="text">
-       <string>Protein Complex</string>
+       <string>File List</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="4" rowspan="4">
-     <widget class="QGraphicsView" name="GraphicThermShift2"/>
-    </item>
-    <item row="7" column="0" colspan="3">
-     <widget class="QTableWidget" name="tableProteinComplex"/>
-    </item>
-    <item row="8" column="0">
-     <widget class="QPushButton" name="ButtonAddComplex">
+    <item row="0" column="3">
+     <widget class="QLabel" name="labelProteinTable1">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>Add</string>
+       <string>Group1 Protein Table</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="3" rowspan="4">
-     <widget class="QGraphicsView" name="GraphicThermShift1"/>
+    <item row="0" column="4">
+     <widget class="QLabel" name="labelProteinTable2">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Group2 Protein Table</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="ButtonGroup2">
+      <property name="text">
+       <string>Set as G2</string>
+      </property>
+     </widget>
     </item>
     <item row="2" column="2">
      <widget class="QPushButton" name="ButtonClearFileList">
@@ -146,28 +160,14 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="3" rowspan="4">
+     <widget class="QGraphicsView" name="GraphicThermShift1"/>
+    </item>
+    <item row="4" column="4" rowspan="4">
+     <widget class="QGraphicsView" name="GraphicThermShift2"/>
+    </item>
     <item row="4" column="0" colspan="3">
      <widget class="QListWidget" name="ListDatabase"/>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QLabel" name="labelDatabase">
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Database List</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QPushButton" name="ButtonDatabaseConfirm">
-      <property name="text">
-       <string>Confirm</string>
-      </property>
-     </widget>
     </item>
     <item row="5" column="1">
      <widget class="QPushButton" name="ButtonDatabaseRemove">
@@ -176,17 +176,17 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="2">
-     <widget class="QPushButton" name="ButtonShowCurve">
+    <item row="5" column="2">
+     <widget class="QPushButton" name="ButtonClearDatabase">
       <property name="text">
-       <string>Show Curve</string>
+       <string>Clear</string>
       </property>
      </widget>
     </item>
-    <item row="8" column="1">
-     <widget class="QPushButton" name="ButtonRemoveComplex">
+    <item row="5" column="0">
+     <widget class="QPushButton" name="ButtonDatabaseConfirm">
       <property name="text">
-       <string>Remove</string>
+       <string>Confirm</string>
       </property>
      </widget>
     </item>
@@ -198,7 +198,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>986</width>
+     <width>1054</width>
      <height>26</height>
     </rect>
    </property>
@@ -214,7 +214,7 @@
     <property name="title">
      <string>Data</string>
     </property>
-    <addaction name="actionPreprocess"/>
+    <addaction name="actionPreprocessing"/>
     <addaction name="actionProteomics"/>
     <addaction name="actionDatabase"/>
    </widget>
@@ -315,9 +315,9 @@
     <string>Check licence</string>
    </property>
   </action>
-  <action name="actionPreprocess">
+  <action name="actionPreprocessing">
    <property name="text">
-    <string>Preprocess...</string>
+    <string>Preprocessing...</string>
    </property>
   </action>
  </widget>

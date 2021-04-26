@@ -22,6 +22,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     def __init__(self, parent=None): 
         super(PreprocessUI, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowTitle("Preprocessing")
+        
         self.comboBoxMerging.addItems(['Median', 'Mean'])
         
         self.ColumnSelectUI = ColumnSelectUI()

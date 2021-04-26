@@ -40,10 +40,12 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalPvalComplexUI = AnalPvalComplexUI()
         self.AnalROCUI = AnalROCUI()
         self.AnalTSAUI = AnalTSAUI()
+        self.PreprocessUI = PreprocessUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionDatabase.triggered.connect(self.LoadProteinComplex)
+        self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
         self.action_CETSA.triggered.connect(self.OpenAnalTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
         self.actionCalcPval.triggered.connect(self.OpenAnalPvalComplex)
@@ -190,6 +192,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
     def OpenAnalPvalComplex(self):
         self.AnalPvalComplexUI.show()
+        
+        
+    def OpenPreprocessing(self):
+        self.PreprocessUI.show()
         
     
     def OpenAnalTSA(self):

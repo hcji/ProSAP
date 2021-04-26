@@ -15,6 +15,7 @@ class AnalTSAUI(QtWidgets.QWidget, Ui_Form):
     def __init__(self, parent=None): 
         super(AnalTSAUI, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowTitle("TPP Analysis")
 
 
         
