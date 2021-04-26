@@ -136,6 +136,9 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             if std > std_thres:
                 continue
             
+            vals = np.array(vals)
+            vals[np.isnan(vals)] = 0
+            
             rsd_list.append(std)
             prot_list.append(prot)
             val_list.append(vals)
@@ -161,7 +164,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
-        data = pd.DataFrame(self.tableView.model()._data)
+        data = pd.DataFrame(self.tableView.model()._data, index = False)
         data.to_csv(fileName)
         
         

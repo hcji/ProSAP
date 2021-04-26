@@ -150,6 +150,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def OpenColumnSelection(self):
+        self.ColumnSelectUI.listWidget.clear()
         all_cols = self.tableProtein1.model()._data.columns
         for c in all_cols:
             self.ColumnSelectUI.listWidget.addItem(c)
@@ -208,6 +209,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             
   
     def DoAnalTSA(self):
+        self.ColumnSelectUI.listWidget.clear()
         all_cols = self.tableProtein1.model()._data.columns
         for c in all_cols:
             self.ColumnSelectUI.listWidget.addItem(c)
@@ -217,6 +219,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def ShowAnalTSA(self):
+        self.AnalTSAUI.tableWidgetProteinList.clear()
+        
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         

@@ -78,7 +78,7 @@ def analTSA(proteinData1, proteinData2, columns, minR2 = 0.8, maxPlateau = 0.3, 
     data_1 = proteinData1.loc[:, cols]
     data_2 = proteinData2.loc[:, cols]
 
-    prots = list(set(list(data_1.iloc[:,0]) + list(data_2.iloc[:,0])))
+    prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
     
     def fit_curve(p):
         x = temps
@@ -91,11 +91,14 @@ def analTSA(proteinData1, proteinData2, columns, minR2 = 0.8, maxPlateau = 0.3, 
         yh1 = meltCurve(x, paras1[0], paras1[1], paras1[2])
         yh2 = meltCurve(x, paras2[0], paras2[1], paras2[2])
         
-        r1 = r2_score(y1, yh1)
-        r2 = r2_score(y2, yh2)
+        r1 = max(r2_score(y1, yh1), 0)
+        r2 = max(r2_score(y2, yh2), 0)
         
-        Tm1 = fsolve(lambda x: meltCurve(x, paras1[0], paras1[1], paras1[2]) - h_axis, 52)[0]
-        Tm2 = fsolve(lambda x: meltCurve(x, paras2[0], paras2[1], paras2[2]) - h_axis, 52)[0]
+        i1 = x[ np.argmin(np.abs(y1 - h_axis))]
+        i2 = x[ np.argmin(np.abs(y2 - h_axis))]
+        
+        Tm1 = fsolve(lambda x: meltCurve(x, paras1[0], paras1[1], paras1[2]) - h_axis, i1)[0]
+        Tm2 = fsolve(lambda x: meltCurve(x, paras2[0], paras2[1], paras2[2]) - h_axis, i2)[0]
         
         Tm1 = min(Tm1, max(x))
         Tm1 = max(Tm1, min(x))
