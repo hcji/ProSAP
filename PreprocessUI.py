@@ -30,41 +30,48 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         
         self.pushButtonOpen.clicked.connect(self.LoadProteinFile)
         self.pushButtonConfirm.clicked.connect(self.DoPropress)
+        self.pushButtonClear.clicked.connect(self.ClearProteinFile)
         self.pushButtonSave.clicked.connect(self.SaveData)
         
         self.columns = None
-        
+    
+    
+    def ClearProteinFile(self):
+        self.ListFile.clear()
+    
         
     def LoadProteinFile(self):
+        self.ListFile.clear()
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileNames, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
         
-        for fileName in fileNames:
-            if fileName.split('.')[1] == 'csv':
-                self.ListFile.addItem(fileName)
-            else:
-                msg = QtWidgets.QMessageBox()
-                msg.resize(550, 200)
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Invalid format")
-                msg.setWindowTitle("Error")
-                msg.exec_()
-        else:
+        if len(fileNames) == 0:
             pass
         
-        data = pd.read_csv(fileName)
+        else:
+            for fileName in fileNames:
+                if fileName.split('.')[1] == 'csv':
+                    self.ListFile.addItem(fileName)
+                else:
+                    pass
+                
+            if self.ListFile.count() == 0:
+                pass
+            
+            else:    
+                data = pd.read_csv(fileName)
         
-        all_cols = data.columns
-        self.comboBoxPSM.addItems(all_cols)
-        for c in all_cols:
-            self.ColumnSelectUI.listWidget.addItem(c)
+                all_cols = data.columns
+                self.comboBoxPSM.addItems(all_cols)
+                for c in all_cols:
+                    self.ColumnSelectUI.listWidget.addItem(c)
         
-        self.ColumnSelectUI.show()
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetTemperture)
-        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
+                self.ColumnSelectUI.show()
+                self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetTemperture)
+                self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
         
-    
+        
     def SetTemperture(self):
         columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
         self.columns = columns
@@ -139,7 +146,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         val_list['Accession'] = prot_list
         val_cols = ['Accession'] + val_cols
 
-        F = MakeFigure(1.5, 1.5)
+        F = MakeFigure(1.2, 1.2)
         F.axes.cla()
         F.RSDHistFigure(np.array(rsd_list))
         f = QtWidgets.QGraphicsScene()
