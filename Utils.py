@@ -113,7 +113,11 @@ def analTSA(proteinData1, proteinData2, columns, minR2 = 0.8, maxPlateau = 0.3, 
         return r1, r2, Tm1, Tm2, deltaTm
         
     n_core = os.cpu_count() - 1
-    res = Parallel(n_jobs=n_core)(delayed(fit_curve)(p) for p in prots)
+    res = []
+    for p in prots:
+        res.append(fit_curve(p))
+    
+    # res = Parallel(n_jobs=n_core)(delayed(fit_curve)(p) for p in prots)
     res = pd.DataFrame(res)
     res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm']
     

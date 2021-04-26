@@ -271,9 +271,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
 
 if __name__ == '__main__':
-    import sys
     
+    import sys
     app = QApplication(sys.argv)
     ui = TCPA_Main()
     ui.show()
     sys.exit(app.exec_())
+    
