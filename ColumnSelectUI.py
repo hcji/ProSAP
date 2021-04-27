@@ -15,6 +15,10 @@ class ColumnSelectUI(QMainWindow, Ui_Form):
     def __init__(self, parent=None):
         super(ColumnSelectUI, self).__init__(parent)
         self.setupUi(self)
+        self.clearList()
+        
+    def clearList(self):
+        self.listWidget.clear()
         
 
 if __name__ == '__main__':

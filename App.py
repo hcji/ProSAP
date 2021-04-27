@@ -8,6 +8,7 @@ Created on Wed Apr 14 09:29:07 2021
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -19,8 +20,9 @@ from AnalPvalComplexUI import AnalPvalComplexUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from PreprocessUI import PreprocessUI
+from Thread import CurveFitThread
 from MakeFigure import MakeFigure
-from Utils import TableModel, analTSA
+from Utils import TableModel, fit_curve
 
 class TCPA_Main(QMainWindow, Ui_MainWindow):
     
@@ -34,6 +36,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.setMinimumHeight(650)
         self.move(75, 50)
         self.setWindowTitle("TPCA -- Thermal proximity coaggregation analysis")
+        
+        # Threads
+        self.CurveFitThread = None
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
@@ -62,6 +67,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         # server data
         self.columns = None
+        self.prots = None
+        self.resultDataTSA = []
         
     
     def LoadProteinFile(self):
@@ -160,7 +167,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def PlotProteinComplex(self):
-        colNames = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()] 
+        colNames = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        self.ColumnSelectUI.close()
+        
         header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
         # print(header)
         i = self.tableProteinComplex.selectedItems()[0].row()
@@ -185,7 +194,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.GraphicThermShift1.setScene(F1)
         self.GraphicThermShift2.setScene(F2)
         
-        self.ColumnSelectUI.close
+        
     
     def OpenAnalROC(self):
         self.AnalROCUI.show()
@@ -218,19 +227,83 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
     
     
+    def ProcessBarTSA(self, msg):
+        self.AnalTSAUI.progressBar.setValue(int(msg))
+        
+    
+    def ResultDataTSA(self, msg):
+        self.resultDataTSA.append(msg)
+        # print(msg)
+    
+    
     def ShowAnalTSA(self):
+        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        self.columns = columns
+        self.ColumnSelectUI.close()
+        self.resultDataTSA = []
+        
         self.AnalTSAUI.tableWidgetProteinList.clear()
+        self.AnalTSAUI.progressBar.setValue(0)
         
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
-        
-        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
-        self.columns = columns
+
         h_axis = self.AnalTSAUI.Boxhaxis.value()
         minR2 = self.AnalTSAUI.BoxR2.value()
         maxPlateau = self.AnalTSAUI.BoxPlateau.value()
         
-        TSA_table = analTSA(proteinData1, proteinData2, columns=columns, minR2 = minR2, maxPlateau = maxPlateau, h_axis = h_axis)
+        temps = np.array([float(t.replace('T', '')) for t in columns])
+        cols = ['Accession'] + columns
+        data_1 = proteinData1.loc[:, cols]
+        data_2 = proteinData2.loc[:, cols]
+
+        self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
+        
+        self.CurveFitThread = CurveFitThread(self.prots, temps, data_1, data_2, minR2, maxPlateau, h_axis)
+        self.CurveFitThread._ind.connect(self.ProcessBarTSA)
+        self.CurveFitThread._res.connect(self.ResultDataTSA)
+        self.CurveFitThread.start()
+        self.CurveFitThread.finished.connect(self.VisualizeTSA)
+        
+        '''
+        res = []
+        for i, p in enumerate(prots):
+            x = temps
+            y1 = np.array(data_1[data_1.iloc[:,0] == p].iloc[0,1:])
+            y2 = np.array(data_2[data_2.iloc[:,0] == p].iloc[0,1:])
+            res.append(fit_curve(x, y1, y2, minR2, maxPlateau, h_axis))
+            self.AnalTSAUI.progressBar.setValue(int(i / len(prots)))
+        '''
+        # res = Parallel(n_jobs=n_core, backend = 'threading')(delayed(fit_curve)(p) for p in prots)
+        # res = pd.DataFrame(res)
+    
+    
+    def VisualizeTSA(self):
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        prots = self.prots
+        columns = self.columns
+        
+        res = pd.DataFrame(self.resultDataTSA)
+        res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm']
+    
+        delta_Tm = res['delta_Tm']
+        p_Val = []
+        for i in range(len(res)):
+            s = delta_Tm[i]
+            pv = stats.t.sf((s - np.mean(delta_Tm)) / np.std(delta_Tm), len(delta_Tm)-1)
+            p_Val.append(pv)
+        score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
+    
+        res['Accession'] = prots
+        res['delta_Tm'] = delta_Tm
+        res['p_Val (-log10)'] = -np.log10(p_Val)
+        res['Score'] = score
+        res = np.round(res, 3)
+    
+        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm']]
+        TSA_table = res.sort_values(by = 'Score',axis = 0, ascending = False)
 
         self.AnalTSAUI.tableWidgetProteinList.setRowCount(TSA_table.shape[0])
         self.AnalTSAUI.tableWidgetProteinList.setColumnCount(TSA_table.shape[1])
@@ -247,7 +320,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         f = QtWidgets.QGraphicsScene()
         f.addWidget(F)
         self.AnalTSAUI.graphicsViewAvgCurve.setScene(f)
-        
         self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
 
     

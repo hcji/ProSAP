@@ -14,6 +14,57 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="0">
+    <widget class="QDoubleSpinBox" name="Boxhaxis">
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.500000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>minR2</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Parameters for TPP analysis:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="8">
+    <widget class="QLabel" name="label_3">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Average thermal shift curves:</string>
+     </property>
+    </widget>
+   </item>
    <item row="6" column="0">
     <widget class="QDoubleSpinBox" name="BoxR2">
      <property name="singleStep">
@@ -21,6 +72,35 @@
      </property>
      <property name="value">
       <double>0.800000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2">
+    <widget class="QPushButton" name="ButtonConfirm">
+     <property name="text">
+      <string>Confirm</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>maxPlateau</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2">
+    <widget class="QPushButton" name="ButtonCancel">
+     <property name="text">
+      <string>Cancel</string>
      </property>
     </widget>
    </item>
@@ -34,9 +114,6 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0" colspan="3">
-    <widget class="QTableWidget" name="tableWidgetProteinList"/>
-   </item>
    <item row="11" column="0">
     <widget class="QLabel" name="label">
      <property name="font">
@@ -47,19 +124,6 @@
      </property>
      <property name="text">
       <string>Protein list sorted by scores:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="8">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Thermal shift curves comparison:</string>
      </property>
     </widget>
    </item>
@@ -81,86 +145,10 @@
    <item row="1" column="8" rowspan="10" colspan="2">
     <widget class="QGraphicsView" name="graphicsViewAvgCurve"/>
    </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_6">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>minR2</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="8">
-    <widget class="QLabel" name="label_3">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Average thermal shift curves:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Parameters for TPP analysis:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_10">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>maxPlateau</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QDoubleSpinBox" name="Boxhaxis">
-     <property name="singleStep">
-      <double>0.050000000000000</double>
-     </property>
-     <property name="value">
-      <double>0.500000000000000</double>
-     </property>
-    </widget>
-   </item>
    <item row="13" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="8" colspan="2">
-    <widget class="QGraphicsView" name="graphicsViewTSACurve"/>
-   </item>
-   <item row="6" column="2">
-    <widget class="QPushButton" name="ButtonConfirm">
-     <property name="text">
-      <string>Confirm</string>
      </property>
     </widget>
    </item>
@@ -171,12 +159,11 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="2">
-    <widget class="QPushButton" name="ButtonCancel">
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
+   <item row="12" column="8" colspan="2">
+    <widget class="QGraphicsView" name="graphicsViewTSACurve"/>
+   </item>
+   <item row="12" column="0" colspan="3">
+    <widget class="QTableWidget" name="tableWidgetProteinList"/>
    </item>
    <item row="13" column="2">
     <widget class="QPushButton" name="pushButtonSave">
@@ -185,10 +172,23 @@
      </property>
     </widget>
    </item>
+   <item row="11" column="8">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Thermal shift curves comparison:</string>
+     </property>
+    </widget>
+   </item>
    <item row="13" column="8">
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
-      <number>24</number>
+      <number>0</number>
      </property>
     </widget>
    </item>
