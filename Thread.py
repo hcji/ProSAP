@@ -44,7 +44,33 @@ class CurveFitThread(QtCore.QThread):
             self._res.emit(list(rv))
         # print('finished')
 
+
+class ROCThread(QtCore.QThread):
+
+    _ind = QtCore.pyqtSignal(str)
+    _res = QtCore.pyqtSignal(float)
+ 
+    def __init__(self, prot, data, dist, proteinPair):
+        super(ROCThread, self).__init__()
+        self.prot = prot
+        self.dist = dist
+        self.proteinPair = proteinPair
+        self.data = data
+        self.working = True
+ 
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        for i in self.proteinPair.index:
+            p1 = self.proteinPair['Protein A'][i]
+            p2 = self.proteinPair['Protein B'][i]
+            a = np.where(self.prot == p1)[0]
+            b = np.where(self.prot == p2)[0]
+            if (len(a) > 0) and (len(b) > 0):
+                d = self.dist[a[0], b[0]]
+                self._ind.emit(str(int( 100 * (i + 1) / len(self.proteinPair))))
+                self._res.emit(d)
+        # print('finished')
         
-
-
-

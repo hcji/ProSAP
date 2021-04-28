@@ -85,7 +85,7 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=4)
         self.axes.set_xlabel('Temperature (℃)', fontsize=3)
         self.axes.set_ylabel('Abundances', fontsize=3)
-        self.axes.legend(fontsize=3)        
+        self.axes.legend(fontsize=3)
     
     
     def RSDHistFigure(self, rsdList):
@@ -93,5 +93,16 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=3)
         self.axes.set_xlabel('RSD', fontsize=3)
         self.axes.set_ylabel('Number', fontsize=3)
-        
     
+    
+    def ROCFigure(self, fpr, tpr, auroc):
+        self.axes.plot(fpr, tpr, label='AUC = {}'.format(auroc), color = 'red', lw=0.7)
+        self.axes.plot([0, 1], [0, 1], color='black', linestyle='--', lw=0.7)
+        self.axes.set_xlabel('False Positive Rate', fontsize = 4)
+        self.axes.set_ylabel('True Positive Rate', fontsize = 4)
+        self.axes.tick_params(labelsize=4)
+        self.axes.legend(fontsize=3)
+        
+        
+        
+        

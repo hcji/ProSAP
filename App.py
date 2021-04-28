@@ -8,7 +8,9 @@ Created on Wed Apr 14 09:29:07 2021
 
 import numpy as np
 import pandas as pd
+
 from scipy import stats
+from sklearn import metrics
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -16,11 +18,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from MainWindow import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
-from AnalPvalComplexUI import AnalPvalComplexUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from PreprocessUI import PreprocessUI
-from Thread import CurveFitThread
+from Thread import CurveFitThread, ROCThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
@@ -39,10 +40,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         # Threads
         self.CurveFitThread = None
+        self.ROCThread = None
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
-        self.AnalPvalComplexUI = AnalPvalComplexUI()
         self.AnalROCUI = AnalROCUI()
         self.AnalTSAUI = AnalTSAUI()
         self.PreprocessUI = PreprocessUI()
@@ -53,7 +54,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
         self.action_CETSA.triggered.connect(self.OpenAnalTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
-        self.actionCalcPval.triggered.connect(self.OpenAnalPvalComplex)
         
         # button action
         self.ButtonGroup1.clicked.connect(self.SetProteinTable1)
@@ -68,8 +68,19 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         # server data
         self.columns = None
         self.prots = None
+        self.proteinPair = None
         self.resultDataTSA = []
+        self.resultDataROC = []
+        self.ROCNegValues = []
         
+    def ErrorMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(Text)
+        msg.setWindowTitle("Error")
+        msg.exec_()
+                
     
     def LoadProteinFile(self):
         options = QtWidgets.QFileDialog.Options()
@@ -79,12 +90,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             if fileName.split('.')[1] == 'csv':
                 self.ListFile.addItem(fileName)
             else:
-                msg = QtWidgets.QMessageBox()
-                msg.resize(550, 200)
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Invalid format")
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorMsg("Invalid format")
         else:
             pass
 
@@ -101,12 +107,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             if fileName.split('.')[1] == 'csv':
                 self.ListDatabase.addItem(fileName)
             else:
-                msg = QtWidgets.QMessageBox()
-                msg.resize(550, 200)
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Invalid format")
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorMsg("Invalid format")
         else:
             pass
         
@@ -139,12 +140,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         selectItem = self.ListDatabase.currentItem()
         selectData = pd.read_csv(selectItem.text())
         if 'Subunits_UniProt_IDs' not in selectData.columns:
-            msg = QtWidgets.QMessageBox()
-            msg.resize(550, 200)
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("'Subunits_UniProt_IDs' not in columns")
-            msg.setWindowTitle("Error")
-            msg.exec_()
+            self.ErrorMsg("Subunits_UniProt_IDs' not in columns")
         else:
             self.tableProteinComplex.setRowCount(selectData.shape[0])
             self.tableProteinComplex.setColumnCount(selectData.shape[1])
@@ -194,16 +190,113 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.GraphicThermShift1.setScene(F1)
         self.GraphicThermShift2.setScene(F2)
         
+
+    def LoadProteinPair(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        if fileName:
+            if fileName.split('.')[1] == 'csv':
+                self.proteinPair = pd.read_csv(fileName)
+                self.AnalROCUI.tableView.setModel(TableModel(self.proteinPair))
+            else:
+                self.ErrorMsg("Invalid format")
+        else:
+            self.AnalROCUI.spinBoxRandom.setProperty("value", len(self.proteinPair))
         
     
     def OpenAnalROC(self):
         self.AnalROCUI.show()
+        self.AnalROCUI.progressBar.setValue(0)
+        self.AnalROCUI.comboBoxDataset.addItems(['Group1', 'Group2'])
+        self.AnalROCUI.comboBoxDistance.addItems(['manhattan', 'cityblock', 'cosine', 'euclidean', 'l1', 'l2'])
+
+        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
+            pass
+        else:
+            self.AnalROCUI.pushButtonDatabase.clicked.connect(self.LoadProteinPair)
+            self.AnalROCUI.pushButtonConfirm.clicked.connect(self.DoAnalROC)
+            self.AnalROCUI.pushButtonCancel.clicked.connect(self.AnalROCUI.close)
+    
+    
+    def DoAnalROC(self):
+        self.ColumnSelectUI.listWidget.clear()
+        all_cols = self.tableProtein1.model()._data.columns
+        for c in all_cols:
+            self.ColumnSelectUI.listWidget.addItem(c)
+        self.ColumnSelectUI.show()
+        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.ShowAnalROC)
+        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
+        
+    
+    def ShowAnalROC(self):
+        pub_thres = self.AnalROCUI.spinBoxPub.value()
+        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        self.columns = columns
+        self.ColumnSelectUI.close()
+        self.resultDataROC = []
+        
+        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
+            self.ErrorMsg("Protein matrix is not available")
+        else:
+            if self.AnalROCUI.comboBoxDataset.currentText() == 'Group1':
+                proteinData = self.tableProtein1.model()._data
+            else:
+                proteinData = self.tableProtein2.model()._data
+                
+        if self.AnalROCUI.tableView.model() is None:
+            self.ErrorMsg("Protein pairs is not available")
+        
+        else:
+            proteinPair = self.AnalROCUI.tableView.model()._data            
+            if ('Protein A' not in proteinPair.columns) or ('Protein B' not in proteinPair.columns):
+                self.ErrorMsg("Protein pairs is not available")
+            # proteinData = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
+            # columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']
+            # proteinPair = pd.read_csv('data/TPCA_TableS2_Protein_Pairs.csv')
+            
+            if 'Publications' in proteinPair.columns:
+                proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
+            
+            prot = proteinData.loc[:, 'Accession']
+            data = proteinData.loc[:, columns]
+            dist = metrics.pairwise_distances(data, metric = self.AnalROCUI.comboBoxDistance.currentText())
+            neg_values = np.triu(dist, k = 0).flatten()
+            neg_values = neg_values[neg_values > 0]
+            
+            self.ROCNegValues = np.array(np.random.choice(list(neg_values), self.AnalROCUI.spinBoxRandom.value(), replace=False))
+            self.ROCThread = ROCThread(prot, data, dist, proteinPair)
+            self.ROCThread._ind.connect(self.ProcessBarROC)
+            self.ROCThread._res.connect(self.ResultDataROC)
+            self.ROCThread.start()
+            self.ROCThread.finished.connect(self.VisualizeROC)            
+
+    
+    def VisualizeROC(self):
+        pos_values = 1 - np.array(self.resultDataROC)
+        neg_values = 1 - np.array(self.ROCNegValues)
+        values = list(pos_values) + list(neg_values)
+        labels = [1] * len(pos_values) + [0] * len(neg_values)
+        
+        fpr, tpr, threshold = metrics.roc_curve(labels, values, pos_label = 1)
+        auroc = np.round(metrics.roc_auc_score(labels, values), 4)
+        
+        F = MakeFigure(1.2, 1.2)
+        F.axes.cla()
+        F.ROCFigure(fpr, tpr, auroc)
+        f = QtWidgets.QGraphicsScene()
+        f.addWidget(F)
+        self.AnalROCUI.graphicsView.setScene(f)
 
 
-    def OpenAnalPvalComplex(self):
-        self.AnalPvalComplexUI.show()
+    def ResultDataROC(self, msg):
+        self.resultDataROC.append(msg)
         
-        
+
+    def ProcessBarROC(self, msg):
+        self.AnalROCUI.progressBar.setValue(int(msg))
+
+    
     def OpenPreprocessing(self):
         self.PreprocessUI.show()
         
@@ -339,7 +432,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         f = QtWidgets.QGraphicsScene()
         f.addWidget(F)
         self.AnalTSAUI.graphicsViewTSACurve.setScene(f)
-    
+
     
 
 if __name__ == '__main__':

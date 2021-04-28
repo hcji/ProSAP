@@ -15,7 +15,9 @@ class AnalROCUI(QtWidgets.QWidget, Ui_Form):
     def __init__(self, parent=None): 
         super(AnalROCUI, self).__init__(parent)
         self.setupUi(self)
-
+        self.setWindowTitle("Protein pairs ROC analysis")
+        
+        
 
         
 
