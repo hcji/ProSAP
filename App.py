@@ -14,7 +14,9 @@ from sklearn import metrics
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 
 from MainWindow import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
@@ -62,16 +64,19 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonDatabaseConfirm.clicked.connect(self.SetProteinComplex)
         self.ButtonDatabaseRemove.clicked.connect(self.RemoveProteinComplex)
         self.ButtonClearDatabase.clicked.connect(self.ClearProteinComplex)
-        
-        self.ButtonShowCurve.clicked.connect(self.OpenColumnSelection)
+        self.ButtonShowCurve.clicked.connect(self.PlotProteinComplex)
         
         # server data
         self.columns = None
         self.prots = None
         self.proteinPair = None
+        self.ProteinTable1 = None
+        self.ProteinTable2 = None
+        self.TSA_table = pd.DataFrame()
         self.resultDataTSA = []
         self.resultDataROC = []
         self.ROCNegValues = []
+        
         
     def ErrorMsg(self, Text):
         msg = QtWidgets.QMessageBox()
@@ -128,13 +133,34 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
     def SetProteinTable1(self):
         data = self.SelectProteinTable()
-        self.tableProtein1.setModel(TableModel(data))
+        self.ProteinTable1 = data
+        self.ColumnSelectUI.listWidget.clear()
+        all_cols = data.columns
+        for c in all_cols:
+            self.ColumnSelectUI.listWidget.addItem(c)
+        self.ColumnSelectUI.show()
+        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetProteinColumn)
+        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
 
 
     def SetProteinTable2(self):
-        data = self.SelectProteinTable()
-        self.tableProtein2.setModel(TableModel(data))
+        if self.columns == None:
+            self.ErrorMsg('Please set Group 1')
+        else:
+            columns = ['Accession'] + self.columns
+            data = self.SelectProteinTable()
+            data = data.loc[:, columns]
+            self.tableProtein2.setModel(TableModel(data))
+            self.ProteinTable2 = data
 
+
+    def SetProteinColumn(self):
+        self.columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        columns = ['Accession'] + self.columns
+        self.ColumnSelectUI.close()
+        data = self.ProteinTable1.loc[:, columns]
+        self.tableProtein1.setModel(TableModel(data))
+        
 
     def SetProteinComplex(self):
         selectItem = self.ListDatabase.currentItem()
@@ -150,22 +176,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 for j in range(selectData.shape[1]):
                     item = QtWidgets.QTableWidgetItem(str(selectData.iloc[i,j]))
                     self.tableProteinComplex.setItem(i, j, item)
+                    
     
-    
-    def OpenColumnSelection(self):
-        self.ColumnSelectUI.listWidget.clear()
-        all_cols = self.tableProtein1.model()._data.columns
-        for c in all_cols:
-            self.ColumnSelectUI.listWidget.addItem(c)
-        self.ColumnSelectUI.show()
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.PlotProteinComplex)
-        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
-    
-    
-    def PlotProteinComplex(self):
-        colNames = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
-        self.ColumnSelectUI.close()
-        
+    def PlotProteinComplex(self):       
+        colNames = self.columns        
         header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
         # print(header)
         i = self.tableProteinComplex.selectedItems()[0].row()
@@ -208,46 +222,39 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def OpenAnalROC(self):
         self.AnalROCUI.show()
         self.AnalROCUI.progressBar.setValue(0)
+        self.AnalROCUI.comboBoxDataset.clear()
         self.AnalROCUI.comboBoxDataset.addItems(['Group1', 'Group2'])
+        self.AnalROCUI.comboBoxDistance.clear()
         self.AnalROCUI.comboBoxDistance.addItems(['manhattan', 'cityblock', 'cosine', 'euclidean', 'l1', 'l2'])
 
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             pass
         else:
             self.AnalROCUI.pushButtonDatabase.clicked.connect(self.LoadProteinPair)
-            self.AnalROCUI.pushButtonConfirm.clicked.connect(self.DoAnalROC)
+            self.AnalROCUI.pushButtonConfirm.clicked.connect(self.ShowAnalROC)
             self.AnalROCUI.pushButtonCancel.clicked.connect(self.AnalROCUI.close)
-    
-    
-    def DoAnalROC(self):
-        self.ColumnSelectUI.listWidget.clear()
-        all_cols = self.tableProtein1.model()._data.columns
-        for c in all_cols:
-            self.ColumnSelectUI.listWidget.addItem(c)
-        self.ColumnSelectUI.show()
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.ShowAnalROC)
-        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
         
     
     def ShowAnalROC(self):
         pub_thres = self.AnalROCUI.spinBoxPub.value()
-        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
-        self.columns = columns
-        self.ColumnSelectUI.close()
-        self.resultDataROC = []
+        columns = self.columns
         
+        self.resultDataROC = []
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             self.ErrorMsg("Protein matrix is not available")
         else:
-            if self.AnalROCUI.comboBoxDataset.currentText() == 'Group1':
-                proteinData = self.tableProtein1.model()._data
-            else:
-                proteinData = self.tableProtein2.model()._data
+                proteinData1 = self.tableProtein1.model()._data
+                proteinData2 = self.tableProtein2.model()._data
                 
         if self.AnalROCUI.tableView.model() is None:
             self.ErrorMsg("Protein pairs is not available")
         
         else:
+            if self.AnalROCUI.comboBoxDataset.currentText() == 'Group1':
+                proteinData = proteinData1
+            else:
+                proteinData = proteinData2
+            
             proteinPair = self.AnalROCUI.tableView.model()._data            
             if ('Protein A' not in proteinPair.columns) or ('Protein B' not in proteinPair.columns):
                 self.ErrorMsg("Protein pairs is not available")
@@ -269,7 +276,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             self.ROCThread._ind.connect(self.ProcessBarROC)
             self.ROCThread._res.connect(self.ResultDataROC)
             self.ROCThread.start()
-            self.ROCThread.finished.connect(self.VisualizeROC)            
+            self.ROCThread.finished.connect(self.VisualizeROC)
 
     
     def VisualizeROC(self):
@@ -306,18 +313,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             pass
         else:
-            self.AnalTSAUI.ButtonConfirm.clicked.connect(self.DoAnalTSA)
+            self.AnalTSAUI.ButtonConfirm.clicked.connect(self.ShowAnalTSA)
             self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
-            
-  
-    def DoAnalTSA(self):
-        self.ColumnSelectUI.listWidget.clear()
-        all_cols = self.tableProtein1.model()._data.columns
-        for c in all_cols:
-            self.ColumnSelectUI.listWidget.addItem(c)
-        self.ColumnSelectUI.show()
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.ShowAnalTSA)
-        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
     
     
     def ProcessBarTSA(self, msg):
@@ -330,8 +327,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def ShowAnalTSA(self):
-        columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
-        self.columns = columns
+        columns = self.columns
         self.ColumnSelectUI.close()
         self.resultDataTSA = []
         
@@ -397,7 +393,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
         res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm']]
         TSA_table = res.sort_values(by = 'Score',axis = 0, ascending = False)
-
+        
+        self.TSA_table = TSA_table
         self.AnalTSAUI.tableWidgetProteinList.setRowCount(TSA_table.shape[0])
         self.AnalTSAUI.tableWidgetProteinList.setColumnCount(TSA_table.shape[1])
         self.AnalTSAUI.tableWidgetProteinList.setHorizontalHeaderLabels(TSA_table.columns)
@@ -432,7 +429,15 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         f = QtWidgets.QGraphicsScene()
         f.addWidget(F)
         self.AnalTSAUI.graphicsViewTSACurve.setScene(f)
+        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
 
+
+    def SaveTSAData(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        data = self.TSA_table
+        data.to_csv(fileName)
     
 
 if __name__ == '__main__':

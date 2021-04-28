@@ -74,3 +74,38 @@ class ROCThread(QtCore.QThread):
                 self._res.emit(d)
         # print('finished')
         
+
+class PairThread(QtCore.QThread):
+
+    _ind = QtCore.pyqtSignal(str)
+    _res = QtCore.pyqtSignal(float)
+ 
+    def __init__(self, prot1, dist1, prot2, dist2, proteinPair):
+        super(ROCThread, self).__init__()
+        self.pro1t = prot1
+        self.dist1 = dist1
+        self.pro12 = prot2
+        self.dist2 = dist2
+        self.proteinPair = proteinPair
+        self.working = True
+ 
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        for i in self.proteinPair.index:
+            p1 = self.proteinPair['Protein A'][i]
+            p2 = self.proteinPair['Protein B'][i]
+            a1 = np.where(self.prot1 == p1)[0]
+            b1 = np.where(self.prot1 == p2)[0]
+            a2 = np.where(self.prot2 == p1)[0]
+            b2 = np.where(self.prot2 == p2)[0]
+            if (len(a1) > 0) and (len(b1) > 0):
+                if (len(a2) > 0) and (len(b2) > 0):
+                    d1 = self.dist1[a1[0], b1[0]]
+                    d2 = self.dist2[a2[0], b2[0]]
+                    d = abs(d1 - d2)
+                    self._ind.emit(str(int( 100 * (i + 1) / len(self.proteinPair))))
+                    self._res.emit(d)
+        # print('finished')

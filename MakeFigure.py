@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class MakeFigure(FigureCanvas):
@@ -25,6 +25,9 @@ class MakeFigure(FigureCanvas):
         self.axes.spines['left'].set_linewidth(0.5)
         self.axes.spines['right'].set_linewidth(0.5)
         self.axes.spines['top'].set_linewidth(0.5)
+        self.axes.tick_params(labelsize=5)
+        FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
 
     
     def ProteinComplexFigure(self, proteinSubunit, proteinData, colNames):
@@ -46,9 +49,8 @@ class MakeFigure(FigureCanvas):
         for p, vec in pltData.items():
             self.axes.plot(temps, vec, label = p)
             
-        self.axes.tick_params(labelsize=5)
-        self.axes.set_xlabel('Temperature (℃)', fontsize='xx-small')
-        self.axes.set_ylabel('Abundances', fontsize='xx-small')
+        self.axes.set_xlabel('Temperature (℃)', fontsize=5)
+        self.axes.set_ylabel('Abundances', fontsize=5)
         self.axes.legend(fontsize=4)
     
     

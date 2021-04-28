@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1054</width>
-    <height>875</height>
+    <width>1172</width>
+    <height>759</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -205,7 +205,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1054</width>
+     <width>1172</width>
      <height>26</height>
     </rect>
    </property>
@@ -237,8 +237,9 @@
     <property name="title">
      <string>Analysis</string>
     </property>
-    <addaction name="actionCalcROC"/>
     <addaction name="action_CETSA"/>
+    <addaction name="actionCalcROC"/>
+    <addaction name="actionCalcComplex"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDatabase"/>
@@ -293,7 +294,7 @@
   </action>
   <action name="action_CETSA">
    <property name="text">
-    <string>Single protein analysis (TSA) ...</string>
+    <string>Single protein analysis ...</string>
    </property>
   </action>
   <action name="actionCalcPval">
@@ -303,7 +304,7 @@
   </action>
   <action name="actionCalcROC">
    <property name="text">
-    <string>Protein pair ROC analysis ...</string>
+    <string>Protein pair analysis...</string>
    </property>
   </action>
   <action name="actionCheck_update">
@@ -324,6 +325,11 @@
   <action name="actionPreprocessing">
    <property name="text">
     <string>Preprocessing...</string>
+   </property>
+  </action>
+  <action name="actionCalcComplex">
+   <property name="text">
+    <string>Protein complex analysis...</string>
    </property>
   </action>
  </widget>
