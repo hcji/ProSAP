@@ -7,6 +7,7 @@ Created on Tue Apr 27 09:47:47 2021
 
 
 import numpy as np
+from scipy.stats import norm
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -101,7 +102,7 @@ class PairThread(QtCore.QThread):
         for i, p in enumerate(all_prot):
             w1.append(np.where(self.prot1 == p)[0][0])
             w2.append(np.where(self.prot2 == p)[0][0])
-            self._ind.emit(str(int(100 * (i + 1) / len(self.proteinPair))))
+            self._ind.emit(str(int(50 * (i + 1) / len(self.proteinPair))))
         
         a = np.random.choice(np.arange(len(w1)), self.n)
         b = np.random.choice(np.arange(len(w1)), self.n)
@@ -133,14 +134,13 @@ class ComplexThread(QtCore.QThread):
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
-    def __init__(self, prot1, dist1, prot2, dist2, proteinComplex, n):
+    def __init__(self, prot1, dist1, prot2, dist2, proteinComplex):
         super(ComplexThread, self).__init__()
         self.prot1 = prot1
         self.dist1 = dist1
         self.prot2 = prot2
         self.dist2 = dist2
         self.proteinComplex = proteinComplex
-        self.n = n
         self.working = True
  
     def __del__(self):
@@ -148,4 +148,58 @@ class ComplexThread(QtCore.QThread):
         self.working = False
  
     def run(self):
-        pass
+        all_prot = np.intersect1d(self.prot1, self.prot2)
+        w1, w2 = [], []
+        for i, p in enumerate(all_prot):
+            w1.append(np.where(self.prot1 == p)[0][0])
+            w2.append(np.where(self.prot2 == p)[0][0])
+            self._ind.emit(str(int(50 * (i + 1) / len(all_prot))))
+        w1 = np.array(w1)
+        w2 = np.array(w2)
+        
+        prot_align = self.prot1[w1]
+        dist1_align = self.dist1[w1,:][:, w1]
+        dist2_align = self.dist2[w2,:][:, w2]
+        dist_change = np.abs(dist1_align - dist2_align)
+        
+        dist1_align[dist1_align == 0] = np.nan
+        dist2_align[dist2_align == 0] = np.nan
+        dist_change[dist_change == 0] = np.nan
+        
+        dist1_mu, dist1_sigma = np.nanmean(dist1_align), np.nanstd(dist1_align)
+        dist2_mu, dist2_sigma = np.nanmean(dist2_align), np.nanstd(dist2_align)
+        dist_change_mu, dist_change_sigma = np.nanmean(dist_change), np.nanstd(dist_change)
+        
+        for i in self.proteinComplex.index:
+            subunits = self.proteinComplex.loc[i, 'Subunits_UniProt_IDs']
+            subunits = subunits.split(',')
+            subunits = [p.replace('(', '') for p in subunits]
+            subunits = [p.replace(')', '') for p in subunits]
+            
+            l = []
+            for s in subunits:
+                a = np.where(prot_align == s)[0]
+                if len(a) > 0:
+                    l.append(a[0])
+            if len(l) <= 2:
+                pm, dm, p1, d1, p2, d2 = np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
+            else:
+                dist1_sub = dist1_align[l,:][:,l]
+                dist2_sub = dist2_align[l,:][:,l]
+                dist_change_sub = dist_change[l,:][:,l]
+                
+                d1 = round(np.nanmean(dist1_sub),3)
+                d2 = round(np.nanmean(dist2_sub),3)
+                dm = round(np.nanmean(dist_change_sub),3)
+                
+                n = len(l)
+                z1 = (d1 - dist1_mu) * (n ** (1/2)) / dist1_sigma
+                z2 = (d2 - dist2_mu) * (n ** (1/2)) / dist2_sigma
+                zm = (dm - dist_change_mu) * (n ** (1/2)) / dist_change_sigma
+        
+                p1 = round(norm.sf(z1),3)
+                p2 = round(norm.sf(z2),3)
+                pm = round(norm.sf(zm),3)
+                
+            self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinComplex))))
+            self._res.emit([n, pm, dm, p1, d1, p2, d2])        

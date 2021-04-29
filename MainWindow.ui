@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="labelFileList">
@@ -151,7 +151,7 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="labelProteinTable1">
@@ -187,7 +187,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="labelProteinTable2">
@@ -292,7 +292,6 @@
     </property>
     <addaction name="action_CETSA"/>
     <addaction name="actionCalcROC"/>
-    <addaction name="actionCalcComplex"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDatabase"/>

@@ -23,7 +23,7 @@ from ColumnSelectUI import ColumnSelectUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from PreprocessUI import PreprocessUI
-from Thread import CurveFitThread, ROCThread, PairThread
+from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
@@ -52,6 +52,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.CurveFitThread = None
         self.ROCThread = None
         self.PairThread = None
+        self.ComplexThread = None
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
@@ -83,6 +84,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ProteinTable1 = None
         self.ProteinTable2 = None
         self.TSA_table = pd.DataFrame()
+        self.resultDataComplex = []
         self.resultDataTSA = []
         self.resultDataROC = []
         self.resultProtPair = []
@@ -188,7 +190,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                     item = QtWidgets.QTableWidgetItem(str(selectData.iloc[i,j]))
                     self.tableProteinComplex.setItem(i, j, item)
             self.proteinComplex = selectData
-                    
+        self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
+        
     
     def CalcProteinComplexChange(self):
         columns = self.columns
@@ -202,7 +205,37 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         dist2 = metrics.pairwise_distances(data2, metric = 'manhattan')
         prot1 = proteinData1.loc[:, 'Accession']
         prot2 = proteinData2.loc[:, 'Accession']
+
+        self.ComplexThread = ComplexThread(prot1, dist1, prot2, dist2, proteinComplex)
+        self.ComplexThread._ind.connect(self.ProcessBarComplex)
+        self.ComplexThread._res.connect(self.ResultDataComplex)
+        self.ComplexThread.start()
+        self.ComplexThread.finished.connect(self.VisualizeComplex)
+
+
+    def ResultDataComplex(self, msg):
+        self.resultDataComplex.append(msg)
         
+
+    def ProcessBarComplex(self, msg):
+        self.progressBar.setValue(int(msg))
+    
+    
+    def VisualizeComplex(self):
+        proteinComplex = self.proteinComplex
+        resultDataComplex = pd.DataFrame(self.resultDataComplex)
+        resultDataComplex.columns = ['Num subunit found', 'p-value (change)', 'Avg distance (change)', 'TPCA Sig 1', 'Avg distance 1', 'TPCA Sig 2', 'Avg distance 2']
+        proteinComplex = pd.concat([proteinComplex, resultDataComplex], axis=1)
+        proteinComplex = proteinComplex.sort_values(by = 'p-value (change)')
+        
+        self.tableProteinComplex.setRowCount(proteinComplex.shape[0])
+        self.tableProteinComplex.setColumnCount(proteinComplex.shape[1])
+        self.tableProteinComplex.setHorizontalHeaderLabels(proteinComplex.columns)
+        self.tableProteinComplex.setVerticalHeaderLabels(proteinComplex.index.astype(str))
+        for i in range(proteinComplex.shape[0]):
+            for j in range(proteinComplex.shape[1]):
+                item = QtWidgets.QTableWidgetItem(str(proteinComplex.iloc[i,j]))
+                self.tableProteinComplex.setItem(i, j, item)       
     
     
     def PlotProteinComplex(self):       
@@ -216,8 +249,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         # print(proteinData)
-        F_gr1 = MakeFigure(2.2, 1.6)
-        F_gr2 = MakeFigure(2.2, 1.6)
+        F_gr1 = MakeFigure(1.5, 1.5)
+        F_gr2 = MakeFigure(1.5, 1.5)
         F_gr1.axes.cla()
         F_gr2.axes.cla()
         
