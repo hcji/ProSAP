@@ -69,7 +69,7 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=4)
         self.axes.set_xlabel('Temperature (℃)', fontsize=3)
         self.axes.set_ylabel('Abundances', fontsize=3)
-        self.axes.legend(fontsize=3)        
+        self.axes.legend(fontsize=3, bbox_to_anchor=(1,1), loc="upper left")        
         
     
     def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession):
@@ -104,7 +104,4 @@ class MakeFigure(FigureCanvas):
         self.axes.set_ylabel('True Positive Rate', fontsize = 4)
         self.axes.tick_params(labelsize=4)
         self.axes.legend(fontsize=3)
-        
-        
-        
         

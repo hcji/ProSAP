@@ -23,7 +23,7 @@ from ColumnSelectUI import ColumnSelectUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from PreprocessUI import PreprocessUI
-from Thread import CurveFitThread, ROCThread
+from Thread import CurveFitThread, ROCThread, PairThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
@@ -43,6 +43,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         # Threads
         self.CurveFitThread = None
         self.ROCThread = None
+        self.PairThread = None
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
@@ -75,6 +76,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.TSA_table = pd.DataFrame()
         self.resultDataTSA = []
         self.resultDataROC = []
+        self.resultProtPair = []
         self.ROCNegValues = []
         
         
@@ -242,12 +244,14 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.resultDataROC = []
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             self.ErrorMsg("Protein matrix is not available")
+            self.AnalROCUI.close()
         else:
-                proteinData1 = self.tableProtein1.model()._data
-                proteinData2 = self.tableProtein2.model()._data
+            proteinData1 = self.tableProtein1.model()._data
+            proteinData2 = self.tableProtein2.model()._data
                 
         if self.AnalROCUI.tableView.model() is None:
             self.ErrorMsg("Protein pairs is not available")
+            self.AnalROCUI.close()
         
         else:
             if self.AnalROCUI.comboBoxDataset.currentText() == 'Group1':
@@ -255,10 +259,11 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             else:
                 proteinData = proteinData2
             
-            proteinPair = self.AnalROCUI.tableView.model()._data            
+            proteinPair = self.AnalROCUI.tableView.model()._data
             if ('Protein A' not in proteinPair.columns) or ('Protein B' not in proteinPair.columns):
                 self.ErrorMsg("Protein pairs is not available")
-            # proteinData = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
+            # proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
+            # proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
             # columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']
             # proteinPair = pd.read_csv('data/TPCA_TableS2_Protein_Pairs.csv')
             
@@ -294,6 +299,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         f = QtWidgets.QGraphicsScene()
         f.addWidget(F)
         self.AnalROCUI.graphicsView.setScene(f)
+        self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
 
 
     def ResultDataROC(self, msg):
@@ -302,6 +308,46 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
     def ProcessBarROC(self, msg):
         self.AnalROCUI.progressBar.setValue(int(msg))
+        
+        
+    def CalcProteinPairChange(self):
+        columns = self.columns
+        pub_thres = self.AnalROCUI.spinBoxPub.value()
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data    
+        proteinPair = self.AnalROCUI.tableView.model()._data
+        
+        if 'Publications' in proteinPair.columns:
+            proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
+        data1 = proteinData1.loc[:, columns]
+        data2 = proteinData2.loc[:, columns]
+        dist1 = metrics.pairwise_distances(data1, metric = self.AnalROCUI.comboBoxDistance.currentText())
+        dist2 = metrics.pairwise_distances(data2, metric = self.AnalROCUI.comboBoxDistance.currentText())
+        prot1 = proteinData1.loc[:, 'Accession']
+        prot2 = proteinData2.loc[:, 'Accession']
+        
+        n = self.AnalROCUI.spinBoxRandom.value()
+        self.PairThread = PairThread(prot1, dist1, prot2, dist2, proteinPair, n)
+        self.PairThread._ind.connect(self.ProcessBarROC)
+        self.PairThread._res.connect(self.ResultProtPair)
+        self.PairThread.start()
+        self.PairThread.finished.connect(self.VisualizeProtPair)        
+
+
+    def VisualizeProtPair(self):
+        pub_thres = self.AnalROCUI.spinBoxPub.value()
+        proteinPair = self.AnalROCUI.tableView.model()._data
+        if 'Publications' in proteinPair.columns:
+            proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
+        proteinPairDist = pd.DataFrame(self.resultProtPair)
+        proteinPairDist.columns = ['Distance change', 'p-value', 'Distance Group1', 'Distance Group2']
+        proteinPair = pd.concat([proteinPair, proteinPairDist], axis=1)
+        proteinPair = proteinPair.sort_values(by = 'p-value')
+        self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
+        
+
+    def ResultProtPair(self, msg):
+        self.resultProtPair.append(msg)
 
     
     def OpenPreprocessing(self):

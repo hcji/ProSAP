@@ -72,21 +72,23 @@ class ROCThread(QtCore.QThread):
                 d = self.dist[a[0], b[0]]
                 self._ind.emit(str(int( 100 * (i + 1) / len(self.proteinPair))))
                 self._res.emit(d)
+        self._ind.emit(str(int(100)))
         # print('finished')
         
 
 class PairThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
-    _res = QtCore.pyqtSignal(float)
+    _res = QtCore.pyqtSignal(list)
  
-    def __init__(self, prot1, dist1, prot2, dist2, proteinPair):
-        super(ROCThread, self).__init__()
-        self.pro1t = prot1
+    def __init__(self, prot1, dist1, prot2, dist2, proteinPair, n):
+        super(PairThread, self).__init__()
+        self.prot1 = prot1
         self.dist1 = dist1
-        self.pro12 = prot2
+        self.prot2 = prot2
         self.dist2 = dist2
         self.proteinPair = proteinPair
+        self.n = n
         self.working = True
  
     def __del__(self):
@@ -94,6 +96,16 @@ class PairThread(QtCore.QThread):
         self.working = False
  
     def run(self):
+        all_prot = np.intersect1d(self.prot1, self.prot2)
+        w1, w2 = [], []
+        for i, p in enumerate(all_prot):
+            w1.append(np.where(self.prot1 == p)[0][0])
+            w2.append(np.where(self.prot2 == p)[0][0])
+            self._ind.emit(str(int(100 * (i + 1) / len(self.proteinPair))))
+        a = np.random.choice(w1, self.n)
+        b = np.random.choice(w2, self.n)
+        negDist = np.abs(self.dist1[a, b] - self.dist2[a, b])
+        
         for i in self.proteinPair.index:
             p1 = self.proteinPair['Protein A'][i]
             p2 = self.proteinPair['Protein B'][i]
@@ -103,9 +115,59 @@ class PairThread(QtCore.QThread):
             b2 = np.where(self.prot2 == p2)[0]
             if (len(a1) > 0) and (len(b1) > 0):
                 if (len(a2) > 0) and (len(b2) > 0):
-                    d1 = self.dist1[a1[0], b1[0]]
-                    d2 = self.dist2[a2[0], b2[0]]
-                    d = abs(d1 - d2)
-                    self._ind.emit(str(int( 100 * (i + 1) / len(self.proteinPair))))
-                    self._res.emit(d)
+                    d1 = round(self.dist1[a1[0], b1[0]], 3)
+                    d2 = round(self.dist2[a2[0], b2[0]], 3)
+                    d = round(abs(d1 - d2), 3)
+                    p = round(1 - len(np.where(negDist < d)[0]) / len(negDist), 3)
+                    self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinPair))))
+                    self._res.emit([d, p, d1, d2])
+        # print('finished')
+
+
+
+class ComplexThread(QtCore.QThread):
+
+    _ind = QtCore.pyqtSignal(str)
+    _res = QtCore.pyqtSignal(list)
+ 
+    def __init__(self, prot1, dist1, prot2, dist2, proteinPair, n):
+        super(ComplexThread, self).__init__()
+        self.prot1 = prot1
+        self.dist1 = dist1
+        self.prot2 = prot2
+        self.dist2 = dist2
+        self.proteinPair = proteinPair
+        self.n = n
+        self.working = True
+ 
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        all_prot = np.intersect1d(self.prot1, self.prot2)
+        w1, w2 = [], []
+        for i, p in enumerate(all_prot):
+            w1.append(np.where(self.prot1 == p)[0][0])
+            w2.append(np.where(self.prot2 == p)[0][0])
+            self._ind.emit(str(int(100 * (i + 1) / len(self.proteinPair))))
+        a = np.random.choice(w1, self.n)
+        b = np.random.choice(w2, self.n)
+        negDist = np.abs(self.dist1[a, b] - self.dist2[a, b])
+        
+        for i in self.proteinPair.index:
+            p1 = self.proteinPair['Protein A'][i]
+            p2 = self.proteinPair['Protein B'][i]
+            a1 = np.where(self.prot1 == p1)[0]
+            b1 = np.where(self.prot1 == p2)[0]
+            a2 = np.where(self.prot2 == p1)[0]
+            b2 = np.where(self.prot2 == p2)[0]
+            if (len(a1) > 0) and (len(b1) > 0):
+                if (len(a2) > 0) and (len(b2) > 0):
+                    d1 = round(self.dist1[a1[0], b1[0]], 3)
+                    d2 = round(self.dist2[a2[0], b2[0]], 3)
+                    d = round(abs(d1 - d2), 3)
+                    p = round(1 - len(np.where(negDist < d)[0]) / len(negDist), 3)
+                    self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinPair))))
+                    self._res.emit([d, p, d1, d2])
         # print('finished')
