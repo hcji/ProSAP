@@ -27,6 +27,14 @@ from Thread import CurveFitThread, ROCThread, PairThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
+
+# proteinData1 = pd.read_csv('D:/project/PDFiles/MTX_CETSA.csv')
+# proteinData2 = pd.read_csv('D:/project/PDFiles/PAN_CETSA.csv')
+# columns = ['T37.0', 'T40.0', 'T43.0', 'T46.0', 'T49.0', 'T52.0', 'T55.0', 'T58.0', 'T61.0', 'T64.0']
+# proteinPair = pd.read_csv('data/TPCA_TableS2_Protein_Pairs.csv')
+# proteinComplex = pd.read_csv('data/TPCA_TableS3_Protein_Complex.csv')
+
+
 class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def __init__(self, parent=None):
@@ -71,6 +79,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.columns = None
         self.prots = None
         self.proteinPair = None
+        self.proteinComplex = None
         self.ProteinTable1 = None
         self.ProteinTable2 = None
         self.TSA_table = pd.DataFrame()
@@ -178,7 +187,23 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 for j in range(selectData.shape[1]):
                     item = QtWidgets.QTableWidgetItem(str(selectData.iloc[i,j]))
                     self.tableProteinComplex.setItem(i, j, item)
+            self.proteinComplex = selectData
                     
+    
+    def CalcProteinComplexChange(self):
+        columns = self.columns
+        proteinComplex = self.proteinComplex
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        data1 = proteinData1.loc[:, columns]
+        data2 = proteinData2.loc[:, columns]
+        dist1 = metrics.pairwise_distances(data1, metric = 'manhattan')
+        dist2 = metrics.pairwise_distances(data2, metric = 'manhattan')
+        prot1 = proteinData1.loc[:, 'Accession']
+        prot2 = proteinData2.loc[:, 'Accession']
+        
+    
     
     def PlotProteinComplex(self):       
         colNames = self.columns        
@@ -262,10 +287,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             proteinPair = self.AnalROCUI.tableView.model()._data
             if ('Protein A' not in proteinPair.columns) or ('Protein B' not in proteinPair.columns):
                 self.ErrorMsg("Protein pairs is not available")
-            # proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
-            # proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
-            # columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']
-            # proteinPair = pd.read_csv('data/TPCA_TableS2_Protein_Pairs.csv')
             
             if 'Publications' in proteinPair.columns:
                 proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
