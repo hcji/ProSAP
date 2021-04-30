@@ -10,12 +10,15 @@ import numpy as np
 import pandas as pd
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 
 from Preprocess import Ui_Form
 from ColumnSelectUI import ColumnSelectUI
 from Utils import TableModel
+from Thread import PreprocessThread
 from MakeFigure import MakeFigure
+
 
 class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     
@@ -23,10 +26,16 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         super(PreprocessUI, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("Preprocessing")
-        
         self.comboBoxMerging.addItems(['Median', 'Mean'])
-        
+
         self.ColumnSelectUI = ColumnSelectUI()
+        self.PreprocessThread = None
+        
+        self.figureRSD = MakeFigure(5, 5)
+        self.figureRSD_ntb = NavigationToolbar(self.figureRSD, self)
+        self.gridlayoutRSD = QGridLayout(self.groupBox)
+        self.gridlayoutRSD.addWidget(self.figureRSD)
+        self.gridlayoutRSD.addWidget(self.figureRSD_ntb)
         
         self.pushButtonOpen.clicked.connect(self.LoadProteinFile)
         self.pushButtonConfirm.clicked.connect(self.DoPropress)
@@ -34,6 +43,10 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         self.pushButtonSave.clicked.connect(self.SaveData)
         
         self.columns = None
+        self.tempertures = None
+        self.valueData = []
+        self.rsdData = []
+        self.protData = []
     
     
     def ClearProteinFile(self):
@@ -77,6 +90,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     def SetTemperture(self):
         columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
         self.columns = columns
+        self.ColumnSelectUI.close()
+        
         self.tableWidgetTemp.setRowCount(len(columns))
         self.tableWidgetTemp.setColumnCount(2)
         self.tableWidgetTemp.setHorizontalHeaderLabels(['columnName', 'temperture'])
@@ -89,7 +104,6 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     
     
     def DoPropress(self):
-        
         # d = 'D:/project/PDFiles'
         # fileNames = os.listdir(d)
         fileNames = [self.ListFile.item(i).text() for i in range(self.ListFile.count())]
@@ -106,7 +120,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         else:
             
             tempertures = [float(self.tableWidgetTemp.item(i,1).text()) for i in range(self.tableWidgetTemp.rowCount())]
-        
+            self.tempertures = tempertures
+            
             psm_column = self.comboBoxPSM.currentText()
             psm_thres = self.spinBoxPSMFilter.value()
             std_thres = self.doubleSpinBoxRSDFilter.value()
@@ -128,56 +143,55 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
                 fun = np.nanmedian
             else:
                 fun = np.nanmean
-        
-            prot_list, val_list, rsd_list = [], [], []
-            for i in data.index:
-                wh = np.where([psm_column == s.split('_')[0] for s in data.columns])[0]
-                psm = np.nanmean(data.iloc[i, wh].values.astype(float))
-                if psm < psm_thres:
-                    continue
-                else:
-                    prot = data.loc[i, 'Accession']
             
-                vals = []
-                for c in columns:
-                    wh = np.where([c == s.split('_')[0] for s in data.columns])[0]
-                    v = data.iloc[i, wh].values.astype(float)
-                    v = np.round(v, 4)
-                    std = np.nanstd(v) / np.nanmean(v)
-                    vals.append(fun(v))
-                if std > std_thres:
-                    continue
+            self.valueData, self.rsdData, self.protData = [], [], []
             
-                vals = np.array(vals)
-                vals[np.isnan(vals)] = 0
-            
-                rsd_list.append(std)
-                prot_list.append(prot)
-                val_list.append(vals)
-        
-            val_cols = ['T{}'.format(t) for t in tempertures]
-            val_list = pd.DataFrame(val_list)
-            val_list.columns = val_cols
-            val_list['Accession'] = prot_list
-            val_cols = ['Accession'] + val_cols
+            self.PreprocessThread = PreprocessThread(data, psm_column, psm_thres, std_thres, columns, fun)
+            self.PreprocessThread._ind.connect(self.ProcessBar)
+            self.PreprocessThread._val.connect(self.ValueData)
+            self.PreprocessThread._rsd.connect(self.RSDData)
+            self.PreprocessThread._prot.connect(self.ProtData)
+            self.PreprocessThread.start()
+            self.PreprocessThread.finished.connect(self.VisualizeProprocess)            
+    
+    
+    def VisualizeProprocess(self):
+        val_cols = ['T{}'.format(t) for t in self.tempertures]
+        val_list = pd.DataFrame(self.valueData)
+        val_list.columns = val_cols
+        val_list['Accession'] = self.protData
+        val_list['RSD'] = self.rsdData
+        val_cols = ['Accession'] + val_cols + ['RSD']
 
-            F = MakeFigure(1.2, 1.2)
-            F.axes.cla()
-            F.RSDHistFigure(np.array(rsd_list))
-            f = QtWidgets.QGraphicsScene()
-            f.addWidget(F)
-            self.graphicsView.setScene(f)
+        self.figureRSD.RSDHistFigure(np.array(self.rsdData))
+        result = val_list[val_cols]
+        result = result[result['RSD'] <= self.doubleSpinBoxRSDFilter.value()]
         
-            result = val_list[val_cols]
-            self.tableView.setModel(TableModel(result))
+        self.tableView.setModel(TableModel(result))
         
+    
+    def RSDData(self, msg):
+        self.rsdData.append(msg)
+        
+
+    def ProtData(self, msg):
+        self.protData.append(msg)
+    
+    
+    def ValueData(self, msg):
+        self.valueData.append(msg)
+        
+
+    def ProcessBar(self, msg):
+        self.progressBar.setValue(int(msg))    
+    
         
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
-        data = pd.DataFrame(self.tableView.model()._data, index = False)
-        data.to_csv(fileName)
+        data = pd.DataFrame(self.tableView.model()._data)
+        data.to_csv(fileName, index = False)
         
         
 

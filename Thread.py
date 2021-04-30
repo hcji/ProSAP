@@ -14,6 +14,58 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils import TableModel, fit_curve
 
 
+class PreprocessThread(QtCore.QThread):
+
+    _ind = QtCore.pyqtSignal(str)
+    _val = QtCore.pyqtSignal(list)
+    _rsd = QtCore.pyqtSignal(float)
+    _prot = QtCore.pyqtSignal(str)
+ 
+    def __init__(self, data, psm_column, psm_thres, std_thres, columns, fun):
+        super(PreprocessThread, self).__init__()
+        self.data = data
+        self.psm_column = psm_column
+        self.psm_thres = psm_thres
+        self.std_thres = std_thres
+        self.columns = columns
+        self.fun = fun
+        self.working = True
+ 
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        data = self.data
+        for i in data.index:
+            wh = np.where([self.psm_column == s.split('_')[0] for s in data.columns])[0]
+            psm = np.nanmean(data.iloc[i, wh].values.astype(float))
+            if psm < self.psm_thres:
+                continue
+            else:
+                prot = data.loc[i, 'Accession']
+            
+            vals = []
+            for c in self.columns:
+                wh = np.where([c == s.split('_')[0] for s in data.columns])[0]
+                v = data.iloc[i, wh].values.astype(float)
+                v = np.round(v, 4)
+                std = np.nanstd(v) / np.nanmean(v)
+                vals.append(self.fun(v))
+            if std > self.std_thres:
+                continue
+            
+            vals = np.array(vals)
+            vals[np.isnan(vals)] = 0
+            
+            self._ind.emit(str(int(100 * (i+1) / len(data.index))))
+            self._val.emit(list(vals))
+            self._prot.emit(prot)
+            self._rsd.emit(std)
+        self._ind.emit(str(int(100)))
+
+            
+
 class CurveFitThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)

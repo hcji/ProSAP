@@ -347,15 +347,18 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         fpr, tpr, threshold = metrics.roc_curve(labels, values, pos_label = 1)
         auroc = np.round(metrics.roc_auc_score(labels, values), 4)
         
+        self.AnalROCUI.figureROC.ROCFigure(fpr, tpr, auroc)
+        '''
         F = MakeFigure(1.2, 1.2)
         F.axes.cla()
         F.ROCFigure(fpr, tpr, auroc)
         f = QtWidgets.QGraphicsScene()
         f.addWidget(F)
         self.AnalROCUI.graphicsView.setScene(f)
+        '''
         self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
-
+        
 
     def PlotProteinPairCurve(self):
         columns = self.columns

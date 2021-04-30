@@ -166,7 +166,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableView" name="tableView"/>
+          <widget class="QTableView" name="tableView">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -184,13 +191,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonSave">
-             <property name="text">
-              <string>Save Curve</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
         </layout>
@@ -198,20 +198,29 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>250</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>300</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Arial</family>
              <pointsize>11</pointsize>
             </font>
            </property>
-           <property name="text">
-            <string>ROC curve view:</string>
+           <property name="title">
+            <string>ROC Curve</string>
            </property>
           </widget>
-         </item>
-         <item>
-          <widget class="QGraphicsView" name="graphicsView"/>
          </item>
         </layout>
        </item>

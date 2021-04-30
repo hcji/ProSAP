@@ -16,7 +16,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class MakeFigure(FigureCanvas):
-    def __init__(self,width=5, height=4, dpi=200):
+    def __init__(self,width=5, height=5, dpi=300):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.18,right=0.95)
         super(MakeFigure,self).__init__(self.fig) 
@@ -53,6 +53,7 @@ class MakeFigure(FigureCanvas):
         self.axes.set_xlabel('Temperature (℃)', fontsize=5)
         self.axes.set_ylabel('Abundances', fontsize=5)
         self.axes.legend(fontsize=4, bbox_to_anchor=(1,1), loc="upper left")
+        self.draw()
     
     
     def AverageTSAFigure(self, proteinData1, proteinData2, colNames):
@@ -71,7 +72,8 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=4)
         self.axes.set_xlabel('Temperature (℃)', fontsize=3)
         self.axes.set_ylabel('Abundances', fontsize=3)
-        self.axes.legend(fontsize=3)        
+        self.axes.legend(fontsize=3)    
+        self.draw()
         
     
     def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession):
@@ -91,6 +93,7 @@ class MakeFigure(FigureCanvas):
         self.axes.set_xlabel('Temperature (℃)', fontsize=3)
         self.axes.set_ylabel('Abundances', fontsize=3)
         self.axes.legend(fontsize=3)
+        self.draw()
     
     
     def RSDHistFigure(self, rsdList):
@@ -99,6 +102,7 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=3)
         self.axes.set_xlabel('RSD', fontsize=3)
         self.axes.set_ylabel('Number', fontsize=3)
+        self.draw()
     
     
     def ROCFigure(self, fpr, tpr, auroc):
@@ -109,6 +113,7 @@ class MakeFigure(FigureCanvas):
         self.axes.set_ylabel('True Positive Rate', fontsize = 4)
         self.axes.tick_params(labelsize=4)
         self.axes.legend(fontsize=3)
+        self.draw()
         
         
     def ProteinPairFigure(self, p1, p2, proteinData, colNames):

@@ -20,14 +20,19 @@ class AnalROCUI(QtWidgets.QWidget, Ui_Form):
         self.setupUi(self)
         self.setWindowTitle("Protein pairs analysis")
         
+        self.figureROC = MakeFigure(3, 3)
         self.figureGroup1 = MakeFigure(3, 3)
         self.figureGroup2 = MakeFigure(3, 3)
+        self.figureROC_ntb = NavigationToolbar(self.figureGroup1, self)
         self.figureGroup1_ntb = NavigationToolbar(self.figureGroup1, self)
         self.figureGroup2_ntb = NavigationToolbar(self.figureGroup2, self)
         
+        self.gridlayoutROC = QGridLayout(self.groupBox)
         self.gridlayoutBox1 = QGridLayout(self.groupBox_1)
         self.gridlayoutBox2 = QGridLayout(self.groupBox_2)
         
+        self.gridlayoutROC.addWidget(self.figureROC)
+        self.gridlayoutROC.addWidget(self.figureROC_ntb)
         self.gridlayoutBox1.addWidget(self.figureGroup1)
         self.gridlayoutBox1.addWidget(self.figureGroup1_ntb)
         self.gridlayoutBox2.addWidget(self.figureGroup2)
