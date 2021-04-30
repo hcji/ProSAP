@@ -123,8 +123,12 @@ class PairThread(QtCore.QThread):
                     d2 = round(self.dist2[a2[0], b2[0]], 3)
                     d = round(abs(d1 - d2), 3)
                     p = round(1 - len(np.where(negDist < d)[0]) / len(negDist), 3)
-                    self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinPair))))
-                    self._res.emit([d, p, d1, d2])
+                else:
+                    d1, d2, d, p = np.nan, np.nan, np.nan, np.nan
+            else:
+                d1, d2, d, p = np.nan, np.nan, np.nan, np.nan
+            self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinPair))))
+            self._res.emit([d, p, d1, d2])
         # print('finished')
 
 
