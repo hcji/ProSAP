@@ -64,7 +64,6 @@ class PreprocessThread(QtCore.QThread):
             self._rsd.emit(std)
         self._ind.emit(str(int(100)))
 
-            
 
 class CurveFitThread(QtCore.QThread):
 

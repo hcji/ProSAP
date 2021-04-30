@@ -6,9 +6,11 @@ Created on Thu Apr 15 15:57:14 2021
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout, QHBoxLayout
 
 from AnalTSA import Ui_Form
+from MakeFigure import MakeFigure
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 
 class AnalTSAUI(QtWidgets.QWidget, Ui_Form):
     
@@ -16,8 +18,17 @@ class AnalTSAUI(QtWidgets.QWidget, Ui_Form):
         super(AnalTSAUI, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("TPP Analysis")
+        self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-
+        self.figureTSA = MakeFigure(5, 5)
+        self.figureTSA_ntb = NavigationToolbar(self.figureTSA, self)
+        self.gridlayoutTSA = QGridLayout(self.groupBox)
+        self.gridlayoutTSA.addWidget(self.figureTSA)
+        self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
+        
+        self.figureAvg = MakeFigure(5, 5, dpi=150)
+        self.gridlayoutAvg = QGridLayout(self.groupBoxAvg)
+        self.gridlayoutAvg.addWidget(self.figureAvg)
         
 
 if __name__ == '__main__':

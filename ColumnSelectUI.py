@@ -16,6 +16,7 @@ class ColumnSelectUI(QMainWindow, Ui_Form):
         super(ColumnSelectUI, self).__init__(parent)
         self.setupUi(self)
         self.clearList()
+        self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
         
     def clearList(self):
         self.listWidget.clear()

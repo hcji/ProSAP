@@ -5,6 +5,8 @@ Created on Wed Apr 14 09:29:07 2021
 @author: hcji
 """
 
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TPCA")
 
 import numpy as np
 import pandas as pd
@@ -47,6 +49,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.setMinimumHeight(650)
         self.move(75, 50)
         self.setWindowTitle("TPCA -- Thermal proximity coaggregation analysis")
+        self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
         
         # Threads
         self.CurveFitThread = None
@@ -524,12 +527,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
                 self.AnalTSAUI.tableWidgetProteinList.setItem(i, j, item)
         
-        F = MakeFigure(1.2, 0.7)
-        F.axes.cla()
-        F.AverageTSAFigure(proteinData1, proteinData2, columns)
-        f = QtWidgets.QGraphicsScene()
-        f.addWidget(F)
-        self.AnalTSAUI.graphicsViewAvgCurve.setScene(f)
+
+        self.AnalTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
         self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
 
     
@@ -543,12 +542,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         j = header.index('Accession')
         ProteinAccession = self.AnalTSAUI.tableWidgetProteinList.item(i, j).text()
 
-        F = MakeFigure(1.3, 1.3)
-        F.axes.cla()
-        F.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
-        f = QtWidgets.QGraphicsScene()
-        f.addWidget(F)
-        self.AnalTSAUI.graphicsViewTSACurve.setScene(f)
+        self.AnalTSAUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
         self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
 
 
