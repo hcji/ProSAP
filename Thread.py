@@ -160,7 +160,7 @@ class ComplexThread(QtCore.QThread):
         prot_align = self.prot1[w1]
         dist1_align = self.dist1[w1,:][:, w1]
         dist2_align = self.dist2[w2,:][:, w2]
-        dist_change = np.abs(dist1_align - dist2_align)
+        dist_change = dist1_align - dist2_align
         
         dist1_align[dist1_align == 0] = np.nan
         dist2_align[dist2_align == 0] = np.nan

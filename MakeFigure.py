@@ -16,7 +16,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class MakeFigure(FigureCanvas):
-    def __init__(self,width=5, height=4, dpi=300):
+    def __init__(self,width=5, height=4, dpi=200):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.18,right=0.95)
         super(MakeFigure,self).__init__(self.fig) 
@@ -45,7 +45,8 @@ class MakeFigure(FigureCanvas):
             if p in list(proteinData['Accession']):
                 vals = proteinData.loc[proteinData.loc[:, 'Accession'] == p, colNames]
                 pltData[p] = vals.values[0,:]
-
+        
+        self.axes.cla()
         for p, vec in pltData.items():
             self.axes.plot(temps, vec, label = p)
             
@@ -63,6 +64,7 @@ class MakeFigure(FigureCanvas):
         vec_1 = np.mean(proteinData1.loc[:, colNames], axis = 0)
         vec_2 = np.mean(proteinData2.loc[:, colNames], axis = 0)
         
+        self.axes.cla()
         self.axes.plot(temps, vec_1, label = 'Group 1')
         self.axes.plot(temps, vec_2, label = 'Group 2')
         
@@ -81,6 +83,7 @@ class MakeFigure(FigureCanvas):
         vec_1 = proteinData1.loc[proteinData1.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         vec_2 = proteinData2.loc[proteinData2.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         
+        self.axes.cla()
         self.axes.plot(temps, vec_1, label = 'Group 1_{}'.format(ProteinAccession))
         self.axes.plot(temps, vec_2, label = 'Group 2_{}'.format(ProteinAccession))
         
@@ -91,6 +94,7 @@ class MakeFigure(FigureCanvas):
     
     
     def RSDHistFigure(self, rsdList):
+        self.axes.cla()
         self.axes.hist(rsdList, 100)
         self.axes.tick_params(labelsize=3)
         self.axes.set_xlabel('RSD', fontsize=3)
@@ -98,6 +102,7 @@ class MakeFigure(FigureCanvas):
     
     
     def ROCFigure(self, fpr, tpr, auroc):
+        self.axes.cla()
         self.axes.plot(fpr, tpr, label='AUC = {}'.format(auroc), color = 'red', lw=0.7)
         self.axes.plot([0, 1], [0, 1], color='black', linestyle='--', lw=0.7)
         self.axes.set_xlabel('False Positive Rate', fontsize = 4)
@@ -105,3 +110,25 @@ class MakeFigure(FigureCanvas):
         self.axes.tick_params(labelsize=4)
         self.axes.legend(fontsize=3)
         
+        
+    def ProteinPairFigure(self, p1, p2, proteinData, colNames):
+        prots = [p1, p2]
+        try:
+            temps = np.array([float(t.replace('T', '')) for t in colNames])
+        except:
+            raise ValueError('invalid column names')
+
+        pltData = dict()
+        for p in prots:
+            if p in list(proteinData['Accession']):
+                vals = proteinData.loc[proteinData.loc[:, 'Accession'] == p, colNames]
+                pltData[p] = vals.values[0,:]
+                
+        self.axes.cla()
+        for p, vec in pltData.items():
+            self.axes.plot(temps, vec, label = p)
+        
+        self.axes.set_xlabel('Temperature (℃)', fontsize=5)
+        self.axes.set_ylabel('Abundances', fontsize=5)
+        self.axes.legend(fontsize=4)
+        self.draw()

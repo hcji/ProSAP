@@ -28,9 +28,9 @@ from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
 
-# proteinData1 = pd.read_csv('D:/project/PDFiles/MTX_CETSA.csv')
-# proteinData2 = pd.read_csv('D:/project/PDFiles/PAN_CETSA.csv')
-# columns = ['T37.0', 'T40.0', 'T43.0', 'T46.0', 'T49.0', 'T52.0', 'T55.0', 'T58.0', 'T61.0', 'T64.0']
+# proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
+# proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
+# columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']
 # proteinPair = pd.read_csv('data/TPCA_TableS2_Protein_Pairs.csv')
 # proteinComplex = pd.read_csv('data/TPCA_TableS3_Protein_Complex.csv')
 
@@ -201,8 +201,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         data1 = proteinData1.loc[:, columns]
         data2 = proteinData2.loc[:, columns]
-        dist1 = metrics.pairwise_distances(data1, metric = 'manhattan')
-        dist2 = metrics.pairwise_distances(data2, metric = 'manhattan')
+        dist1 = metrics.pairwise_distances(data1, metric = 'cityblock')
+        dist2 = metrics.pairwise_distances(data2, metric = 'cityblock')
         prot1 = proteinData1.loc[:, 'Accession']
         prot2 = proteinData2.loc[:, 'Accession']
 
@@ -354,6 +354,23 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         f.addWidget(F)
         self.AnalROCUI.graphicsView.setScene(f)
         self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
+        self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
+
+
+    def PlotProteinPairCurve(self):
+        columns = self.columns
+        proteinPair = self.AnalROCUI.tableView.model()._data
+        proteinPair = proteinPair.reset_index(drop = True)
+        
+        i = self.AnalROCUI.tableView.selectedIndexes()[0].row()
+        p1 = proteinPair.loc[i, 'Protein A']
+        p2 = proteinPair.loc[i, 'Protein B']
+        
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        self.AnalROCUI.figureGroup1.ProteinPairFigure(p1, p2, proteinData1, columns)
+        self.AnalROCUI.figureGroup2.ProteinPairFigure(p1, p2, proteinData2, columns)
 
 
     def ResultDataROC(self, msg):

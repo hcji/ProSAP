@@ -224,40 +224,34 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <widget class="QLabel" name="label_8">
+            <widget class="QGroupBox" name="groupBox_1">
              <property name="font">
               <font>
                <family>Arial</family>
                <pointsize>11</pointsize>
               </font>
              </property>
-             <property name="text">
-              <string>Group1 protein pair</string>
+             <property name="title">
+              <string>Group1 protein curve</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <widget class="QGraphicsView" name="graphicsView_2"/>
            </item>
           </layout>
          </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QGroupBox" name="groupBox_2">
              <property name="font">
               <font>
                <family>Arial</family>
                <pointsize>11</pointsize>
               </font>
              </property>
-             <property name="text">
-              <string>Group2 protein pair</string>
+             <property name="title">
+              <string>Group2 protein curve</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <widget class="QGraphicsView" name="graphicsView_3"/>
            </item>
           </layout>
          </item>
