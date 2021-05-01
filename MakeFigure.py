@@ -18,7 +18,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class MakeFigure(FigureCanvas):
     def __init__(self,width=5, height=5, dpi=300):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.18,right=0.95)
+        self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.15,right=0.85)
         super(MakeFigure,self).__init__(self.fig) 
         self.axes = self.fig.add_subplot(111)
         self.axes.spines['bottom'].set_linewidth(0.5)
@@ -31,6 +31,7 @@ class MakeFigure(FigureCanvas):
 
     
     def ProteinComplexFigure(self, proteinSubunit, proteinData, colNames):
+        self.fig.subplots_adjust(top=0.95,bottom=0.2,left=0.15,right=0.8)
         prots = proteinSubunit.split(',')
         prots = [p.replace('(', '') for p in prots]
         prots = [p.replace(')', '') for p in prots]

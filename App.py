@@ -51,11 +51,24 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("TPCA -- Thermal proximity coaggregation analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
         
-        # Threads
+        # threads
         self.CurveFitThread = None
         self.ROCThread = None
         self.PairThread = None
         self.ComplexThread = None
+        
+        # groupbox
+        self.figureG1 = MakeFigure(5, 5)
+        self.figureG1_ntb = NavigationToolbar(self.figureG1, self)
+        self.gridlayoutG1 = QGridLayout(self.groupBox)
+        self.gridlayoutG1.addWidget(self.figureG1)
+        self.gridlayoutG1.addWidget(self.figureG1_ntb)
+        
+        self.figureG2 = MakeFigure(5, 5)
+        self.figureG2_ntb = NavigationToolbar(self.figureG2, self)
+        self.gridlayoutG2 = QGridLayout(self.groupBox_2)
+        self.gridlayoutG2.addWidget(self.figureG2)
+        self.gridlayoutG2.addWidget(self.figureG2_ntb)
         
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
@@ -198,7 +211,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def CalcProteinComplexChange(self):
         columns = self.columns
-        proteinComplex = self.proteinComplex
+        proteinComplex = self.proteinComplex.copy()
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         
@@ -225,7 +238,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def VisualizeComplex(self):
-        proteinComplex = self.proteinComplex
+        proteinComplex = self.proteinComplex.copy()
         resultDataComplex = pd.DataFrame(self.resultDataComplex)
         resultDataComplex.columns = ['Num subunit found', 'p-value (change)', 'Avg distance (change)', 'TPCA Sig 1', 'Avg distance 1', 'TPCA Sig 2', 'Avg distance 2']
         proteinComplex = pd.concat([proteinComplex, resultDataComplex], axis=1)
@@ -252,20 +265,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         # print(proteinData)
-        F_gr1 = MakeFigure(1.5, 1.5)
-        F_gr2 = MakeFigure(1.5, 1.5)
-        F_gr1.axes.cla()
-        F_gr2.axes.cla()
-        
-        F_gr1.ProteinComplexFigure(proteinSubunit, proteinData1, colNames)
-        F_gr2.ProteinComplexFigure(proteinSubunit, proteinData2, colNames)
-        F1 = QtWidgets.QGraphicsScene()
-        F1.addWidget(F_gr1)
-        F2 = QtWidgets.QGraphicsScene()
-        F2.addWidget(F_gr2)
-        
-        self.GraphicThermShift1.setScene(F1)
-        self.GraphicThermShift2.setScene(F2)
+
+        self.figureG1.ProteinComplexFigure(proteinSubunit, proteinData1, colNames)
+        self.figureG2.ProteinComplexFigure(proteinSubunit, proteinData2, colNames)
+
         
 
     def LoadProteinPair(self):
@@ -527,9 +530,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
                 self.AnalTSAUI.tableWidgetProteinList.setItem(i, j, item)
         
-
         self.AnalTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
         self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
+        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
 
     
     def ShowTSACurve(self):
@@ -543,8 +546,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         ProteinAccession = self.AnalTSAUI.tableWidgetProteinList.item(i, j).text()
 
         self.AnalTSAUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
-        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
-
+        
 
     def SaveTSAData(self):
         options = QtWidgets.QFileDialog.Options()

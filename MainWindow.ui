@@ -10,6 +10,12 @@
     <height>850</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -136,13 +142,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="ButtonSaveCurve">
-            <property name="text">
-             <string>Save Curve</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
        </layout>
@@ -167,23 +166,33 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableView" name="tableProtein1"/>
+          <widget class="QTableView" name="tableProtein1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QLabel" name="labelThermalShift1">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Arial</family>
              <pointsize>11</pointsize>
             </font>
            </property>
-           <property name="text">
+           <property name="title">
             <string>Group1 Thermal Shift Curve</string>
            </property>
           </widget>
-         </item>
-         <item>
-          <widget class="QGraphicsView" name="GraphicThermShift1"/>
          </item>
         </layout>
        </widget>
@@ -203,23 +212,33 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableView" name="tableProtein2"/>
+          <widget class="QTableView" name="tableProtein2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QLabel" name="labelThermalShift2">
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Arial</family>
              <pointsize>11</pointsize>
             </font>
            </property>
-           <property name="text">
+           <property name="title">
             <string>Group2 Thermal Shift Curve</string>
            </property>
           </widget>
-         </item>
-         <item>
-          <widget class="QGraphicsView" name="GraphicThermShift2"/>
          </item>
         </layout>
        </widget>
