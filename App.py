@@ -197,21 +197,14 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         if 'Subunits_UniProt_IDs' not in selectData.columns:
             self.ErrorMsg("Subunits_UniProt_IDs' not in columns")
         else:
-            self.tableProteinComplex.setRowCount(selectData.shape[0])
-            self.tableProteinComplex.setColumnCount(selectData.shape[1])
-            self.tableProteinComplex.setHorizontalHeaderLabels(selectData.columns)
-            self.tableProteinComplex.setVerticalHeaderLabels(selectData.index.astype(str))
-            for i in range(selectData.shape[0]):
-                for j in range(selectData.shape[1]):
-                    item = QtWidgets.QTableWidgetItem(str(selectData.iloc[i,j]))
-                    self.tableProteinComplex.setItem(i, j, item)
+            self.tableProteinComplex.setModel(TableModel(selectData))
             self.proteinComplex = selectData
         self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
         
     
     def CalcProteinComplexChange(self):
         columns = self.columns
-        proteinComplex = self.proteinComplex.copy()
+        proteinComplex = self.proteinComplex
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         
@@ -238,12 +231,13 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     
     def VisualizeComplex(self):
-        proteinComplex = self.proteinComplex.copy()
+        proteinComplex = self.proteinComplex
         resultDataComplex = pd.DataFrame(self.resultDataComplex)
         resultDataComplex.columns = ['Num subunit found', 'p-value (change)', 'Avg distance (change)', 'TPCA Sig 1', 'Avg distance 1', 'TPCA Sig 2', 'Avg distance 2']
         proteinComplex = pd.concat([proteinComplex, resultDataComplex], axis=1)
         proteinComplex = proteinComplex.sort_values(by = 'p-value (change)')
-        
+        self.tableProteinComplex.setModel(TableModel(proteinComplex))
+        '''
         self.tableProteinComplex.setRowCount(proteinComplex.shape[0])
         self.tableProteinComplex.setColumnCount(proteinComplex.shape[1])
         self.tableProteinComplex.setHorizontalHeaderLabels(proteinComplex.columns)
@@ -252,15 +246,15 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             for j in range(proteinComplex.shape[1]):
                 item = QtWidgets.QTableWidgetItem(str(proteinComplex.iloc[i,j]))
                 self.tableProteinComplex.setItem(i, j, item)       
+        '''
     
-    
-    def PlotProteinComplex(self):       
+    def PlotProteinComplex(self):
         colNames = self.columns        
-        header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
+        header = self.tableProteinComplex.model()._data.columns
         # print(header)
-        i = self.tableProteinComplex.selectedItems()[0].row()
-        j = header.index('Subunits_UniProt_IDs')
-        proteinSubunit = self.tableProteinComplex.item(i, j).text()
+        i = self.tableProteinComplex.selectedIndexes()[0].row()
+        j = list(header).index('Subunits_UniProt_IDs')
+        proteinSubunit = self.tableProteinComplex.model()._data.iloc[i,j]
         # print(proteinSubunit)
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data

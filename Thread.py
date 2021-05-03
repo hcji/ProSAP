@@ -11,7 +11,7 @@ from scipy.stats import norm
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Utils import TableModel, fit_curve
+from Utils import TableModel, fit_curve, meltCurve
 
 
 class PreprocessThread(QtCore.QThread):

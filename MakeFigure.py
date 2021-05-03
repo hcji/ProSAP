@@ -9,10 +9,13 @@ Created on Fri Apr 16 16:23:29 2021
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+
+from scipy.optimize import curve_fit
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtGui, QtWidgets
+from Utils import meltCurve
 
 
 class MakeFigure(FigureCanvas):
@@ -27,7 +30,7 @@ class MakeFigure(FigureCanvas):
         self.axes.spines['top'].set_linewidth(0.5)
         self.axes.tick_params(labelsize=5)
         FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
+        FigureCanvas.updateGeometry(self)        
 
     
     def ProteinComplexFigure(self, proteinSubunit, proteinData, colNames):
@@ -38,6 +41,7 @@ class MakeFigure(FigureCanvas):
 
         try:
             temps = np.array([float(t.replace('T', '')) for t in colNames])
+            temps_ = np.arange(temps[0], temps[-1], 0.1)
         except:
             raise ValueError('invalid column names')
 
@@ -49,7 +53,9 @@ class MakeFigure(FigureCanvas):
         
         self.axes.cla()
         for p, vec in pltData.items():
-            self.axes.plot(temps, vec, label = p)
+            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+            self.axes.scatter(temps, vec, marker='.', label = p)
+            self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]))
             
         self.axes.set_xlabel('Temperature (℃)', fontsize=5)
         self.axes.set_ylabel('Abundances', fontsize=5)
@@ -80,15 +86,21 @@ class MakeFigure(FigureCanvas):
     def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession):
         try:
             temps = np.array([float(t.replace('T', '')) for t in colNames])
+            temps_ = np.arange(temps[0], temps[-1], 0.1)
         except:
             raise ValueError('invalid column names')
             
         vec_1 = proteinData1.loc[proteinData1.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         vec_2 = proteinData2.loc[proteinData2.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         
+        paras1 = curve_fit(meltCurve, temps, vec_1, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+        paras2 = curve_fit(meltCurve, temps, vec_2, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+        
         self.axes.cla()
-        self.axes.plot(temps, vec_1, label = 'Group 1_{}'.format(ProteinAccession))
-        self.axes.plot(temps, vec_2, label = 'Group 2_{}'.format(ProteinAccession))
+        self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession))
+        self.axes.scatter(temps, vec_2, marker='*', label = 'Group 2_{}'.format(ProteinAccession))
+        self.axes.plot(temps_, meltCurve(temps_, paras1[0], paras1[1], paras1[2]))
+        self.axes.plot(temps_, meltCurve(temps_, paras2[0], paras2[1], paras2[2]))
         
         self.axes.tick_params(labelsize=4)
         self.axes.set_xlabel('Temperature (℃)', fontsize=3)
@@ -121,6 +133,7 @@ class MakeFigure(FigureCanvas):
         prots = [p1, p2]
         try:
             temps = np.array([float(t.replace('T', '')) for t in colNames])
+            temps_ = np.arange(temps[0], temps[-1], 0.1)
         except:
             raise ValueError('invalid column names')
 
@@ -132,7 +145,9 @@ class MakeFigure(FigureCanvas):
                 
         self.axes.cla()
         for p, vec in pltData.items():
-            self.axes.plot(temps, vec, label = p)
+            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+            self.axes.scatter(temps, vec, marker='.', label = p)
+            self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]))
         
         self.axes.set_xlabel('Temperature (℃)', fontsize=5)
         self.axes.set_ylabel('Abundances', fontsize=5)
