@@ -8,6 +8,7 @@ Created on Wed Apr 14 10:54:02 2021
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import ttest_ind
 
 import os
 # import multiprocessing

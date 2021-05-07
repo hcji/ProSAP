@@ -102,7 +102,6 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             item = QtWidgets.QTableWidgetItem(str(columns[i]))
             self.tableWidgetTemp.setItem(i, 0, item)
         self.comboBoxReference.addItems(columns)
-        self.ColumnSelectUI.close
     
     
     def DoPropress(self):
