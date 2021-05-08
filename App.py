@@ -24,6 +24,7 @@ from MainWindow import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
 from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
+from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
 from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread
 from MakeFigure import MakeFigure
@@ -74,12 +75,14 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ColumnSelectUI = ColumnSelectUI()
         self.AnalROCUI = AnalROCUI()
         self.AnalTSAUI = AnalTSAUI()
+        self.iTSAUI = AnaliTSAUI()
         self.PreprocessUI = PreprocessUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionDatabase.triggered.connect(self.LoadProteinComplex)
         self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
+        self.action_iTSA.triggered.connect(self.OpeniTSA)
         self.action_CETSA.triggered.connect(self.OpenAnalTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
         
@@ -426,6 +429,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def OpenPreprocessing(self):
         self.PreprocessUI.show()
+        
+        
+    def OpeniTSA(self):
+        self.iTSAUI.show()
         
     
     def OpenAnalTSA(self):

@@ -20,13 +20,13 @@ class AnalTSAUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle("TPP Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-        self.figureTSA = MakeFigure(5, 5)
+        self.figureTSA = MakeFigure(10, 10, dpi = 250)
         self.figureTSA_ntb = NavigationToolbar(self.figureTSA, self)
         self.gridlayoutTSA = QGridLayout(self.groupBox)
         self.gridlayoutTSA.addWidget(self.figureTSA)
         self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
         
-        self.figureAvg = MakeFigure(5, 5, dpi=150)
+        self.figureAvg = MakeFigure(10, 10, dpi=150)
         self.gridlayoutAvg = QGridLayout(self.groupBoxAvg)
         self.gridlayoutAvg.addWidget(self.figureAvg)
         

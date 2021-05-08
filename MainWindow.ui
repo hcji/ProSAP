@@ -152,7 +152,7 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -210,7 +210,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QGroupBox" name="groupBox">
@@ -290,7 +290,7 @@
      <x>0</x>
      <y>0</y>
      <width>1242</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -322,6 +322,7 @@
      <string>Analysis</string>
     </property>
     <addaction name="action_CETSA"/>
+    <addaction name="action_iTSA"/>
     <addaction name="actionCalcROC"/>
    </widget>
    <addaction name="menuFile"/>
@@ -413,6 +414,11 @@
   <action name="actionCalcComplex">
    <property name="text">
     <string>Protein complex analysis...</string>
+   </property>
+  </action>
+  <action name="action_iTSA">
+   <property name="text">
+    <string>Single temperture analysis...</string>
    </property>
   </action>
  </widget>

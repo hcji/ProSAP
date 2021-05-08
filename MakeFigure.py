@@ -97,14 +97,14 @@ class MakeFigure(FigureCanvas):
         paras2 = curve_fit(meltCurve, temps, vec_2, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
         
         self.axes.cla()
-        self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession))
-        self.axes.scatter(temps, vec_2, marker='*', label = 'Group 2_{}'.format(ProteinAccession))
+        self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession), s = 10)
+        self.axes.scatter(temps, vec_2, marker='.', label = 'Group 2_{}'.format(ProteinAccession), s = 10)
         self.axes.plot(temps_, meltCurve(temps_, paras1[0], paras1[1], paras1[2]))
         self.axes.plot(temps_, meltCurve(temps_, paras2[0], paras2[1], paras2[2]))
         
         self.axes.tick_params(labelsize=4)
-        self.axes.set_xlabel('Temperature (℃)', fontsize=3)
-        self.axes.set_ylabel('Abundances', fontsize=3)
+        self.axes.set_xlabel('Temperature (℃)', fontsize=4)
+        self.axes.set_ylabel('Abundances', fontsize=4)
         self.axes.legend(fontsize=3)
         self.draw()
     
@@ -153,3 +153,21 @@ class MakeFigure(FigureCanvas):
         self.axes.set_ylabel('Abundances', fontsize=5)
         self.axes.legend(fontsize=4)
         self.draw()
+        
+        
+    def iTSA_Volcano(self, iTSA_result, fc_thres, pv_thres):        
+        fc = iTSA_result['logFC']
+        pv = iTSA_result['-logAdjPval']
+        sig = np.where(np.logical_and(np.abs(fc) >= np.log2(fc_thres), pv >= -np.log10(pv_thres)))[0]
+        
+        self.axes.cla()
+        self.axes.scatter(fc, pv, color = 'gray', marker = '.', s = 10)
+        self.axes.scatter(fc[sig], pv[sig], color = 'red', marker = '.', s = 10)
+        self.axes.axvline(x = np.log2(fc_thres),ls = '-', color = 'black', lw=1)
+        self.axes.axvline(x = -np.log2(fc_thres),ls = '-', color = 'black', lw=1)
+        self.axes.axhline(y = -np.log10(pv_thres), ls = '-', color = 'black', lw=1)
+        self.axes.set_xlabel('Log FC', fontsize = 4)
+        self.axes.set_ylabel('-Log Adj P', fontsize = 4)
+        self.axes.tick_params(labelsize=4)
+        self.draw()
+        

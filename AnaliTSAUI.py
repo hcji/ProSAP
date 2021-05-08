@@ -7,7 +7,6 @@ Created on Fri May  7 08:36:21 2021
 
 import numpy as np
 import pandas as pd
-from scipy.stats import ttest_ind
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout, QHBoxLayout
@@ -17,20 +16,10 @@ from MakeFigure import MakeFigure
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 
 from Utils import TableModel
+from iTSA import iTSA
 from Thread import PreprocessThread
 from MakeFigure import MakeFigure
 from ColumnSelectUI import ColumnSelectUI
-
-
-from rpy2 import robjects
-from rpy2.robjects import numpy2ri, pandas2ri
-
-numpy2ri.activate()
-pandas2ri.activate()
-robjects.r('''source('R/iTSA.R')''')
-
-do_limma = robjects.globalenv['do_limma']
-p_value_adjust = robjects.globalenv['p_value_adjust']
 
 
 '''
@@ -41,55 +30,8 @@ columns = ['V_log2.i._TMT_1_iTSA52', 'V_log2.i._TMT_3_iTSA52',
        'D_log2.i._TMT_4_iTSA52', 'D_log2.i._TMT_6_iTSA52',
        'D_log2.i._TMT_8_iTSA52', 'D_log2.i._TMT_10_iTSA52']
 labels = [0,0,0,0,0,1,1,1,1,1]
+X = proteinData.loc[:,columns]
 '''
-
-def do_ttest(X, y):
-    i = np.where(y == 'Case')[0]
-    j = np.where(y == 'Control')[0]
-    pval = []
-    for k in range(X.shape[0]):
-        pval.append(ttest_ind(X.iloc[k, i], X.iloc[k, j]).pvalue)
-    return np.expand_dims(np.array(pval), 1)
-
-
-class iTSA:
-    
-    def __init__(self, method = 'Limma'):
-        self.method = method
-        
-        
-    def fit_data(self, X, y):
-        self.X = X
-        self.y = y
-        
-        if self.method == 'Limma':
-            pass
-        elif self.method == 'Ttest':
-            self.res = do_ttest(X, y)
-        else:
-            raise IOError('{} is not a support method'.format(self.method))
-        
-        
-    def fold_change(self):
-        case_val = np.nanmean(self.X.loc[:, self.y == 'Case'], axis = 1)
-        cont_val = np.nanmean(self.X.loc[:, self.y == 'Control'], axis = 1)
-        return np.log2(case_val / cont_val)
-        
-        
-    def p_values(self):
-        return np.array(self.res)[:,0]
-    
-    
-    def adjusted_p_values(self):
-        return np.array(p_value_adjust(self.res))
-    
-    
-    def summary(self):
-        fc = self.fold_change()
-        pval = self.p_values()
-        apval = self.adjusted_p_values()
-        return pd.DataFrame({'index': self.index, 'fold_change': fc, 'p_values': pval, 'adjusted_p_values': apval})
-
 
 
 class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
@@ -100,13 +42,14 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle("iTSA Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-        self.figureTSA = MakeFigure(5, 5)
+        self.figureTSA = MakeFigure(10, 10, dpi = 250)
         self.figureTSA_ntb = NavigationToolbar(self.figureTSA, self)
         self.gridlayoutTSA = QGridLayout(self.groupBoxVolcano)
         self.gridlayoutTSA.addWidget(self.figureTSA)
         self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
         self.ColumnSelectUI = ColumnSelectUI()
-        self.comboBoxMerging.addItems(['comboBoxMethod'])
+        self.comboBoxMethod.addItems(['t-Test', 'Limma'])
+        self.comboBoxLog2.addItems(['True', 'False'])
         
         self.pushButtonData.clicked.connect(self.LoadProteinFile)
         self.pushButtonOK.clicked.connect(self.DoPropress)
@@ -152,7 +95,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
     
     
     def DoPropress(self):
-        if None in [self.tableWidgetTemp.item(i,1) for i in range(self.tableWidgetTemp.rowCount())]:
+        if None in [self.tableWidgetLabel.item(i,1) for i in range(self.tableWidgetLabel.rowCount())]:
             msg = QtWidgets.QMessageBox()
             msg.resize(550, 200)
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -168,13 +111,23 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             msg.exec_()               
         else:
             X = self.data.loc[:,self.columns]
+            if self.comboBoxLog2.currentText() == 'True':
+                pass
+            else:
+                X = np.log2(X)
             y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])
-            lbs = np.unique(y)   
-            i = np.where(y == lbs[0])[0]
-            j = np.where(y == lbs[0])[1]
-            self.pval = []
-            for k in range(X.shape[0]):
-                self.pval.append(ttest_ind(X.iloc[k, i], X.iloc[k, j]).pvalue)
+            names = self.data.loc[:,'Accession']
+            method = self.comboBoxMethod.currentText()
+            worker = iTSA(method = method)
+            result = worker.fit_data(X, y, names)
+            result = result.reset_index(drop=True)
+            
+            fc_thres = self.doubleSpinBoxFCthres.value()
+            pv_thres = self.doubleSpinBoxPthres.value()
+            
+            self.tableViewData.setModel(TableModel(result))
+            self.figureTSA.iTSA_Volcano(result, fc_thres, pv_thres)
+            
         
         
 
