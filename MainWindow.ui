@@ -313,9 +313,9 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionCheck_update"/>
     <addaction name="actionCitation"/>
     <addaction name="actionCheck_liences"/>
+    <addaction name="actionContact"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
     <property name="title">
@@ -403,7 +403,7 @@
   </action>
   <action name="actionCheck_liences">
    <property name="text">
-    <string>Check licence</string>
+    <string>Check licence...</string>
    </property>
   </action>
   <action name="actionPreprocessing">
@@ -419,6 +419,11 @@
   <action name="action_iTSA">
    <property name="text">
     <string>Single temperture analysis...</string>
+   </property>
+  </action>
+  <action name="actionContact">
+   <property name="text">
+    <string>Contact author...</string>
    </property>
   </action>
  </widget>

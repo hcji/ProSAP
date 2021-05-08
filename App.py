@@ -85,6 +85,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.action_iTSA.triggered.connect(self.OpeniTSA)
         self.action_CETSA.triggered.connect(self.OpenAnalTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
+        self.actionContact.triggered.connect(self.ContactMsg)
         
         # button action
         self.ButtonGroup1.clicked.connect(self.SetProteinTable1)
@@ -109,7 +110,16 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.resultProtPair = []
         self.ROCNegValues = []
         
-        
+    
+    def ContactMsg(self):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setText('Author: \t Ji Hongchao- ji.hongchao@foxmail.com \t Tan Soon Heng- christan@sustech.edu.cn')
+        msg.setWindowTitle("Contact")
+        msg.exec_()        
+    
+    
     def ErrorMsg(self, Text):
         msg = QtWidgets.QMessageBox()
         msg.resize(550, 200)

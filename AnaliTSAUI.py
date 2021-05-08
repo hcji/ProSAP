@@ -127,7 +127,14 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             self.tableViewData.setModel(TableModel(result))
             self.figureTSA.iTSA_Volcano(result, fc_thres, pv_thres)
-            
+        
+        
+    def SaveData(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        data = pd.DataFrame(self.tableViewData.model()._data)
+        data.to_csv(fileName, index = False)
         
         
 
