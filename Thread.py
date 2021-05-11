@@ -97,6 +97,32 @@ class CurveFitThread(QtCore.QThread):
         # print('finished')
 
 
+class DistTSAThread(QtCore.QThread):
+
+    _ind = QtCore.pyqtSignal(str)
+    _res = QtCore.pyqtSignal(list)
+ 
+    def __init__(self, prots, temps, data_1, data_2, ):
+        super(CurveFitThread, self).__init__()
+        self.prots = prots
+        self.temps = temps
+        self.data_1 = data_1
+        self.data_2 = data_2
+        
+        self.working = True
+ 
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        for i, p in enumerate(self.prots):
+            x = self.temps
+            y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
+            y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
+            pass
+
+
 class ROCThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)

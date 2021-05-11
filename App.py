@@ -170,6 +170,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SelectProteinTable(self):
         selectItem = self.ListFile.currentItem()
         selectData = pd.read_csv(selectItem.text())
+        keep = np.where(selectData.isnull().sum(axis=1) == 0)[0]
+        selectData = selectData.loc[keep,:]
+        selectData = selectData.reset_index(drop=True)
         return selectData
 
 
@@ -216,6 +219,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
     
     def CalcProteinComplexChange(self):
+        self.resultDataComplex = []
+        self.progressBar.setValue(0)
+        
         columns = self.columns
         proteinComplex = self.proteinComplex
         proteinData1 = self.tableProtein1.model()._data
@@ -398,6 +404,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         
     def CalcProteinPairChange(self):
+        self.resultProtPair = []
+        self.AnalROCUI.progressBar.setValue(0)
         columns = self.columns
         pub_thres = self.AnalROCUI.spinBoxPub.value()
         proteinData1 = self.tableProtein1.model()._data
@@ -446,6 +454,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
     
     def OpenAnalTSA(self):
+        self.resultDataTSA = []
+        self.AnalTSAUI.progressBar.setValue(0)
         self.AnalTSAUI.show()
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             pass
