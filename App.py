@@ -129,6 +129,14 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         msg.exec_()        
     
     
+    def WarnMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setText(Text)
+        msg.setWindowTitle("Error")
+        msg.exec_()    
+    
     def ErrorMsg(self, Text):
         msg = QtWidgets.QMessageBox()
         msg.resize(550, 200)
@@ -207,19 +215,32 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         if self.columns == None:
             self.ErrorMsg('Please set Group 1')
         else:
-            columns = ['Accession'] + self.columns
             data = self.SelectProteinTable()
-            data = data.loc[:, columns]
-            self.tableProtein2.setModel(TableModel(data))
-            self.ProteinTable2 = data
+            try:
+                if np.nanmax(data.loc[:, self.columns]) > 10:
+                    self.WarnMsg('The data seems not normalized')
+                columns = ['Accession'] + self.columns
+                try:
+                    data = data.loc[:, columns]
+                    self.tableProtein2.setModel(TableModel(data))
+                    self.ProteinTable2 = data
+                except:
+                    self.ErrorMsg('No columns matched with Group 1')        
+            except:
+                self.ErrorMsg('The data include nonnumeric value')
 
 
     def SetProteinColumn(self):
         self.columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
-        columns = ['Accession'] + self.columns
-        self.ColumnSelectUI.close()
-        data = self.ProteinTable1.loc[:, columns]
-        self.tableProtein1.setModel(TableModel(data))
+        try:
+            if np.nanmax(self.ProteinTable1.loc[:, self.columns] > 10):
+                self.WarnMsg('The data seems not normalized')
+            columns = ['Accession'] + self.columns
+            self.ColumnSelectUI.close()
+            data = self.ProteinTable1.loc[:, columns]
+            self.tableProtein1.setModel(TableModel(data))
+        except:
+            self.ErrorMsg('The data include nonnumeric value')
         
 
     def SetProteinComplex(self):
