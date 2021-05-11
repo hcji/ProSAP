@@ -31,6 +31,7 @@ class NPTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutAvg = QGridLayout(self.groupBoxAvg)
         self.gridlayoutAvg.addWidget(self.figureAvg)
         
+        self.tableWidgetProteinList.setSortingEnabled(True)
         self.comboBox.addItems(['euclidean', 'squaredeuclidean', 'seuclidean', 'mahalanobis', 'cityblock', 'chebychev', 'cosine'])
 
 

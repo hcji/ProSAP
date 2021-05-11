@@ -26,9 +26,11 @@ class AnalTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutTSA.addWidget(self.figureTSA)
         self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
         
-        self.figureAvg = MakeFigure(10, 10, dpi=150)
+        self.figureAvg = MakeFigure(10, 10, dpi = 150)
         self.gridlayoutAvg = QGridLayout(self.groupBoxAvg)
         self.gridlayoutAvg.addWidget(self.figureAvg)
+        
+        self.tableWidgetProteinList.setSortingEnabled(True)
         
 
 if __name__ == '__main__':

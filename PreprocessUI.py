@@ -108,6 +108,12 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         # d = 'D:/project/PDFiles'
         # fileNames = os.listdir(d)
         fileNames = [self.ListFile.item(i).text() for i in range(self.ListFile.count())]
+        fileNames_ = []
+        for f in fileNames:
+            if f.split('.')[1] in ['csv', 'xlsx', 'xls']:
+                fileNames_.append(f)
+        fileNames = fileNames_
+        
         columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
         reference = self.comboBoxReference.currentText()
         
@@ -127,7 +133,13 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             psm_thres = self.spinBoxPSMFilter.value()
             std_thres = self.doubleSpinBoxRSDFilter.value()
             
-            all_data = [pd.read_csv(f) for f in fileNames]
+            all_data = []
+            for f in fileNames:
+                if f.split('.')[1]  == 'csv':
+                    all_data.append(pd.read_csv(f))
+                else:
+                    all_data.append(pd.read_excel(f))
+            
             for i in range(len(all_data)):
                 ref = all_data[i].loc[:,reference].copy()
                 for c in columns:

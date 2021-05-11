@@ -66,16 +66,18 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         if fileName:
             if fileName.split('.')[1] == 'csv':
                 self.data = pd.read_csv(fileName)
-                self.tableViewData.setModel(TableModel(self.data))
-                
-                self.columns = self.data.columns
-                for c in self.columns:
-                    self.ColumnSelectUI.listWidget.addItem(c)
-                self.ColumnSelectUI.show()
-                self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetLabel)
-                self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
+            elif fileName.split('.')[1] == 'xlsx':
+                self.data = pd.read_excel(fileName)
             else:
                 self.ErrorMsg("Invalid format")
+                
+            self.tableViewData.setModel(TableModel(self.data))
+            self.columns = self.data.columns
+            for c in self.columns:
+                self.ColumnSelectUI.listWidget.addItem(c)
+            self.ColumnSelectUI.show()
+            self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetLabel)
+            self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
         else:
             pass
     

@@ -14,7 +14,7 @@ import pandas as pd
 from scipy import stats
 from sklearn import metrics
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QVariant
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -99,6 +99,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonDatabaseRemove.clicked.connect(self.RemoveProteinComplex)
         self.ButtonClearDatabase.clicked.connect(self.ClearProteinComplex)
         self.ButtonShowCurve.clicked.connect(self.PlotProteinComplex)
+        self.ButtonSaveComp.clicked.connect(self.SaveProteinComplex)
+        
+        # table sort
+        self.tableProteinComplex.setSortingEnabled(True)
         
         # server data
         self.columns = None
@@ -108,6 +112,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ProteinTable1 = None
         self.ProteinTable2 = None
         self.TSA_table = pd.DataFrame()
+        self.Complex_table = pd.DataFrame()
         self.resultDataComplex = []
         self.resultDataTSA = []
         self.resultDataROC = []
@@ -138,7 +143,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
-            if fileName.split('.')[1] == 'csv':
+            if fileName.split('.')[1] in ['csv', 'xlsx']:
                 self.ListFile.addItem(fileName)
             else:
                 self.ErrorMsg("Invalid format")
@@ -155,7 +160,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
-            if fileName.split('.')[1] == 'csv':
+            if fileName.split('.')[1] in ['csv', 'xlsx']:
                 self.ListDatabase.addItem(fileName)
             else:
                 self.ErrorMsg("Invalid format")
@@ -173,7 +178,13 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def SelectProteinTable(self):
         selectItem = self.ListFile.currentItem()
-        selectData = pd.read_csv(selectItem.text())
+        if selectItem.text().split('.')[1] == 'csv':
+            selectData = pd.read_csv(selectItem.text())
+        elif selectItem.text().split('.')[1] == 'xlsx':
+            selectData = pd.read_excel(selectItem.text())
+        else:
+            pass
+        # selectData = pd.read_csv(selectItem.text())
         keep = np.where(selectData.isnull().sum(axis=1) == 0)[0]
         selectData = selectData.loc[keep,:]
         selectData = selectData.reset_index(drop=True)
@@ -213,11 +224,31 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
     def SetProteinComplex(self):
         selectItem = self.ListDatabase.currentItem()
-        selectData = pd.read_csv(selectItem.text())
+        if selectItem.text().split('.')[1] == 'csv':
+            selectData = pd.read_csv(selectItem.text())
+        elif selectItem.text().split('.')[1] == 'xlsx':
+            selectData = pd.read_excel(selectItem.text())
+        else:
+            pass
+        # selectData = pd.read_csv(selectItem.text())
         if 'Subunits_UniProt_IDs' not in selectData.columns:
             self.ErrorMsg("Subunits_UniProt_IDs' not in columns")
         else:
-            self.tableProteinComplex.setModel(TableModel(selectData))
+            # self.tableProteinComplex.setModel(TableModel(selectData))
+            self.Complex_table = selectData
+            self.tableProteinComplex.setRowCount(selectData.shape[0])
+            self.tableProteinComplex.setColumnCount(selectData.shape[1])
+            self.tableProteinComplex.setHorizontalHeaderLabels(selectData.columns)
+            self.tableProteinComplex.setVerticalHeaderLabels(selectData.index.astype(str))
+            for i in range(selectData.shape[0]):
+                for j in range(selectData.shape[1]):
+                    if type(selectData.iloc[i,j]) == np.float64:
+                        item = QtWidgets.QTableWidgetItem()
+                        item.setData(Qt.EditRole, QVariant(float(selectData.iloc[i,j])))
+                    else:
+                            item = QtWidgets.QTableWidgetItem(str(selectData.iloc[i,j]))
+                    self.tableProteinComplex.setItem(i, j, item)            
+
             self.proteinComplex = selectData
         self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
         
@@ -259,8 +290,22 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         resultDataComplex.columns = ['Num subunit found', 'p-value (change)', 'Avg distance (change)', 'TPCA Sig 1', 'Avg distance 1', 'TPCA Sig 2', 'Avg distance 2']
         proteinComplex = pd.concat([proteinComplex, resultDataComplex], axis=1)
         proteinComplex = proteinComplex.sort_values(by = 'p-value (change)')
-        self.tableProteinComplex.setModel(TableModel(proteinComplex))
-
+        # self.tableProteinComplex.setModel(TableModel(proteinComplex))
+        
+        self.tableProteinComplex.setRowCount(proteinComplex.shape[0])
+        self.tableProteinComplex.setColumnCount(proteinComplex.shape[1])
+        self.tableProteinComplex.setHorizontalHeaderLabels(proteinComplex.columns)
+        self.tableProteinComplex.setVerticalHeaderLabels(proteinComplex.index.astype(str))
+        for i in range(proteinComplex.shape[0]):
+            for j in range(proteinComplex.shape[1]):
+                if type(proteinComplex.iloc[i,j]) == np.float64:
+                    item = QtWidgets.QTableWidgetItem()
+                    item.setData(Qt.EditRole, QVariant(float(proteinComplex.iloc[i,j])))
+                else:
+                    item = QtWidgets.QTableWidgetItem(str(proteinComplex.iloc[i,j]))
+                self.tableProteinComplex.setItem(i, j, item)
+        self.Complex_table = proteinComplex
+        
     
     def PlotProteinComplex(self):
         colNames = self.columns        
@@ -278,6 +323,14 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.figureG2.ProteinComplexFigure(proteinSubunit, proteinData2, colNames)
     
 
+    def SaveProteinComplex(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        data = self.Complex_table
+        data.to_csv(fileName)
+
+
     def LoadProteinPair(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -285,6 +338,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         if fileName:
             if fileName.split('.')[1] == 'csv':
                 self.proteinPair = pd.read_csv(fileName)
+                self.AnalROCUI.tableView.setModel(TableModel(self.proteinPair))
+            elif fileName.split('.')[1] == 'xlsx':
+                self.proteinPair = pd.read_excel(fileName)
                 self.AnalROCUI.tableView.setModel(TableModel(self.proteinPair))
             else:
                 self.ErrorMsg("Invalid format")
@@ -503,7 +559,12 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.NPTSAUI.tableWidgetProteinList.setVerticalHeaderLabels(TSA_table.index.astype(str))
         for i in range(TSA_table.shape[0]):
             for j in range(TSA_table.shape[1]):
-                item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
+                if type(TSA_table.iloc[i,j]) == np.float64:
+                    item = QtWidgets.QTableWidgetItem()
+                    item.setData(Qt.EditRole, QVariant(float(TSA_table.iloc[i,j])))
+                    # item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
+                else:
+                    item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
                 self.NPTSAUI.tableWidgetProteinList.setItem(i, j, item)
         
         self.NPTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
@@ -623,7 +684,11 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalTSAUI.tableWidgetProteinList.setVerticalHeaderLabels(TSA_table.index.astype(str))
         for i in range(TSA_table.shape[0]):
             for j in range(TSA_table.shape[1]):
-                item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
+                if type(TSA_table.iloc[i,j]) == np.float64:
+                    item = QtWidgets.QTableWidgetItem()
+                    item.setData(Qt.EditRole, QVariant(float(TSA_table.iloc[i,j])))
+                else:
+                    item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
                 self.AnalTSAUI.tableWidgetProteinList.setItem(i, j, item)
         
         self.AnalTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
