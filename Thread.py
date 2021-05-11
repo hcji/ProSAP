@@ -8,10 +8,12 @@ Created on Tue Apr 27 09:47:47 2021
 
 import numpy as np
 from scipy.stats import norm
+from scipy.spatial.distance import pdist
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils import TableModel, fit_curve, meltCurve
+
 
 
 class PreprocessThread(QtCore.QThread):
@@ -97,18 +99,18 @@ class CurveFitThread(QtCore.QThread):
         # print('finished')
 
 
-class DistTSAThread(QtCore.QThread):
+class NPTSAThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
-    _res = QtCore.pyqtSignal(list)
+    _res = QtCore.pyqtSignal(float)
  
-    def __init__(self, prots, temps, data_1, data_2, ):
-        super(CurveFitThread, self).__init__()
+    def __init__(self, prots, temps, data_1, data_2, method):
+        super(NPTSAThread, self).__init__()
         self.prots = prots
         self.temps = temps
         self.data_1 = data_1
         self.data_2 = data_2
-        
+        self.method = method
         self.working = True
  
     def __del__(self):
@@ -120,7 +122,10 @@ class DistTSAThread(QtCore.QThread):
             x = self.temps
             y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
             y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
-            pass
+            dist = pdist(np.vstack([y1,y2]), metric = self.method)[0]
+            self._ind.emit(str(int( 100 * (i + 1) / len(self.prots))))
+            self._res.emit(dist)
+        self._ind.emit(str(int(100)))
 
 
 class ROCThread(QtCore.QThread):

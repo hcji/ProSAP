@@ -26,7 +26,8 @@ from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
-from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread
+from NPTSAUI import NPTSAUI
+from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, NPTSAThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
@@ -57,6 +58,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ROCThread = None
         self.PairThread = None
         self.ComplexThread = None
+        self.NPTSAThread = None
         
         # groupbox
         self.figureG1 = MakeFigure(5, 5)
@@ -77,6 +79,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalTSAUI = AnalTSAUI()
         self.iTSAUI = AnaliTSAUI()
         self.PreprocessUI = PreprocessUI()
+        self.NPTSAUI = NPTSAUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
@@ -84,6 +87,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
         self.action_iTSA.triggered.connect(self.OpeniTSA)
         self.action_CETSA.triggered.connect(self.OpenAnalTSA)
+        self.actionNPTSA.triggered.connect(self.OpenNPTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
         self.actionContact.triggered.connect(self.ContactMsg)
         
@@ -160,7 +164,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
     
     def RemoveProteinComplex(self):
-        self.ListDatabase.takeItem(self.ListDatabase.currentItem())
+        self.ListDatabase.takeItem(self.ListDatabase.currentRow())
     
     
     def ClearProteinComplex(self):
@@ -256,16 +260,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinComplex = pd.concat([proteinComplex, resultDataComplex], axis=1)
         proteinComplex = proteinComplex.sort_values(by = 'p-value (change)')
         self.tableProteinComplex.setModel(TableModel(proteinComplex))
-        '''
-        self.tableProteinComplex.setRowCount(proteinComplex.shape[0])
-        self.tableProteinComplex.setColumnCount(proteinComplex.shape[1])
-        self.tableProteinComplex.setHorizontalHeaderLabels(proteinComplex.columns)
-        self.tableProteinComplex.setVerticalHeaderLabels(proteinComplex.index.astype(str))
-        for i in range(proteinComplex.shape[0]):
-            for j in range(proteinComplex.shape[1]):
-                item = QtWidgets.QTableWidgetItem(str(proteinComplex.iloc[i,j]))
-                self.tableProteinComplex.setItem(i, j, item)       
-        '''
+
     
     def PlotProteinComplex(self):
         colNames = self.columns        
@@ -281,8 +276,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
         self.figureG1.ProteinComplexFigure(proteinSubunit, proteinData1, colNames)
         self.figureG2.ProteinComplexFigure(proteinSubunit, proteinData2, colNames)
-
-        
+    
 
     def LoadProteinPair(self):
         options = QtWidgets.QFileDialog.Options()
@@ -367,14 +361,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         auroc = np.round(metrics.roc_auc_score(labels, values), 4)
         
         self.AnalROCUI.figureROC.ROCFigure(fpr, tpr, auroc)
-        '''
-        F = MakeFigure(1.2, 1.2)
-        F.axes.cla()
-        F.ROCFigure(fpr, tpr, auroc)
-        f = QtWidgets.QGraphicsScene()
-        f.addWidget(F)
-        self.AnalROCUI.graphicsView.setScene(f)
-        '''
         self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
         
@@ -451,7 +437,96 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
     def OpeniTSA(self):
         self.iTSAUI.show()
+
+
+    def OpenNPTSA(self):
+        self.resultDataTSA = []
+        self.NPTSAUI.progressBar.setValue(0)
+        self.NPTSAUI.show()
+        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
+            pass
+        else:
+            self.NPTSAUI.ButtonConfirm.clicked.connect(self.ShowNPTSA)
+            self.NPTSAUI.ButtonCancel.clicked.connect(self.NPTSAUI.close)
+    
+    
+    def ShowNPTSA(self):
+        columns = self.columns
+        self.resultDataTSA = []
         
+        self.NPTSAUI.tableWidgetProteinList.clear()
+        self.NPTSAUI.progressBar.setValue(0)
+        
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        temps = np.array([float(t.replace('T', '')) for t in columns])
+        cols = ['Accession'] + columns
+        data_1 = proteinData1.loc[:, cols]
+        data_2 = proteinData2.loc[:, cols]
+
+        self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
+        
+        self.NPTSAThread = NPTSAThread(self.prots, temps, data_1, data_2, self.NPTSAUI.comboBox.currentText())
+        self.NPTSAThread._ind.connect(self.ProcessBarNPTSA)
+        self.NPTSAThread._res.connect(self.ResultDataTSA)
+        self.NPTSAThread.start()
+        self.NPTSAThread.finished.connect(self.VisualizeNPTSA)       
+
+
+    def VisualizeNPTSA(self):
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        prots = self.prots
+        columns = self.columns
+        
+        res = pd.DataFrame(self.resultDataTSA)
+        res.columns = ['Diff']
+        
+        p_Val = []
+        for i in range(len(res)):
+            s = res['Diff'][i]
+            pv = stats.t.sf((s - np.mean(res['Diff'])) / np.std(res['Diff']), len(res['Diff'])-1)
+            p_Val.append(pv)
+        res['Accession'] = prots
+        res['p_Val (-log10)'] = -np.log10(p_Val)
+        res = np.round(res, 3)
+        
+        res = res[['Accession', 'Diff', 'p_Val (-log10)']]
+        TSA_table = res.sort_values(by = 'p_Val (-log10)',axis = 0, ascending = False)
+        
+        self.TSA_table = TSA_table
+        self.NPTSAUI.tableWidgetProteinList.setRowCount(TSA_table.shape[0])
+        self.NPTSAUI.tableWidgetProteinList.setColumnCount(TSA_table.shape[1])
+        self.NPTSAUI.tableWidgetProteinList.setHorizontalHeaderLabels(TSA_table.columns)
+        self.NPTSAUI.tableWidgetProteinList.setVerticalHeaderLabels(TSA_table.index.astype(str))
+        for i in range(TSA_table.shape[0]):
+            for j in range(TSA_table.shape[1]):
+                item = QtWidgets.QTableWidgetItem(str(TSA_table.iloc[i,j]))
+                self.NPTSAUI.tableWidgetProteinList.setItem(i, j, item)
+        
+        self.NPTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
+        self.NPTSAUI.ButtonShow.clicked.connect(self.ShowNPTSACurve)
+        self.NPTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
+
+    
+    def ShowNPTSACurve(self):
+        columns = self.columns
+        proteinData1 = self.tableProtein1.model()._data
+        proteinData2 = self.tableProtein2.model()._data
+        
+        header = [self.NPTSAUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.NPTSAUI.tableWidgetProteinList.columnCount())]
+        i = self.NPTSAUI.tableWidgetProteinList.selectedItems()[0].row()
+        j = header.index('Accession')
+        ProteinAccession = self.NPTSAUI.tableWidgetProteinList.item(i, j).text()
+
+        self.NPTSAUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
+
+
+    def ProcessBarNPTSA(self, msg):
+        self.NPTSAUI.progressBar.setValue(int(msg))
+
     
     def OpenAnalTSA(self):
         self.resultDataTSA = []

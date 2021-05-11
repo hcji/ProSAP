@@ -322,6 +322,7 @@
      <string>Analysis</string>
     </property>
     <addaction name="action_CETSA"/>
+    <addaction name="actionNPTSA"/>
     <addaction name="action_iTSA"/>
     <addaction name="actionCalcROC"/>
    </widget>
@@ -378,7 +379,7 @@
   </action>
   <action name="action_CETSA">
    <property name="text">
-    <string>Single protein analysis ...</string>
+    <string>Thermal shift analysis ...</string>
    </property>
   </action>
   <action name="actionCalcPval">
@@ -418,12 +419,17 @@
   </action>
   <action name="action_iTSA">
    <property name="text">
-    <string>Single temperture analysis...</string>
+    <string>Isothermal shift analysis...</string>
    </property>
   </action>
   <action name="actionContact">
    <property name="text">
     <string>Contact author...</string>
+   </property>
+  </action>
+  <action name="actionNPTSA">
+   <property name="text">
+    <string>Nonparametric thermal shift analysis...</string>
    </property>
   </action>
  </widget>

@@ -216,6 +216,8 @@ class Ui_MainWindow(object):
         self.action_iTSA.setObjectName("action_iTSA")
         self.actionContact = QtWidgets.QAction(MainWindow)
         self.actionContact.setObjectName("actionContact")
+        self.actionNPTSA = QtWidgets.QAction(MainWindow)
+        self.actionNPTSA.setObjectName("actionNPTSA")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionQuit)
@@ -226,6 +228,7 @@ class Ui_MainWindow(object):
         self.menuHelp.addAction(self.actionCheck_liences)
         self.menuHelp.addAction(self.actionContact)
         self.menuAnalysis.addAction(self.action_CETSA)
+        self.menuAnalysis.addAction(self.actionNPTSA)
         self.menuAnalysis.addAction(self.action_iTSA)
         self.menuAnalysis.addAction(self.actionCalcROC)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -266,7 +269,7 @@ class Ui_MainWindow(object):
         self.actionQuit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionProteomics.setText(_translate("MainWindow", "Load proteomics..."))
         self.actionDatabase.setText(_translate("MainWindow", "Load PPI database..."))
-        self.action_CETSA.setText(_translate("MainWindow", "Single protein analysis ..."))
+        self.action_CETSA.setText(_translate("MainWindow", "Thermal shift analysis ..."))
         self.actionCalcPval.setText(_translate("MainWindow", "Calculate p-values of protein complex ..."))
         self.actionCalcROC.setText(_translate("MainWindow", "Protein pair analysis..."))
         self.actionCheck_update.setText(_translate("MainWindow", "Check update ..."))
@@ -274,8 +277,9 @@ class Ui_MainWindow(object):
         self.actionCheck_liences.setText(_translate("MainWindow", "Check licence..."))
         self.actionPreprocessing.setText(_translate("MainWindow", "Preprocessing..."))
         self.actionCalcComplex.setText(_translate("MainWindow", "Protein complex analysis..."))
-        self.action_iTSA.setText(_translate("MainWindow", "Single temperture analysis..."))
+        self.action_iTSA.setText(_translate("MainWindow", "Isothermal shift analysis..."))
         self.actionContact.setText(_translate("MainWindow", "Contact author..."))
+        self.actionNPTSA.setText(_translate("MainWindow", "Nonparametric thermal shift analysis..."))
 
 
 if __name__ == "__main__":
