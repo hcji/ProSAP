@@ -102,13 +102,34 @@ do_DESeq2 <- function(X, y, names){
   dds <- as.data.frame(results(dds))
   return(dds)
 }
+     
+      
+estimate_df <- function(rss1, rssDiff){
+  rm_idx <- is.na(rssDiff) | (rssDiff <= 0)
+  rss1 <- rss1[!rm_idx]
+  rssDiff <- rssDiff[!rm_idx]
+
+  M = median(rssDiff, na.rm = TRUE)
+  V = mad(rssDiff, na.rm = TRUE)^2
+  s0_sq = 1/2 * V/M
+  rssDiff = rssDiff/s0_sq
+  rss1 = rss1/s0_sq
+  d1 = MASS::fitdistr(x = rssDiff, densfun = "chi-squared", start = list(df = 1), method = "Brent", lower = 0, upper = length(rssDiff))[["estimate"]]
+  d2 = MASS::fitdistr(x = rss1, densfun = "chi-squared", start = list(df = 1),  method = "Brent", lower = 0, upper = length(rssDiff))[["estimate"]]
+
+  out <- c(d1 = d1, d2 = d2, s0_sq = s0_sq)
+  return(out)
+}
+
 '''
+
 
 robjects.r(r_codes)
 
 do_limma = robjects.globalenv['do_limma']
 do_DESeq2 = robjects.globalenv['do_DESeq2']
 do_edgeR = robjects.globalenv['do_edgeR']
+estimate_df = robjects.globalenv['estimate_df']
 p_value_adjust = robjects.globalenv['p_value_adjust']
 
 

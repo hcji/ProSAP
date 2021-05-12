@@ -7,13 +7,14 @@ Created on Tue Apr 27 09:47:47 2021
 
 
 import numpy as np
+import pandas as pd
 from scipy.stats import norm
 from scipy.spatial.distance import pdist
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Utils import TableModel, fit_curve, meltCurve
-
+from Utils import TableModel, fit_curve, meltCurve, fit_np
+from iTSA import estimate_df
 
 
 class PreprocessThread(QtCore.QThread):
@@ -118,13 +119,29 @@ class NPTSAThread(QtCore.QThread):
         self.working = False
  
     def run(self):
-        for i, p in enumerate(self.prots):
-            x = self.temps
-            y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
-            y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
-            dist = pdist(np.vstack([y1,y2]), metric = self.method)[0]
-            self._ind.emit(str(int( 100 * (i + 1) / len(self.prots))))
-            self._res.emit(dist)
+        if self.method != 'NPARC': 
+            for i, p in enumerate(self.prots):
+                x = self.temps
+                y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
+                y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
+                dist = pdist(np.vstack([y1,y2]), metric = self.method)[0]
+                self._ind.emit(str(int( 100 * (i + 1) / len(self.prots))))
+                self._res.emit(dist)
+        else:
+            res = []
+            for i, p in enumerate(self.prots):
+                x = self.temps
+                y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
+                y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
+                res.append(fit_np(x, y1, y2))
+                self._ind.emit(str(int(90 * (i + 1) / len(self.prots))))
+            res = pd.DataFrame(res)
+            res.columns = ['rssNull', 'rssAlt', 'rssDiff']
+            [d1, d2, s0_sq] = list(np.array(estimate_df(res['rssAlt'], res['rssDiff'])))
+            dists = list(res['rssDiff']/ s0_sq)
+            for i in range(len(self.prots)):
+                self._ind.emit(str(int(90 + 10 * (i + 1) / len(self.prots))))
+                self._res.emit(dists[i])
         self._ind.emit(str(int(100)))
 
 

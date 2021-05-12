@@ -20,16 +20,42 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="2" column="0" colspan="4">
-          <widget class="QComboBox" name="comboBoxPSM">
-           <property name="contextMenuPolicy">
-            <enum>Qt::DefaultContextMenu</enum>
+         <item row="5" column="2" colspan="2">
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+            </font>
            </property>
-           <property name="currentText">
-            <string/>
+           <property name="text">
+            <string>Normlization</string>
            </property>
-           <property name="minimumContentsLength">
-            <number>0</number>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="2">
+          <widget class="QComboBox" name="comboBoxMV"/>
+         </item>
+         <item row="6" column="2" colspan="2">
+          <widget class="QComboBox" name="comboBox_2"/>
+         </item>
+         <item row="10" column="2" colspan="2">
+          <widget class="QLabel" name="label_11">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Missing value filter ratio</string>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="3">
+          <widget class="QPushButton" name="pushButtonSave">
+           <property name="text">
+            <string>Save as...</string>
            </property>
           </widget>
          </item>
@@ -46,50 +72,33 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="4">
-          <widget class="QComboBox" name="comboBoxMerging"/>
-         </item>
-         <item row="3" column="0" colspan="4">
-          <widget class="QLabel" name="label_6">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>PSM filter threshold</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="1">
+         <item row="16" column="1">
           <widget class="QPushButton" name="pushButtonConfirm">
            <property name="text">
             <string>Confirm</string>
            </property>
           </widget>
          </item>
-         <item row="11" column="3">
-          <widget class="QPushButton" name="pushButtonSave">
+         <item row="16" column="0">
+          <widget class="QPushButton" name="pushButtonOpen">
            <property name="text">
-            <string>Save as...</string>
+            <string>Open</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0" colspan="4">
-          <widget class="QSpinBox" name="spinBoxPSMFilter">
-           <property name="value">
-            <number>2</number>
+         <item row="16" column="2">
+          <widget class="QPushButton" name="pushButtonClear">
+           <property name="text">
+            <string>Clear</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0" colspan="4">
+         <item row="1" column="0" colspan="2">
           <widget class="QLabel" name="label_5">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -100,14 +109,88 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="0">
-          <widget class="QPushButton" name="pushButtonOpen">
-           <property name="text">
-            <string>Open</string>
+         <item row="2" column="0" colspan="2">
+          <widget class="QComboBox" name="comboBoxPSM">
+           <property name="contextMenuPolicy">
+            <enum>Qt::DefaultContextMenu</enum>
+           </property>
+           <property name="currentText">
+            <string/>
+           </property>
+           <property name="minimumContentsLength">
+            <number>0</number>
            </property>
           </widget>
          </item>
-         <item row="8" column="0" colspan="4">
+         <item row="5" column="0" colspan="2">
+          <widget class="QLabel" name="label_7">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
+           </property>
+           <property name="text">
+            <string>Merging metrics</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" colspan="2">
+          <widget class="QLabel" name="label_6">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>PSM filter threshold</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2" colspan="2">
+          <widget class="QSpinBox" name="spinBoxPSMFilter">
+           <property name="value">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <widget class="QComboBox" name="comboBoxMerging"/>
+         </item>
+         <item row="10" column="0" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Missing value imputation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="2" colspan="2">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxMVFilter">
+           <property name="singleStep">
+            <double>0.020000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.200000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="0" colspan="2">
           <widget class="QDoubleSpinBox" name="doubleSpinBoxRSDFilter">
            <property name="singleStep">
             <double>0.020000000000000</double>
@@ -117,11 +200,12 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="4">
+         <item row="12" column="0" colspan="2">
           <widget class="QLabel" name="label_8">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -132,14 +216,12 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0" colspan="4">
-          <widget class="QComboBox" name="comboBoxReference"/>
-         </item>
-         <item row="9" column="0" colspan="4">
+         <item row="12" column="2" colspan="2">
           <widget class="QLabel" name="label_10">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="contextMenuPolicy">
@@ -153,30 +235,8 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="2">
-          <widget class="QPushButton" name="pushButtonClear">
-           <property name="text">
-            <string>Clear</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="4">
-          <widget class="QLabel" name="label_7">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="contextMenuPolicy">
-            <enum>Qt::NoContextMenu</enum>
-           </property>
-           <property name="text">
-            <string>Merging metrics</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
+         <item row="13" column="2" colspan="2">
+          <widget class="QComboBox" name="comboBoxReference"/>
          </item>
         </layout>
        </item>
