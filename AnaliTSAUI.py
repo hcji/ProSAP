@@ -29,8 +29,9 @@ columns = ['V_log2.i._TMT_1_iTSA52', 'V_log2.i._TMT_3_iTSA52',
        'V_log2.i._TMT_9_iTSA52', 'D_log2.i._TMT_2_iTSA52',
        'D_log2.i._TMT_4_iTSA52', 'D_log2.i._TMT_6_iTSA52',
        'D_log2.i._TMT_8_iTSA52', 'D_log2.i._TMT_10_iTSA52']
-labels = [0,0,0,0,0,1,1,1,1,1]
+y = [0,0,0,0,0,1,1,1,1,1]
 X = proteinData.loc[:,columns]
+names = proteinData['Accession']
 '''
 
 
@@ -48,7 +49,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutTSA.addWidget(self.figureTSA)
         self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
         self.ColumnSelectUI = ColumnSelectUI()
-        self.comboBoxMethod.addItems(['t-Test', 'Limma'])
+        self.comboBoxMethod.addItems(['t-Test', 'Limma', 'edgeR', 'DESeq2'])
         self.comboBoxLog2.addItems(['True', 'False'])
         
         self.pushButtonData.clicked.connect(self.LoadProteinFile)
@@ -114,13 +115,19 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         else:
             X = self.data.loc[:,self.columns]
             if self.comboBoxLog2.currentText() == 'True':
-                pass
+                X = 2 ** X
             else:
-                X = np.log2(X)
-            y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])
+                pass
+            y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])            
             names = self.data.loc[:,'Accession']
             method = self.comboBoxMethod.currentText()
             worker = iTSA(method = method)
+            
+            keep = np.where(np.sum(X, axis=1))[0]
+            X = X.iloc[keep,:]
+            X = X.reset_index(drop = True)
+            names = names[keep]
+            
             result = worker.fit_data(X, y, names)
             result = result.reset_index(drop=True)
             
