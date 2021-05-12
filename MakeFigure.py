@@ -53,7 +53,7 @@ class MakeFigure(FigureCanvas):
         
         self.axes.cla()
         for p, vec in pltData.items():
-            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [10**4, 10**4, 0.3]))[0]
+            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
             self.axes.scatter(temps, vec, marker='.', label = p)
             self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]))
             
@@ -93,8 +93,8 @@ class MakeFigure(FigureCanvas):
         vec_1 = proteinData1.loc[proteinData1.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         vec_2 = proteinData2.loc[proteinData2.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
         
-        paras1 = curve_fit(meltCurve, temps, vec_1, bounds=(0, [10**4, 10**4, 0.3]))[0]
-        paras2 = curve_fit(meltCurve, temps, vec_2, bounds=(0, [10**4, 10**4, 0.3]))[0]
+        paras1 = curve_fit(meltCurve, temps, vec_1, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+        paras2 = curve_fit(meltCurve, temps, vec_2, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
         
         self.axes.cla()
         self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession), s = 10)
@@ -145,7 +145,7 @@ class MakeFigure(FigureCanvas):
                 
         self.axes.cla()
         for p, vec in pltData.items():
-            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [10**4, 10**4, 0.3]))[0]
+            paras = curve_fit(meltCurve, temps, vec, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
             self.axes.scatter(temps, vec, marker='.', label = p)
             self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]))
         
