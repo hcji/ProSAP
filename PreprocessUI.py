@@ -9,6 +9,7 @@ import os
 import numpy as np
 import pandas as pd
 
+from sklearn.impute import KNNImputer
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
@@ -29,6 +30,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
         
         self.comboBoxMerging.addItems(['Median', 'Mean'])
+        self.comboBoxNorm.addItems(['Reference', 'Median', 'None'])
+        self.comboBoxMV.addItems(['None', 'KNN', 'Zero'])
 
         self.ColumnSelectUI = ColumnSelectUI()
         self.PreprocessThread = None
@@ -120,60 +123,85 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         if None in [self.tableWidgetTemp.item(i,1) for i in range(self.tableWidgetTemp.rowCount())]:
             msg = QtWidgets.QMessageBox()
             msg.resize(550, 200)
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Please input temperature")
-            msg.setWindowTitle("Error")
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setText("No temperature input, use original colnames")
+            msg.setWindowTitle("Information")
             msg.exec_()
+            self.tempertures = None
         else:
+            try:
+                tempertures = [float(self.tableWidgetTemp.item(i,1).text()) for i in range(self.tableWidgetTemp.rowCount())]
+            except:
+                tempertures = None    
+            self.tempertures = tempertures    
+        psm_column = self.comboBoxPSM.currentText()
+        psm_thres = self.spinBoxPSMFilter.value()
+        std_thres = self.doubleSpinBoxRSDFilter.value()
             
-            tempertures = [float(self.tableWidgetTemp.item(i,1).text()) for i in range(self.tableWidgetTemp.rowCount())]
-            self.tempertures = tempertures
+        all_data = []
+        for f in fileNames:
+            if f.split('.')[1]  == 'csv':
+                all_data.append(pd.read_csv(f))
+            else:
+                all_data.append(pd.read_excel(f))
             
-            psm_column = self.comboBoxPSM.currentText()
-            psm_thres = self.spinBoxPSMFilter.value()
-            std_thres = self.doubleSpinBoxRSDFilter.value()
-            
-            all_data = []
-            for f in fileNames:
-                if f.split('.')[1]  == 'csv':
-                    all_data.append(pd.read_csv(f))
-                else:
-                    all_data.append(pd.read_excel(f))
-            
+        # devided by reference
+        if self.comboBoxNorm.currentText() == 'Reference':
             for i in range(len(all_data)):
                 ref = all_data[i].loc[:,reference].copy()
                 for c in columns:
                     all_data[i].loc[:,c] /= ref
         
-            data = all_data[0]
-            if len(all_data) == 1:
-                pass
-            else:
-                for data_ in all_data[1:]:
-                    data = data.merge(data_, 'outer', on = 'Accession')
         
-            if self.comboBoxMerging.currentText() == 'Median':
-                fun = np.nanmedian
-            else:
-                fun = np.nanmean
+        data = all_data[0]
+        if len(all_data) == 1:
+            pass
+        else:
+            for data_ in all_data[1:]:
+                data = data.merge(data_, 'outer', on = 'Accession')
+        
+        if self.comboBoxMerging.currentText() == 'Median':
+            fun = np.nanmedian
+        else:
+            fun = np.nanmean
             
-            self.valueData, self.rsdData, self.protData = [], [], []
+        self.valueData, self.rsdData, self.protData = [], [], []
             
-            self.PreprocessThread = PreprocessThread(data, psm_column, psm_thres, std_thres, columns, fun)
-            self.PreprocessThread._ind.connect(self.ProcessBar)
-            self.PreprocessThread._val.connect(self.ValueData)
-            self.PreprocessThread._rsd.connect(self.RSDData)
-            self.PreprocessThread._prot.connect(self.ProtData)
-            self.PreprocessThread.start()
-            self.PreprocessThread.finished.connect(self.VisualizeProprocess)            
+        # normalize by median
+        if self.comboBoxNorm.currentText() == 'Median':
+            whs = np.where([c.split('_')[0] in columns for c in list(data.columns)])[0]
+            medians = np.nanmedian(data.iloc[:,whs], axis = 0)
+            ratios = medians / np.mean(medians)
+            data.iloc[:,whs] = data.iloc[:,whs] / ratios
+            
+        self.PreprocessThread = PreprocessThread(data, psm_column, psm_thres, std_thres, columns, fun)
+        self.PreprocessThread._ind.connect(self.ProcessBar)
+        self.PreprocessThread._val.connect(self.ValueData)
+        self.PreprocessThread._rsd.connect(self.RSDData)
+        self.PreprocessThread._prot.connect(self.ProtData)
+        self.PreprocessThread.start()
+        self.PreprocessThread.finished.connect(self.VisualizeProprocess)            
     
     
     def VisualizeProprocess(self):
-        val_cols = ['T{}'.format(t) for t in self.tempertures]
         val_list = pd.DataFrame(self.valueData)
+        if self.comboBoxMV.currentText() == 'KNN':
+            knn_imputer = KNNImputer(n_neighbors = 3)
+            val_list_ = pd.DataFrame(knn_imputer.fit_transform(val_list))
+            val_list_.columns = val_list.columns
+            val_list = val_list_
+        elif self.comboBoxMV.currentText() == 'Zero':
+            val_list = val_list.fillna(0)
+        else:
+            pass
+        
+        if self.tempertures is not None:
+            val_cols = ['T{}'.format(t) for t in self.tempertures]
+        else:
+            val_cols = [self.tableWidgetTemp.item(i,0).text() for i in range(self.tableWidgetTemp.rowCount())]
         val_list.columns = val_cols
         val_list['Accession'] = self.protData
-        val_list['RSD'] = self.rsdData
+        val_list['RSD'] = np.round(self.rsdData, 4)
         val_cols = ['Accession'] + val_cols + ['RSD']
 
         self.figureRSD.RSDHistFigure(np.array(self.rsdData))

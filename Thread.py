@@ -119,7 +119,7 @@ class NPTSAThread(QtCore.QThread):
         self.working = False
  
     def run(self):
-        if self.method != 'NPARC': 
+        if self.method != 'fitness': 
             for i, p in enumerate(self.prots):
                 x = self.temps
                 y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
@@ -134,13 +134,14 @@ class NPTSAThread(QtCore.QThread):
                 y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
                 y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
                 res.append(fit_np(x, y1, y2))
-                self._ind.emit(str(int(90 * (i + 1) / len(self.prots))))
+                self._ind.emit(str(int(95 * (i + 1) / len(self.prots))))
             res = pd.DataFrame(res)
             res.columns = ['rssNull', 'rssAlt', 'rssDiff']
-            [d1, d2, s0_sq] = list(np.array(estimate_df(res['rssAlt'], res['rssDiff'])))
-            dists = list(res['rssDiff']/ s0_sq)
+            # [d1, d2, s0_sq] = list(np.array(estimate_df(res['rssAlt'], res['rssDiff'])))
+            # dists = list(res['rssDiff']/ s0_sq)
+            dists = res['rssDiff']
             for i in range(len(self.prots)):
-                self._ind.emit(str(int(90 + 10 * (i + 1) / len(self.prots))))
+                self._ind.emit(str(int(95 + 10 * (i + 1) / len(self.prots))))
                 self._res.emit(dists[i])
         self._ind.emit(str(int(100)))
 
