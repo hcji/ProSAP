@@ -330,11 +330,12 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def PlotProteinComplex(self):
         colNames = self.columns        
-        header = self.tableProteinComplex.model()._data.columns
+        # header = self.tableProteinComplex.model()._data.columns
+        header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
         # print(header)
         i = self.tableProteinComplex.selectedIndexes()[0].row()
         j = list(header).index('Subunits_UniProt_IDs')
-        proteinSubunit = self.tableProteinComplex.model()._data.iloc[i,j]
+        proteinSubunit = self.tableProteinComplex.item(i, j).text()
         # print(proteinSubunit)
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
