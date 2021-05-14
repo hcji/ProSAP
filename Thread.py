@@ -195,7 +195,7 @@ class PairThread(QtCore.QThread):
     def __del__(self):
         self.wait()
         self.working = False
- 
+
     def run(self):
         all_prot = np.intersect1d(self.prot1, self.prot2)
         w1, w2 = [], []

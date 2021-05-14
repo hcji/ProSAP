@@ -100,8 +100,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonDatabaseConfirm.clicked.connect(self.SetProteinComplex)
         self.ButtonDatabaseRemove.clicked.connect(self.RemoveProteinComplex)
         self.ButtonClearDatabase.clicked.connect(self.ClearProteinComplex)
+        self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
         self.ButtonShowCurve.clicked.connect(self.PlotProteinComplex)
         self.ButtonSaveComp.clicked.connect(self.SaveProteinComplex)
+        self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         
         # table sort
         self.tableProteinComplex.setSortingEnabled(True)
@@ -307,8 +309,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 self.FillProteinComplex(selectData)
         except:
             self.ErrorMsg("Cannot load the selected file")
-            
-        self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
         
     
     def CalcProteinComplexChange(self):
@@ -317,21 +317,26 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         columns = self.columns
         proteinComplex = self.TakeProteinComplex()
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
-        
-        data1 = proteinData1.loc[:, columns]
-        data2 = proteinData2.loc[:, columns]
-        dist1 = metrics.pairwise_distances(data1, metric = 'cityblock')
-        dist2 = metrics.pairwise_distances(data2, metric = 'cityblock')
-        prot1 = proteinData1.loc[:, 'Accession']
-        prot2 = proteinData2.loc[:, 'Accession']
+        if len(proteinComplex) == 0:
+            self.ErrorMsg('Not set protein complex')
+        elif (self.tableProtein1.model() is None) or (self.tableProtein2.model() is None):
+            self.ErrorMsg('Not set proteomics data')
+        else:       
+            proteinData1 = self.tableProtein1.model()._data
+            proteinData2 = self.tableProtein2.model()._data
 
-        self.ComplexThread = ComplexThread(prot1, dist1, prot2, dist2, proteinComplex)
-        self.ComplexThread._ind.connect(self.ProcessBarComplex)
-        self.ComplexThread._res.connect(self.ResultDataComplex)
-        self.ComplexThread.start()
-        self.ComplexThread.finished.connect(self.VisualizeComplex)
+            data1 = proteinData1.loc[:, columns]
+            data2 = proteinData2.loc[:, columns]
+            dist1 = metrics.pairwise_distances(data1, metric = 'cityblock')
+            dist2 = metrics.pairwise_distances(data2, metric = 'cityblock')
+            prot1 = proteinData1.loc[:, 'Accession']
+            prot2 = proteinData2.loc[:, 'Accession']
+
+            self.ComplexThread = ComplexThread(prot1, dist1, prot2, dist2, proteinComplex)
+            self.ComplexThread._ind.connect(self.ProcessBarComplex)
+            self.ComplexThread._res.connect(self.ResultDataComplex)
+            self.ComplexThread.start()
+            self.ComplexThread.finished.connect(self.VisualizeComplex)
 
 
     def ResultDataComplex(self, msg):
@@ -376,8 +381,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","CSV Files (*.csv)", options=options)
-        data = self.TakeProteinComplex()
-        data.to_csv(fileName)
+        if fileName:
+            data = self.TakeProteinComplex()
+            data.to_csv(fileName)
 
 
     def LoadProteinPair(self):
@@ -464,9 +470,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         fpr, tpr, threshold = metrics.roc_curve(labels, values, pos_label = 1)
         auroc = np.round(metrics.roc_auc_score(labels, values), 4)
-        
         self.AnalROCUI.figureROC.ROCFigure(fpr, tpr, auroc)
-        self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
         
 
@@ -499,25 +503,31 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalROCUI.progressBar.setValue(0)
         columns = self.columns
         pub_thres = self.AnalROCUI.spinBoxPub.value()
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data    
-        proteinPair = self.AnalROCUI.tableView.model()._data
         
-        if 'Publications' in proteinPair.columns:
-            proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
-        data1 = proteinData1.loc[:, columns]
-        data2 = proteinData2.loc[:, columns]
-        dist1 = metrics.pairwise_distances(data1, metric = self.AnalROCUI.comboBoxDistance.currentText())
-        dist2 = metrics.pairwise_distances(data2, metric = self.AnalROCUI.comboBoxDistance.currentText())
-        prot1 = proteinData1.loc[:, 'Accession']
-        prot2 = proteinData2.loc[:, 'Accession']
+        if self.AnalROCUI.tableView.model() is None:
+            self.ErrorMsg('Not set protein complex')
+        elif (self.tableProtein1.model() is None) or (self.tableProtein2.model() is None):
+            self.ErrorMsg('Not set proteomics data')
+        else:      
+            proteinData1 = self.tableProtein1.model()._data
+            proteinData2 = self.tableProtein2.model()._data    
+            proteinPair = self.AnalROCUI.tableView.model()._data
         
-        n = self.AnalROCUI.spinBoxRandom.value()
-        self.PairThread = PairThread(prot1, dist1, prot2, dist2, proteinPair, n)
-        self.PairThread._ind.connect(self.ProcessBarROC)
-        self.PairThread._res.connect(self.ResultProtPair)
-        self.PairThread.start()
-        self.PairThread.finished.connect(self.VisualizeProtPair)        
+            if 'Publications' in proteinPair.columns:
+                proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
+            data1 = proteinData1.loc[:, columns]
+            data2 = proteinData2.loc[:, columns]
+            dist1 = metrics.pairwise_distances(data1, metric = self.AnalROCUI.comboBoxDistance.currentText())
+            dist2 = metrics.pairwise_distances(data2, metric = self.AnalROCUI.comboBoxDistance.currentText())
+            prot1 = proteinData1.loc[:, 'Accession']
+            prot2 = proteinData2.loc[:, 'Accession']
+        
+            n = self.AnalROCUI.spinBoxRandom.value()
+            self.PairThread = PairThread(prot1, dist1, prot2, dist2, proteinPair, n)
+            self.PairThread._ind.connect(self.ProcessBarROC)
+            self.PairThread._res.connect(self.ResultProtPair)
+            self.PairThread.start()
+            self.PairThread.finished.connect(self.VisualizeProtPair)        
 
 
     def VisualizeProtPair(self):
@@ -736,9 +746,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SaveTSAData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
-        data = self.TSA_table
-        data.to_csv(fileName)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","CSV Files (*.csv)", options=options)
+        if fileName:
+            data = self.TSA_table
+            data.to_csv(fileName)
     
 
 if __name__ == '__main__':
