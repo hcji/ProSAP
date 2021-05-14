@@ -3,6 +3,7 @@
 /build/
 /.spyproject/
 /test/
+/dependencies/
 *.pyc
 *.h5
 *.npy

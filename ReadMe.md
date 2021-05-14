@@ -1,6 +1,6 @@
-## TSA Desktop
+## TSAnalyst Desktop
 
 
 ### Compile
 
-	pyinstaller App.py -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
+	pyinstaller TSAnalyst.py -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 

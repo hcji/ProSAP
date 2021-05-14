@@ -71,7 +71,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         
         else:
             for fileName in fileNames:
-                if fileName.split('.')[1] == 'csv':
+                if fileName.split('.')[1] in ['csv', 'xls', 'xlsx']:
                     self.ListFile.addItem(fileName)
                 else:
                     pass
