@@ -146,8 +146,8 @@ class MakeFigure(FigureCanvas):
         self.axes.cla()
         for p, vec in pltData.items():
             paras = curve_fit(meltCurve, temps, vec, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
-            self.axes.scatter(temps, vec, marker='.', label = p)
-            self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]))
+            self.axes.scatter(temps, vec, marker='.', label = p, s = 5)
+            self.axes.plot(temps_, meltCurve(temps_, paras[0], paras[1], paras[2]), lw=1)
         
         self.axes.set_xlabel('Temperature (℃)', fontsize=5)
         self.axes.set_ylabel('Abundances', fontsize=5)

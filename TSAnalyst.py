@@ -103,7 +103,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonCalcComplex.clicked.connect(self.CalcProteinComplexChange)
         self.ButtonShowCurve.clicked.connect(self.PlotProteinComplex)
         self.ButtonSaveComp.clicked.connect(self.SaveProteinComplex)
-        self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         
         # table sort
         self.tableProteinComplex.setSortingEnabled(True)
@@ -111,7 +110,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         # server data
         self.columns = None
         self.prots = None
-        self.proteinPair = None
         self.ProteinTable1 = None
         self.ProteinTable2 = None
         self.TSA_table = pd.DataFrame()
@@ -392,15 +390,18 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             if fileName.split('.')[1] == 'csv':
-                self.proteinPair = pd.read_csv(fileName)
-                self.AnalROCUI.tableView.setModel(TableModel(self.proteinPair))
+                proteinPair = pd.read_csv(fileName)
+                header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
+                proteinPair = proteinPair.loc[:, header]
+                self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
             elif fileName.split('.')[1] == 'xlsx':
-                self.proteinPair = pd.read_excel(fileName)
-                self.AnalROCUI.tableView.setModel(TableModel(self.proteinPair))
+                proteinPair = pd.read_excel(fileName)
+                header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
+                proteinPair = proteinPair.loc[:, header]
+                self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
             else:
                 self.ErrorMsg("Invalid format")
-        else:
-            self.AnalROCUI.spinBoxRandom.setProperty("value", len(self.proteinPair))
+            self.AnalROCUI.spinBoxRandom.setProperty("value", len(proteinPair))
         
     
     def OpenAnalROC(self):
@@ -412,11 +413,12 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalROCUI.comboBoxDistance.addItems(['manhattan', 'cityblock', 'cosine', 'euclidean', 'l1', 'l2'])
 
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
-            pass
+            self.ErrorMsg('Please set proteomics data')
         else:
             self.AnalROCUI.pushButtonDatabase.clicked.connect(self.LoadProteinPair)
             self.AnalROCUI.pushButtonConfirm.clicked.connect(self.ShowAnalROC)
             self.AnalROCUI.pushButtonCancel.clicked.connect(self.AnalROCUI.close)
+            self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         
     
     def ShowAnalROC(self):
@@ -442,6 +444,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
                 proteinData = proteinData2
             
             proteinPair = self.AnalROCUI.tableView.model()._data
+            header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
+            proteinPair = proteinPair.loc[:, header]
+            proteinPair = proteinPair.reset_index(drop = True)
+                
             if ('Protein A' not in proteinPair.columns) or ('Protein B' not in proteinPair.columns):
                 self.ErrorMsg("Protein pairs is not available")
             
@@ -512,6 +518,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             proteinData1 = self.tableProtein1.model()._data
             proteinData2 = self.tableProtein2.model()._data    
             proteinPair = self.AnalROCUI.tableView.model()._data
+            
+            header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
+            proteinPair = proteinPair.loc[:, header]
+            proteinPair = proteinPair.reset_index(drop = True)
         
             if 'Publications' in proteinPair.columns:
                 proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
@@ -533,6 +543,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def VisualizeProtPair(self):
         pub_thres = self.AnalROCUI.spinBoxPub.value()
         proteinPair = self.AnalROCUI.tableView.model()._data
+        header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
+        proteinPair = proteinPair.loc[:, header]
+        proteinPair = proteinPair.reset_index(drop = True)
+        
         if 'Publications' in proteinPair.columns:
             proteinPair = proteinPair[proteinPair['Publications'] >= pub_thres]
         proteinPairDist = pd.DataFrame(self.resultProtPair)
