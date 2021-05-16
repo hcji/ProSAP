@@ -43,11 +43,30 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle("iTSA Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-        self.figureTSA = MakeFigure(10, 10, dpi = 250)
-        self.figureTSA_ntb = NavigationToolbar(self.figureTSA, self)
-        self.gridlayoutTSA = QGridLayout(self.groupBoxVolcano)
-        self.gridlayoutTSA.addWidget(self.figureTSA)
-        self.gridlayoutTSA.addWidget(self.figureTSA_ntb)
+        self.figureVolcano = MakeFigure(10, 10, dpi = 250)
+        self.figureVolcano_ntb = NavigationToolbar(self.figureVolcano, self)
+        self.gridlayoutVolcano = QGridLayout(self.groupBoxVolcano)
+        self.gridlayoutVolcano.addWidget(self.figureVolcano)
+        self.gridlayoutVolcano.addWidget(self.figureVolcano_ntb)
+        
+        self.figureHeatmap = MakeFigure(10, 10, dpi = 150)
+        self.figureHeatmap_ntb = NavigationToolbar(self.figureHeatmap, self)
+        self.gridlayoutHeatmap = QGridLayout(self.groupBoxHeatmap)
+        self.gridlayoutHeatmap.addWidget(self.figureHeatmap)
+        self.gridlayoutHeatmap.addWidget(self.figureHeatmap_ntb)        
+        
+        self.figureBarchart = MakeFigure(10, 10, dpi = 150)
+        self.figureBarchart_ntb = NavigationToolbar(self.figureBarchart, self)
+        self.gridlayoutBarchart = QGridLayout(self.groupBoxBarchart)
+        self.gridlayoutBarchart.addWidget(self.figureBarchart)
+        self.gridlayoutBarchart.addWidget(self.figureBarchart_ntb)      
+        
+        self.figurePCA = MakeFigure(10, 10, dpi = 250)
+        self.figurePCA_ntb = NavigationToolbar(self.figurePCA, self)
+        self.gridlayoutPCA = QGridLayout(self.groupBoxPCA)
+        self.gridlayoutPCA.addWidget(self.figurePCA)
+        self.gridlayoutPCA.addWidget(self.figurePCA_ntb)  
+        
         self.ColumnSelectUI = ColumnSelectUI()
         self.comboBoxMethod.addItems(['t-Test', 'Limma', 'edgeR', 'DESeq2'])
         self.comboBoxLog2.addItems(['True', 'False'])
@@ -73,8 +92,8 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                 self.ErrorMsg("Invalid format")
                 
             self.tableViewData.setModel(TableModel(self.data))
-            self.columns = self.data.columns
-            for c in self.columns:
+            columns = self.data.columns
+            for c in columns:
                 self.ColumnSelectUI.listWidget.addItem(c)
             self.ColumnSelectUI.show()
             self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetLabel)
@@ -123,19 +142,22 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             method = self.comboBoxMethod.currentText()
             worker = iTSA(method = method)
             
-            keep = np.where(np.sum(X, axis=1))[0]
+            keep = np.where(np.sum(X, axis=1) > 0)[0]
             X = X.iloc[keep,:]
             X = X.reset_index(drop = True)
             names = names[keep]
             
-            result = worker.fit_data(X, y, names)
+            result = worker.fit_data(X.copy(), y, names)
             result = result.reset_index(drop=True)
             
             fc_thres = self.doubleSpinBoxFCthres.value()
             pv_thres = self.doubleSpinBoxPthres.value()
             
             self.tableViewData.setModel(TableModel(result))
-            self.figureTSA.iTSA_Volcano(result, fc_thres, pv_thres)
+            self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres)
+            self.figureHeatmap.HeatMap(X)
+            self.figureBarchart.BarChart(X, y)
+            self.figurePCA.PCAPlot(X, y)
         
         
     def SaveData(self):

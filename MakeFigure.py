@@ -8,9 +8,14 @@ Created on Fri Apr 16 16:23:29 2021
 
 import matplotlib
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
+
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -170,4 +175,38 @@ class MakeFigure(FigureCanvas):
         self.axes.set_ylabel('-Log Adj P', fontsize = 4)
         self.axes.tick_params(labelsize=4)
         self.draw()
+    
+    
+    def PCAPlot(self, X, y):
+        pca = PCA(n_components=2)
+        X_s = StandardScaler().fit_transform(X.T)
+        X_r = pca.fit(X_s).transform(X_s)
+        label = np.unique(y)
+        target_names = ['group_{}'.format(i) for i in label]
         
+        self.axes.cla()
+        for i in range(len(label)):
+            self.axes.scatter(X_r[y == label[i], 0], X_r[y == label[i], 1], alpha=.8, lw=1, label=target_names[i], s=10)
+        self.axes.set_xlabel('PC 1', fontsize = 4)
+        self.axes.set_ylabel('PC 2', fontsize = 4)
+        self.axes.tick_params(labelsize=4)
+        self.draw()        
+    
+    
+    def BarChart(self, X, y):
+        self.axes.cla()
+        data = [[], []]
+        for i in range(X.shape[0]):
+            for j in range(X.shape[1]):
+                data[0].append(np.log2(X.iloc[i,j]))
+                data[1].append(X.columns[j])
+        data = pd.DataFrame(data).T
+        data.columns = ['Intensity', 'Sample']
+        sns.boxplot(ax=self.axes, x='Sample', y='Intensity', data=data)
+    
+    
+    def HeatMap(self, X):
+        self.axes.cla()
+        sns.heatmap(ax=self.axes, data=np.log2(X), cmap="YlOrBr", yticklabels=False)
+        
+    
