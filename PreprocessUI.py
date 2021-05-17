@@ -79,8 +79,11 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             if self.ListFile.count() == 0:
                 pass
             
-            else:    
-                data = pd.read_csv(fileName)
+            else:
+                if fileName.split('.')[1] == 'csv':
+                    data = pd.read_csv(fileName)
+                else:
+                    data = pd.read_excel(fileName)
         
                 all_cols = data.columns
                 self.comboBoxPSM.addItems(all_cols)

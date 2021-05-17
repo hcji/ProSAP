@@ -142,7 +142,7 @@ class iTSA:
     def fit_data(self, X, y, names):
         self.X = X
         self.y = np.array(y)
-        self.names = names
+        self.names = np.array(names)
         self.lbs = np.unique(y)
         
         if self.method == 'Limma':
@@ -190,8 +190,9 @@ class iTSA:
             
         else:
             raise IOError('{} is not a support method'.format(self.method))
-        X['Accession'] = names
-        res = pd.merge(res, X, on='Accession')
+        X_ = X.copy()
+        X_['Accession'] = names
+        res = pd.merge(res, X_)
         res = res.sort_values(by = '-logAdjPval', ascending=False)
         return res
         

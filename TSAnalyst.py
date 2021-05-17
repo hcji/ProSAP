@@ -31,7 +31,6 @@ from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, NPTSATh
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 
-
 # proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
 # proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
 # columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']

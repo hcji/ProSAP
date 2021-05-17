@@ -49,13 +49,13 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutVolcano.addWidget(self.figureVolcano)
         self.gridlayoutVolcano.addWidget(self.figureVolcano_ntb)
         
-        self.figureHeatmap = MakeFigure(10, 10, dpi = 150)
+        self.figureHeatmap = MakeFigure(10, 10, dpi = 200)
         self.figureHeatmap_ntb = NavigationToolbar(self.figureHeatmap, self)
         self.gridlayoutHeatmap = QGridLayout(self.groupBoxHeatmap)
         self.gridlayoutHeatmap.addWidget(self.figureHeatmap)
         self.gridlayoutHeatmap.addWidget(self.figureHeatmap_ntb)        
         
-        self.figureBarchart = MakeFigure(10, 10, dpi = 150)
+        self.figureBarchart = MakeFigure(10, 10, dpi = 200)
         self.figureBarchart_ntb = NavigationToolbar(self.figureBarchart, self)
         self.gridlayoutBarchart = QGridLayout(self.groupBoxBarchart)
         self.gridlayoutBarchart.addWidget(self.figureBarchart)
@@ -147,7 +147,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             X = X.reset_index(drop = True)
             names = names[keep]
             
-            result = worker.fit_data(X.copy(), y, names)
+            result = worker.fit_data(X, y, names)
             result = result.reset_index(drop=True)
             
             fc_thres = self.doubleSpinBoxFCthres.value()
@@ -158,8 +158,8 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             self.figureHeatmap.HeatMap(X)
             self.figureBarchart.BarChart(X, y)
             self.figurePCA.PCAPlot(X, y)
-        
-        
+
+    
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog

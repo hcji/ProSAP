@@ -202,11 +202,15 @@ class MakeFigure(FigureCanvas):
                 data[1].append(X.columns[j])
         data = pd.DataFrame(data).T
         data.columns = ['Intensity', 'Sample']
-        sns.boxplot(ax=self.axes, x='Sample', y='Intensity', data=data)
-    
+        sns.boxplot(ax=self.axes, x='Sample', y='Intensity', data = data)
+        self.axes.set_xticklabels(self.axes.get_xticklabels(),rotation = 90) 
+        self.axes.set_xlabel('Sample', fontsize = 5)
+        self.axes.set_ylabel('Intensity', fontsize = 5)
+        
     
     def HeatMap(self, X):
         self.axes.cla()
-        sns.heatmap(ax=self.axes, data=np.log2(X), cmap="YlOrBr", yticklabels=False)
-        
+        sns.heatmap(ax=self.axes, data=np.log2(X), cmap="YlOrBr", yticklabels=False, cbar=False)
+        self.axes.set_xlabel('Sample', fontsize = 5)
+        self.axes.set_ylabel('Proteins', fontsize = 5)
     
