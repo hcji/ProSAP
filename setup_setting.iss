@@ -21,22 +21,24 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=D:\project\TPCA_QT\LICENSE.rtf
+LicenseFile=D:\project\TSAnalyst\LICENSE.rtf
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=D:\project\TPCA_QT\setup
+OutputDir=D:\project\TSAnalyst\setup
 OutputBaseFilename=TSAnalyst_setup
-SetupIconFile=D:\project\TPCA_QT\img\TPCA.ico
+SetupIconFile=D:\project\TSAnalyst\img\TPCA.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+Uninstallable=yes
+UninstallDisplayName=Uninstall{#MyAppName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "D:\project\TPCA_QT\dist\TSAnalyst\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\project\TPCA_QT\dist\TSAnalyst\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\project\TSAnalyst\dist\TSAnalyst\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\project\TSAnalyst\dist\TSAnalyst\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

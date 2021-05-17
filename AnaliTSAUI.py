@@ -23,13 +23,11 @@ from ColumnSelectUI import ColumnSelectUI
 
 
 '''
-proteinData = pd.read_csv('data/iTSA_TableS1_Proteomics.csv')
-columns = ['V_log2.i._TMT_1_iTSA52', 'V_log2.i._TMT_3_iTSA52',
-       'V_log2.i._TMT_5_iTSA52', 'V_log2.i._TMT_7_iTSA52',
-       'V_log2.i._TMT_9_iTSA52', 'D_log2.i._TMT_2_iTSA52',
-       'D_log2.i._TMT_4_iTSA52', 'D_log2.i._TMT_6_iTSA52',
-       'D_log2.i._TMT_8_iTSA52', 'D_log2.i._TMT_10_iTSA52']
-y = [0,0,0,0,0,1,1,1,1,1]
+proteinData = pd.read_csv('D:/project/LiYue/LY-AO-F-Norm.csv')
+columns = ['Abundance: F1: 127N, Sample', 'Abundance: F1: 127C, Sample',
+       'Abundance: F1: 128N, Sample', 'Abundance: F1: 128C, Sample',
+       'Abundance: F1: 129N, Sample', 'Abundance: F1: 129C, Sample']
+y = np.array([0,0,0,1,1,1])
 X = proteinData.loc[:,columns]
 names = proteinData['Accession']
 '''
@@ -73,6 +71,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         
         self.pushButtonData.clicked.connect(self.LoadProteinFile)
         self.pushButtonOK.clicked.connect(self.DoPropress)
+        self.pushButtonSave.clicked.connect(self.SaveData)
         
         self.data = None
         self.columns = None
@@ -95,6 +94,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             columns = self.data.columns
             for c in columns:
                 self.ColumnSelectUI.listWidget.addItem(c)
+            self.ColumnSelectUI.listWidget.clear()
             self.ColumnSelectUI.show()
             self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetLabel)
             self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
@@ -157,16 +157,18 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres)
             self.figureHeatmap.HeatMap(X)
             self.figureBarchart.BarChart(X, y)
-            self.figurePCA.PCAPlot(X, y)
-
+            try:
+                self.figurePCA.PCAPlot(X, y)
+            except:
+                pass
     
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
-        data = pd.DataFrame(self.tableViewData.model()._data)
-        data.to_csv(fileName, index = False)
-        
+        if fileName:
+            data = pd.DataFrame(self.tableViewData.model()._data)
+            data.to_csv(fileName, index = False)
         
 
 if __name__ == '__main__':

@@ -50,6 +50,7 @@ do_limma <- function(X, y, names){
   fit2 <- contrasts.fit(fit, contrast.matrix)
   fit2 <- eBayes(fit2)
   DEG <- topTable(fit2, coef=1, n=Inf)
+  DEG$ID <- rownames(DEG)
   return(DEG)
 }
 
@@ -148,12 +149,15 @@ class iTSA:
         if self.method == 'Limma':
             res = do_limma(np.log2(self.X), self.y, self.names)
             res = pd.DataFrame(res)
-            for i in range(1, res.shape[1]):
-                if i == 1:
+            res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
+            for i, c in enumerate(res.columns):
+                if c == 'ID':
+                    pass
+                elif c == 'logFC':
                     res.iloc[:,i] = np.round(res.iloc[:,i].astype(float), 4)
                 else:
                     res.iloc[:,i] = -np.round(np.log10(res.iloc[:,i].astype(float)), 4)
-            res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
+            
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval']         
             
         elif self.method == 'edgeR':
