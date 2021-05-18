@@ -51,7 +51,7 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 
 [Files]
-Source: "dependencies\R-4.0.5-win.exe"; DestDir: {tmp}; Flags: deleteafterinstall; AfterInstall: InstallR; Check: RIsNotInstalled
+Source: "dep\R-4.0.5-win.exe"; DestDir: {tmp}; Flags: deleteafterinstall; AfterInstall: InstallR; Check: RIsNotInstalled
 
 [Code]
 

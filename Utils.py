@@ -8,13 +8,14 @@ Created on Wed Apr 14 10:54:02 2021
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
 from scipy.stats import ttest_ind
+from scipy.sparse import csc_matrix, eye, diags
+from scipy.sparse.linalg import spsolve
 
 import os
-# import multiprocessing
-from scipy import stats
-from joblib import Parallel, delayed
-from scipy.optimize import curve_fit, fsolve
+# from joblib import Parallel, delayed
+from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -84,10 +85,14 @@ def fit_np(x, y1, y2):
         paras0 = curve_fit(meltCurve, x0, y0, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
         yh0 = meltCurve(x0, paras0[0], paras0[1], paras0[2])
         rss0 = np.sum((y0 - yh0) ** 2)
+        
+        r1 = max(r2_score(y1, yh1), 0)
+        r2 = max(r2_score(y2, yh2), 0)
+        R = min(r1, r2)
     except:
         rss1, rss0 = 0, 0
     diff = abs(rss1 - rss0)
-    return rss0, rss1, diff
+    return rss0, rss1, diff, R
 
 
 def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
@@ -121,3 +126,15 @@ def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
         
     return r1, r2, Tm1, Tm2, deltaTm
 
+
+def WhittakerSmooth(x, lambda_, differences=1):
+    X = np.matrix(x)
+    w = np.ones(x.shape[0])
+    m = X.size
+    E = eye(m, format='csc')
+    D = E[1:] - E[:-1]
+    W = diags(w, 0, shape=(m, m))
+    A = csc_matrix(W + (lambda_ * D.T * D))
+    B = csc_matrix(W * X.T)
+    background = spsolve(A, B)
+    return np.array(background)

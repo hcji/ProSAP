@@ -77,6 +77,24 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.columns = None
         self.label = None
     
+
+    def WarnMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setText(Text)
+        msg.setWindowTitle("Warning")
+        msg.exec_()    
+    
+    
+    def ErrorMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(Text)
+        msg.setWindowTitle("Error")
+        msg.exec_()
+
     
     def LoadProteinFile(self):
         options = QtWidgets.QFileDialog.Options()
@@ -91,10 +109,10 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                 self.ErrorMsg("Invalid format")
                 
             self.tableViewData.setModel(TableModel(self.data))
+            self.ColumnSelectUI.listWidget.clear()
             columns = self.data.columns
             for c in columns:
                 self.ColumnSelectUI.listWidget.addItem(c)
-            self.ColumnSelectUI.listWidget.clear()
             self.ColumnSelectUI.show()
             self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetLabel)
             self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
@@ -134,7 +152,11 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         else:
             X = self.data.loc[:,self.columns]
             if self.comboBoxLog2.currentText() == 'True':
-                X = 2 ** X
+                if np.max(np.max(X)) >= 999:
+                    self.ErrorMsg('The data seems not Log2 transformed, please change parameter')
+                    return None
+                else:
+                    X = 2 ** X
             else:
                 pass
             y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])            
