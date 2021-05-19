@@ -99,7 +99,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
     def LoadProteinFile(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             if fileName.split('.')[1] == 'csv':
                 self.data = pd.read_csv(fileName)
@@ -187,7 +187,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             data = pd.DataFrame(self.tableViewData.model()._data)
             data.to_csv(fileName, index = False)

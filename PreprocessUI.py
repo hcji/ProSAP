@@ -64,7 +64,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileNames, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileNames, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         
         if len(fileNames) == 0:
             pass
@@ -233,7 +233,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","All Files (*);;CSV Files (*.csv)", options=options)
         data = pd.DataFrame(self.tableView.model()._data)
         data.to_csv(fileName, index = False)
         

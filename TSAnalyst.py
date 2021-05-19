@@ -103,6 +103,25 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ButtonShowCurve.clicked.connect(self.PlotProteinComplex)
         self.ButtonSaveComp.clicked.connect(self.SaveProteinComplex)
         
+        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetProteinColumn)
+        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
+        
+        self.AnalROCUI.pushButtonDatabase.clicked.connect(self.LoadProteinPair)
+        self.AnalROCUI.pushButtonConfirm.clicked.connect(self.ShowAnalROC)
+        self.AnalROCUI.pushButtonCancel.clicked.connect(self.AnalROCUI.close)
+        self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
+        self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
+        
+        self.NPTSAUI.ButtonConfirm.clicked.connect(self.ShowNPTSA)
+        self.NPTSAUI.ButtonCancel.clicked.connect(self.NPTSAUI.close)
+        self.NPTSAUI.ButtonShow.clicked.connect(self.ShowNPTSACurve)
+        self.NPTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
+        
+        self.AnalTSAUI.ButtonConfirm.clicked.connect(self.ShowAnalTSA)
+        self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
+        self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
+        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
+        
         # table sort
         self.tableProteinComplex.setSortingEnabled(True)
         
@@ -157,7 +176,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def LoadProteinFile(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileNames, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileNames, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         
         if len(fileNames) == 0:
             pass
@@ -178,7 +197,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def LoadProteinComplex(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             if fileName.split('.')[1] in ['csv', 'xlsx']:
                 self.ListDatabase.addItem(fileName)
@@ -199,6 +218,9 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     
     def SelectProteinTable(self):
         selectItem = self.ListFile.currentItem()
+        if not selectItem:
+            self.ErrorMsg('No item is selected')
+            return None
         try:
             if selectItem.text().split('.')[1] == 'csv':
                 selectData = pd.read_csv(selectItem.text())
@@ -222,8 +244,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         for c in all_cols:
             self.ColumnSelectUI.listWidget.addItem(c)
         self.ColumnSelectUI.show()
-        self.ColumnSelectUI.ButtonColumnSelect.clicked.connect(self.SetProteinColumn)
-        self.ColumnSelectUI.ButtonColumnCancel.clicked.connect(self.ColumnSelectUI.close)
 
 
     def SetProteinTable2(self):
@@ -311,6 +331,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def CalcProteinComplexChange(self):
         self.resultDataComplex = []
         self.progressBar.setValue(0)
+        self.ButtonCalcComplex.setEnabled(False)
         
         columns = self.columns
         proteinComplex = self.TakeProteinComplex()
@@ -356,15 +377,20 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinComplex = proteinComplex.sort_values(by = 'p-value (change)')
         proteinComplex = proteinComplex.reset_index(drop = True)
         self.FillProteinComplex(proteinComplex)
+        self.ButtonCalcComplex.setEnabled(True)
         
     
     def PlotProteinComplex(self):
         colNames = self.columns
         header = [self.tableProteinComplex.horizontalHeaderItem(i).text() for i in range(self.tableProteinComplex.columnCount())]
         # print(header)
-        i = self.tableProteinComplex.selectedIndexes()[0].row()
-        j = list(header).index('Subunits_UniProt_IDs')
-        proteinSubunit = self.tableProteinComplex.item(i, j).text()
+        try:
+            i = self.tableProteinComplex.selectedIndexes()[0].row()
+            j = list(header).index('Subunits_UniProt_IDs')
+            proteinSubunit = self.tableProteinComplex.item(i, j).text()
+        except:
+            self.ErrorMsg('Can not plot protein curves')
+            return None
         # print(proteinSubunit)
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
@@ -377,7 +403,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SaveProteinComplex(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"Save", "","CSV Files (*.csv)", options=options)
         if fileName:
             data = self.TakeProteinComplex()
             data.to_csv(fileName)
@@ -386,7 +412,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def LoadProteinPair(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             if fileName.split('.')[1] == 'csv':
                 proteinPair = pd.read_csv(fileName)
@@ -413,11 +439,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
 
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             self.ErrorMsg('Please set proteomics data')
+            self.AnalROCUI.close()
         else:
-            self.AnalROCUI.pushButtonDatabase.clicked.connect(self.LoadProteinPair)
-            self.AnalROCUI.pushButtonConfirm.clicked.connect(self.ShowAnalROC)
-            self.AnalROCUI.pushButtonCancel.clicked.connect(self.AnalROCUI.close)
-            self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
+            pass
+
         
     
     def ShowAnalROC(self):
@@ -476,7 +501,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         fpr, tpr, threshold = metrics.roc_curve(labels, values, pos_label = 1)
         auroc = np.round(metrics.roc_auc_score(labels, values), 4)
         self.AnalROCUI.figureROC.ROCFigure(fpr, tpr, auroc)
-        self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
+        
         
 
     def PlotProteinPairCurve(self):
@@ -572,18 +597,17 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.NPTSAUI.progressBar.setValue(0)
         self.NPTSAUI.show()
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
-            pass
+            self.ErrorMsg('Please input proteomics data')
+            self.NPTSAUI.close()
         else:
-            self.NPTSAUI.ButtonConfirm.clicked.connect(self.ShowNPTSA)
-            self.NPTSAUI.ButtonCancel.clicked.connect(self.NPTSAUI.close)
+            self.NPTSAUI.tableWidgetProteinList.clear()
     
     
     def ShowNPTSA(self):
         columns = self.columns
-        self.resultDataTSA = []
-        
         self.NPTSAUI.tableWidgetProteinList.clear()
         self.NPTSAUI.progressBar.setValue(0)
+        self.NPTSAUI.ButtonConfirm.setEnabled(False)
         
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
@@ -594,6 +618,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         data_2 = proteinData2.loc[:, cols]
 
         self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
+        print(len(self.prots))
         
         self.NPTSAThread = NPTSAThread(self.prots, temps, data_1, data_2, self.NPTSAUI.comboBox.currentText())
         self.NPTSAThread._ind.connect(self.ProcessBarNPTSA)
@@ -624,11 +649,12 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         res = res[['Accession', 'Diff', 'p_Val (-log10)']]
         TSA_table = res.sort_values(by = 'p_Val (-log10)',axis = 0, ascending = False)
         
+        self.resultDataTSA = []
         self.TSA_table = TSA_table
+        self.NPTSAUI.ButtonConfirm.setEnabled(True)
         self.NPTSAUI.FillTable(TSA_table)
         self.NPTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
-        self.NPTSAUI.ButtonShow.clicked.connect(self.ShowNPTSACurve)
-        self.NPTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
+
 
     
     def ShowNPTSACurve(self):
@@ -653,10 +679,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalTSAUI.progressBar.setValue(0)
         self.AnalTSAUI.show()
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
-            pass
+            self.ErrorMsg('Please input proteomics data')
+            self.AnalTSAUI.close()
         else:
-            self.AnalTSAUI.ButtonConfirm.clicked.connect(self.ShowAnalTSA)
-            self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
+            pass
     
     
     def ProcessBarTSA(self, msg):
@@ -671,8 +697,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def ShowAnalTSA(self):
         columns = self.columns
         self.ColumnSelectUI.close()
-        self.resultDataTSA = []
-        
+        self.AnalTSAUI.ButtonConfirm.setEnabled(False)
         self.AnalTSAUI.tableWidgetProteinList.clear()
         self.AnalTSAUI.progressBar.setValue(0)
         
@@ -736,11 +761,11 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm']]
         TSA_table = res.sort_values(by = 'Score',axis = 0, ascending = False)
         
+        self.resultDataTSA = []
         self.TSA_table = TSA_table
+        self.AnalTSAUI.ButtonConfirm.setEnabled(True)
         self.AnalTSAUI.FillTable(TSA_table)
         self.AnalTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
-        self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
-        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
 
     
     def ShowTSACurve(self):
@@ -759,7 +784,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SaveTSAData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "","CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","CSV Files (*.csv)", options=options)
         if fileName:
             data = self.TSA_table
             data.to_csv(fileName)

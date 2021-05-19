@@ -90,7 +90,7 @@ def fit_np(x, y1, y2):
         r2 = max(r2_score(y2, yh2), 0)
         R = min(r1, r2)
     except:
-        rss1, rss0 = 0, 0
+        rss1, rss0, R = 0, 0, 0
     diff = abs(rss1 - rss0)
     return rss0, rss1, diff, R
 
