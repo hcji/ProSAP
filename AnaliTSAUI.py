@@ -23,13 +23,16 @@ from ColumnSelectUI import ColumnSelectUI
 
 
 '''
-proteinData = pd.read_csv('D:/project/LiYue/LY-AO-F-Norm.csv')
-columns = ['Abundance: F1: 127N, Sample', 'Abundance: F1: 127C, Sample',
-       'Abundance: F1: 128N, Sample', 'Abundance: F1: 128C, Sample',
-       'Abundance: F1: 129N, Sample', 'Abundance: F1: 129C, Sample']
-y = np.array([0,0,0,1,1,1])
+proteinData = pd.read_csv('D:/project/CETSA_Compare/Data/iTSA/Staurosporine/Staurosporine_52C.csv')
+columns = ['V_log2.i._TMT_1_iTSA52',
+       'V_log2.i._TMT_3_iTSA52', 'V_log2.i._TMT_5_iTSA52',
+       'V_log2.i._TMT_7_iTSA52', 'V_log2.i._TMT_9_iTSA52',
+       'D_log2.i._TMT_2_iTSA52', 'D_log2.i._TMT_4_iTSA52',
+       'D_log2.i._TMT_6_iTSA52', 'D_log2.i._TMT_8_iTSA52',
+       'D_log2.i._TMT_10_iTSA52']
+y = np.array([0,0,0,0,0,1,1,1,1,1])
 X = proteinData.loc[:,columns]
-names = proteinData['Accession']
+names = proteinData.loc[:,'Accession'].values
 '''
 
 
@@ -160,7 +163,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             else:
                 pass
             y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])            
-            names = self.data.loc[:,'Accession']
+            names = self.data.loc[:,'Accession'].values
             method = self.comboBoxMethod.currentText()
             worker = iTSA(method = method)
             

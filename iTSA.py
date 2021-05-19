@@ -147,7 +147,17 @@ class iTSA:
         self.lbs = np.unique(y)
         
         if self.method == 'Limma':
-            res = do_limma(np.log2(self.X), self.y, self.names)
+            new_names = []
+            for n in self.names:
+                while True:
+                    if n in new_names:
+                        n = new_names[new_names.index(n)] + '_'
+                    else:
+                        break
+                new_names.append(n)
+            new_names = np.array(new_names)
+
+            res = do_limma(np.log2(self.X), self.y, new_names)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
             for i, c in enumerate(res.columns):

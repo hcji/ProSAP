@@ -531,6 +531,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def CalcProteinPairChange(self):
         self.resultProtPair = []
         self.AnalROCUI.progressBar.setValue(0)
+        self.AnalROCUI.pushButtonPval.setEnabled(False)
         columns = self.columns
         pub_thres = self.AnalROCUI.spinBoxPub.value()
         
@@ -578,6 +579,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         proteinPair = pd.concat([proteinPair, proteinPairDist], axis=1)
         proteinPair = proteinPair.sort_values(by = 'p-value')
         self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
+        self.AnalROCUI.pushButtonPval.setEnabled(True)
         
 
     def ResultProtPair(self, msg):
@@ -714,6 +716,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         data_2 = proteinData2.loc[:, cols]
 
         self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
+        print(len(self.prots))
         
         self.CurveFitThread = CurveFitThread(self.prots, temps, data_1, data_2, minR2, maxPlateau, h_axis)
         self.CurveFitThread._ind.connect(self.ProcessBarTSA)
