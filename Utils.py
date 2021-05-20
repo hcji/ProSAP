@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind
 from scipy.sparse import csc_matrix, eye, diags
 from scipy.sparse.linalg import spsolve
+from scipy.misc import derivative
 
 import os
 # from joblib import Parallel, delayed
@@ -105,26 +106,25 @@ def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
     
     r1 = max(r2_score(y1, yh1), 0)
     r2 = max(r2_score(y2, yh2), 0)
-    '''
-    i1 = x[np.argmin(np.abs(y1 - h_axis))]
-    i2 = x[np.argmin(np.abs(y2 - h_axis))]
-    Tm1 = fsolve(lambda x: meltCurve(x, paras1[0], paras1[1], paras1[2]) - h_axis, i1)[0]
-    Tm2 = fsolve(lambda x: meltCurve(x, paras2[0], paras2[1], paras2[2]) - h_axis, i2)[0]
-    Tm1 = min(Tm1, max(x))
-    Tm1 = max(Tm1, min(x))
-    Tm2 = min(Tm2, max(x))
-    Tm2 = max(Tm2, min(x))
-    '''
+
     x1 = np.arange(x[0], x[-1], 0.01)
-    Tm1 = x1[np.argmin(np.abs(meltCurve(x1, paras1[0], paras1[1], paras1[2]) - h_axis))]
-    Tm2 = x1[np.argmin(np.abs(meltCurve(x1, paras2[0], paras2[1], paras2[2]) - h_axis))]
-        
+    yy1 = meltCurve(x1, paras1[0], paras1[1], paras1[2])
+    yy2 = meltCurve(x1, paras2[0], paras2[1], paras2[2])
+    Tm1 = x1[np.argmin(np.abs(yy1 - h_axis))]
+    Tm2 = x1[np.argmin(np.abs(yy2 - h_axis))]
+    
+    sl1 = np.min((yy1[1:] - yy1[:-1]) / 0.01)
+    sl2 = np.min((yy2[1:] - yy2[:-1]) / 0.01)
+    sl = min(sl1, sl2)
+    
     if min(r1, r2) < minR2:
-        deltaTm = 0
+        deltaTm = np.nan
+    elif max(np.min(yh1), np.min(yh2)) > h_axis:
+        deltaTm = np.nan
     else:
-        deltaTm = abs(Tm1 - Tm2)
+        deltaTm = Tm2 - Tm1
         
-    return r1, r2, Tm1, Tm2, deltaTm
+    return r1, r2, Tm1, Tm2, deltaTm, sl
 
 
 def WhittakerSmooth(x, lambda_, differences=1):

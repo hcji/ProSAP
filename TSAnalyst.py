@@ -716,7 +716,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         data_2 = proteinData2.loc[:, cols]
 
         self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
-        print(len(self.prots))
         
         self.CurveFitThread = CurveFitThread(self.prots, temps, data_1, data_2, minR2, maxPlateau, h_axis)
         self.CurveFitThread._ind.connect(self.ProcessBarTSA)
@@ -745,13 +744,13 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         columns = self.columns
         
         res = pd.DataFrame(self.resultDataTSA)
-        res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm']
+        res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm', 'min_Slope']
     
         delta_Tm = res['delta_Tm']
         p_Val = []
         for i in range(len(res)):
             s = delta_Tm[i]
-            pv = stats.t.sf((s - np.mean(delta_Tm)) / np.std(delta_Tm), len(delta_Tm)-1)
+            pv = stats.t.sf(abs(s - np.nanmean(delta_Tm)) / np.nanstd(delta_Tm), len(delta_Tm)-1)
             p_Val.append(pv)
         score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
     
@@ -761,8 +760,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         res['Score'] = score
         res = np.round(res, 3)
     
-        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm']]
-        TSA_table = res.sort_values(by = 'Score',axis = 0, ascending = False)
+        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'min_Slope']]
+        TSA_table = res.sort_values(by = 'Score', axis = 0, ascending = False)
         
         self.resultDataTSA = []
         self.TSA_table = TSA_table
