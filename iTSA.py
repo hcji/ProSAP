@@ -50,7 +50,7 @@ do_limma <- function(X, y, names){
   fit2 <- eBayes(fit2)
   DEG <- topTable(fit2, coef=1, n=Inf, sort.by = "none")
   DEG$ID <- names
-  DEG <- DEG[,c('ID', "P.Value", "adj.P.Val")]
+  DEG <- DEG[,c('ID', 'logFC', "P.Value", "adj.P.Val")]
   return(DEG)
 }
 
