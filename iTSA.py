@@ -42,15 +42,15 @@ do_limma <- function(X, y, names){
   lbs <- unique(y)
   y[y==lbs[1]] <- 'G1'
   y[y==lbs[2]] <- 'G2'
-  rownames(X) <- names
   design <- model.matrix(~0+factor(y))
   colnames(design) <- levels(factor(y))
   contrast.matrix <- makeContrasts(G2-G1,levels = c('G1', 'G2'))
   fit <- lmFit(X, design)
   fit2 <- contrasts.fit(fit, contrast.matrix)
   fit2 <- eBayes(fit2)
-  DEG <- topTable(fit2, coef=1, n=Inf)
-  DEG$ID <- rownames(DEG)
+  DEG <- topTable(fit2, coef=1, n=Inf, sort.by = "none")
+  DEG$ID <- names
+  DEG <- DEG[,c('ID', "P.Value", "adj.P.Val")]
   return(DEG)
 }
 
@@ -73,8 +73,9 @@ do_edgeR <- function(X, y, names){
   
   fit <- glmFit(DGElist, design)
   results <- glmLRT(fit, contrast = c(-1, 1)) 
-  nrDEG_edgeR <- topTags(results, n = nrow(DGElist))
+  nrDEG_edgeR <- topTags(results, n = nrow(DGElist), sort.by = "none")
   nrDEG_edgeR <- as.data.frame(nrDEG_edgeR)
+  nrDEG_edgeR$ID <- names
   
   return(nrDEG_edgeR)
 }
@@ -101,6 +102,7 @@ do_DESeq2 <- function(X, y, names){
   dds$condition<- relevel(dds$condition, ref = "G1")
   dds <- DESeq(dds)
   dds <- as.data.frame(results(dds))
+  dds$ID <- names
   return(dds)
 }
      
@@ -147,17 +149,7 @@ class iTSA:
         self.lbs = np.unique(y)
         
         if self.method == 'Limma':
-            new_names = []
-            for n in self.names:
-                while True:
-                    if n in new_names:
-                        n = new_names[new_names.index(n)] + '_'
-                    else:
-                        break
-                new_names.append(n)
-            new_names = np.array(new_names)
-
-            res = do_limma(np.log2(self.X), self.y, new_names)
+            res = do_limma(np.log2(self.X), self.y, self.names)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
             for i, c in enumerate(res.columns):
@@ -173,7 +165,6 @@ class iTSA:
         elif self.method == 'edgeR':
             res = do_edgeR(self.X, self.y, self.names)
             res = pd.DataFrame(res)
-            res['ID'] = self.names
             res = res[['ID', 'logFC', 'PValue', 'FDR']]
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval'] 
             res['-logPval'] = -np.round(np.log10(res['-logPval']), 4)
@@ -183,7 +174,6 @@ class iTSA:
         elif self.method == 'DESeq2':
             res = do_DESeq2(self.X, self.y, self.names)
             res = pd.DataFrame(res)
-            res['ID'] = self.names
             res = res[['ID', 'log2FoldChange', 'pvalue', 'padj']]
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval'] 
             res['-logPval'] = -np.round(np.log10(res['-logPval']), 4)

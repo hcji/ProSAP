@@ -1,9 +1,9 @@
-/db/
+/db/raw/
 /dist/
 /build/
 /.spyproject/
 /test/
-/dependencies/
+/dep/
 *.pyc
 *.h5
 *.npy
