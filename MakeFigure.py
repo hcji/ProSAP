@@ -115,6 +115,7 @@ class MakeFigure(FigureCanvas):
     
     
     def RSDHistFigure(self, rsdList):
+        rsdList = [i for i in rsdList if not np.isnan(i)]
         self.axes.cla()
         self.axes.hist(rsdList, 100)
         self.axes.tick_params(labelsize=3)

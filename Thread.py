@@ -43,26 +43,26 @@ class PreprocessThread(QtCore.QThread):
     def run(self):
         data = self.data
         for i in data.index:
-            wh = np.where([self.psm_column == s.split('_')[0] for s in data.columns])[0]
-            psm = np.nanmean(data.iloc[i, wh].values.astype(float))
-            if psm < self.psm_thres:
-                continue
-            else:
-                prot = data.loc[i, 'Accession']
-            
+            if self.psm_column == 'None':
+                pass
+            else:  
+                wh = np.where([self.psm_column == s.split('_')[0] for s in data.columns])[0]
+                psm = np.nanmean(data.iloc[i, wh].values.astype(float))
+                if psm < self.psm_thres:
+                    continue
+
+            prot = data.loc[i, 'Accession']
             vals = []
             for c in self.columns:
                 wh = np.where([c == s.split('_')[0] for s in data.columns])[0]
-                v = data.iloc[i, wh].values.astype(float)
+                v = data.iloc[i, wh].values.astype(float)               
                 v = np.round(v, 4)
                 std = np.nanstd(v) / np.nanmean(v)
                 vals.append(self.fun(v))
             if std > self.std_thres:
                 continue
             
-            vals = np.array(vals)
-            vals[np.isnan(vals)] = 0
-            
+            vals = np.array(vals)            
             self._ind.emit(str(int(100 * (i+1) / len(data.index))))
             self._val.emit(list(vals))
             self._prot.emit(prot)

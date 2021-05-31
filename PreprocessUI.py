@@ -32,6 +32,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         self.comboBoxMerging.addItems(['Median', 'Mean'])
         self.comboBoxNorm.addItems(['Reference', 'Median', 'None'])
         self.comboBoxMV.addItems(['None', 'KNN', 'Zero'])
+        self.comboBoxPSM.addItems(['None'])
 
         self.ColumnSelectUI = ColumnSelectUI()
         self.PreprocessThread = None
@@ -87,6 +88,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         
                 all_cols = data.columns
                 self.comboBoxPSM.addItems(all_cols)
+                
+                self.ColumnSelectUI.listWidget.clear()
                 for c in all_cols:
                     self.ColumnSelectUI.listWidget.addItem(c)
         
@@ -115,6 +118,9 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         # fileNames = os.listdir(d)
         fileNames = [self.ListFile.item(i).text() for i in range(self.ListFile.count())]
         fileNames_ = []
+        if len(fileNames) == 0:
+            return None
+        
         for f in fileNames:
             if f.split('.')[1] in ['csv', 'xlsx', 'xls']:
                 fileNames_.append(f)
@@ -144,17 +150,38 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         all_data = []
         for f in fileNames:
             if f.split('.')[1]  == 'csv':
-                all_data.append(pd.read_csv(f))
+                data = pd.read_csv(f)
             else:
-                all_data.append(pd.read_excel(f))
+                data = pd.read_excel(f)
             
+            if 'Accession' in data.columns:
+                for j in columns:
+                    for i in data.index:
+                        try:
+                            v = float(data.loc[i, j])
+                        except:
+                            v = np.nan
+                        data.loc[i, j] = v
+                    data.loc[:,j] = data.loc[:,j].astype(float)
+                all_data.append(data)
+                # print(data)
+                
+        if len(all_data) == 0:
+            msg = QtWidgets.QMessageBox()
+            msg.resize(550, 200)
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("No valid file input")
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            self.ListFile.clear()
+            return None         
+        
         # devided by reference
         if self.comboBoxNorm.currentText() == 'Reference':
             for i in range(len(all_data)):
                 ref = all_data[i].loc[:,reference].copy()
                 for c in columns:
-                    all_data[i].loc[:,c] /= ref
-        
+                    all_data[i].loc[:,c] /= ref       
         
         data = all_data[0]
         if len(all_data) == 1:
@@ -193,6 +220,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             val_list_ = pd.DataFrame(knn_imputer.fit_transform(val_list))
             val_list_.columns = val_list.columns
             val_list = val_list_
+            print(val_list)
         elif self.comboBoxMV.currentText() == 'Zero':
             val_list = val_list.fillna(0)
         else:
@@ -234,8 +262,9 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","All Files (*);;CSV Files (*.csv)", options=options)
-        data = pd.DataFrame(self.tableView.model()._data)
-        data.to_csv(fileName, index = False)
+        if fileName:
+            data = pd.DataFrame(self.tableView.model()._data)
+            data.to_csv(fileName, index = False)
         
         
 

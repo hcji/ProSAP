@@ -17,7 +17,6 @@ from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationTo
 
 from Utils import TableModel
 from iTSA import iTSA
-from Thread import PreprocessThread
 from MakeFigure import MakeFigure
 from ColumnSelectUI import ColumnSelectUI
 
