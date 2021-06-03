@@ -49,7 +49,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.setMinimumWidth(1150)
         self.setMinimumHeight(650)
         self.move(75, 50)
-        self.setWindowTitle("TPCA -- Thermal proximity coaggregation analysis")
+        self.setWindowTitle("TSAnalyst")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
         
         # threads
@@ -128,8 +128,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         # server data
         self.columns = None
         self.prots = None
-        self.ProteinTable1 = None
-        self.ProteinTable2 = None
         self.TSA_table = pd.DataFrame()
         self.resultDataComplex = []
         self.resultDataTSA = []
@@ -216,6 +214,16 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ListDatabase.clear()
     
     
+    def ReplaceNonNumeric(self, data):
+        for col in data.columns[1:]:
+            data[col] = pd.to_numeric(data[col], errors='coerce')
+        # data = data.astype(float)
+        keep = np.logical_not(np.isnan(np.sum(np.array(data)[:,1:], axis = 1).astype(float)))
+        data = data.iloc[keep,:]
+        data = data.reset_index(drop = True)
+        return data 
+    
+    
     def SelectProteinTable(self):
         selectItem = self.ListFile.currentItem()
         if not selectItem:
@@ -227,18 +235,21 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             elif selectItem.text().split('.')[1] == 'xlsx':
                 selectData = pd.read_excel(selectItem.text())
             else:
-                pass
-            keep = np.where(selectData.isnull().sum(axis=1) == 0)[0]
-            selectData = selectData.loc[keep,:]
-            selectData = selectData.reset_index(drop=True)
-            return selectData
+                return None
         except:
             self.ErrorMsg('Cannot be load the selected file')
+        
+        if 'Accession' in selectData.columns:
+            return selectData
+        else:
+            self.ErrorMsg('Accession is not given in the data')
+            return None
 
 
     def SetProteinTable1(self):
         data = self.SelectProteinTable()
-        self.ProteinTable1 = data
+        if data is None:
+            return None
         self.ColumnSelectUI.listWidget.clear()
         all_cols = data.columns
         for c in all_cols:
@@ -251,33 +262,37 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             self.ErrorMsg('Please set Group 1')
         else:
             data = self.SelectProteinTable()
+            if data is None:
+                return None
+            columns = ['Accession'] + self.columns
             try:
+                data = data.loc[:, columns]
+                data = self.ReplaceNonNumeric(data)
                 if np.nanmax(data.loc[:, self.columns]) > 10:
                     self.WarnMsg('The data seems not normalized')
-                columns = ['Accession'] + self.columns
-                try:
-                    data = data.loc[:, columns]
-                    self.tableProtein2.setModel(TableModel(data))
-                    self.ProteinTable2 = data
-                except:
-                    self.ErrorMsg('No columns matched with Group 1')        
+                self.tableProtein2.setModel(TableModel(data))
             except:
-                self.ErrorMsg('The data include nonnumeric value')
+                self.ErrorMsg('No columns matched with Group 1')
 
 
     def SetProteinColumn(self):
+        data = self.SelectProteinTable()
         self.columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
         try:
-            if np.nanmax(self.ProteinTable1.loc[:, self.columns] > 10):
-                self.WarnMsg('The data seems not normalized')
-            columns = ['Accession'] + self.columns
-            self.ColumnSelectUI.close()
-            data = self.ProteinTable1.loc[:, columns]
-            self.tableProtein1.setModel(TableModel(data))
+            [float(t.replace('T', '')) for t in self.columns]
         except:
-            self.ErrorMsg('The data include nonnumeric value')
-        
-        
+            self.columns = None
+            self.ErrorMsg('Selected columns can only be Txx, where xx is a number representing temperature')
+            return None
+        columns = ['Accession'] + self.columns
+        data = data.loc[:, columns]
+        data = self.ReplaceNonNumeric(data)
+        if np.nanmax(data.loc[:, self.columns] > 10):
+            self.WarnMsg('The data seems not normalized')
+        self.ColumnSelectUI.close()
+        self.tableProtein1.setModel(TableModel(data))
+
+
     def FillProteinComplex(self, proteinComplex):
         self.tableProteinComplex.setRowCount(proteinComplex.shape[0])
         self.tableProteinComplex.setColumnCount(proteinComplex.shape[1])
@@ -442,7 +457,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
             self.AnalROCUI.close()
         else:
             pass
-
         
     
     def ShowAnalROC(self):
@@ -501,7 +515,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         fpr, tpr, threshold = metrics.roc_curve(labels, values, pos_label = 1)
         auroc = np.round(metrics.roc_auc_score(labels, values), 4)
         self.AnalROCUI.figureROC.ROCFigure(fpr, tpr, auroc)
-        
         
 
     def PlotProteinPairCurve(self):
@@ -658,7 +671,6 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.NPTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
 
 
-    
     def ShowNPTSACurve(self):
         columns = self.columns
         proteinData1 = self.tableProtein1.model()._data

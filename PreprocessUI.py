@@ -216,7 +216,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     def VisualizeProprocess(self):
         val_list = pd.DataFrame(self.valueData)
         if self.comboBoxMV.currentText() == 'KNN':
-            knn_imputer = KNNImputer(n_neighbors = 3)
+            knn_imputer = KNNImputer(n_neighbors = 2)
             val_list_ = pd.DataFrame(knn_imputer.fit_transform(val_list))
             val_list_.columns = val_list.columns
             val_list = val_list_
