@@ -99,13 +99,13 @@ class CurveFitThread(QtCore.QThread):
             
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))
-        # print('finished')
+        self._ind.emit(str(int(100)))
 
 
 class NPTSAThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
-    _res = QtCore.pyqtSignal(float)
+    _res = QtCore.pyqtSignal(list)
  
     def __init__(self, prots, temps, data_1, data_2, method):
         super(NPTSAThread, self).__init__()
@@ -121,58 +121,14 @@ class NPTSAThread(QtCore.QThread):
         self.working = False
  
     def run(self):
-        avg_1 = np.nanmean(self.data_1.iloc[:,1:], axis = 0)
-        avg_2 = np.nanmean(self.data_2.iloc[:,1:], axis = 0)
-        sd_1 = abs(np.percentile(self.data_1.iloc[:,1:], 75) - np.percentile(self.data_1.iloc[:,1:], 25))
-        sd_2 = abs(np.percentile(self.data_2.iloc[:,1:], 75) - np.percentile(self.data_2.iloc[:,1:], 25))
-        
-        if self.method != 'fitness': 
-            for i, p in enumerate(self.prots):
-                x = self.temps
-                y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
-                y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])       
-                w = np.logical_and(np.abs(y1 - avg_1) < 2 * sd_1, np.abs(y2 - avg_2) < 2 * sd_2)
-                
-                try:
-                    paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
-                    paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]    
-                    yh1 = meltCurve(x, paras1[0], paras1[1], paras1[2])
-                    yh2 = meltCurve(x, paras2[0], paras2[1], paras2[2])
-                    r1 = max(r2_score(y1, yh1), 0)
-                    r2 = max(r2_score(y2, yh2), 0)
-                    R = min(r1, r2)
-                except:
-                    R = 0
-                
-                dist = pdist(np.vstack([y1[w],y2[w]]), metric = self.method)[0]
-                self._ind.emit(str(int( 100 * (i + 1) / len(self.prots))))
-                if R >= 0.8:
-                    self._res.emit(dist)
-                else:
-                    self._res.emit(0)
-        else:
-            res = []
-            for i, p in enumerate(self.prots):
-                x = self.temps
-                y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
-                y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
-                w = np.logical_and(np.abs(y1 - avg_1) < 3 * sd_1, np.abs(y2 - avg_2) < 3 * sd_2)
-                if len(w) >= 3:
-                    res.append(fit_np(x, y1, y2))
-                else:
-                    res.append([0, 0, 0, 0])
-                self._ind.emit(str(int(95 * (i + 1) / len(self.prots))))
-            res = pd.DataFrame(res)
-            res.columns = ['rssNull', 'rssAlt', 'rssDiff', 'R2']
-            # [d1, d2, s0_sq] = list(np.array(estimate_df(res['rssAlt'], res['rssDiff'])))
-            # dists = list(res['rssDiff']/ s0_sq)
-            dists, r2 = list(res['rssDiff']), list(res['R2'])
-            for i in range(len(self.prots)):
-                self._ind.emit(str(int(95 + 10 * (i + 1) / len(self.prots))))
-                if r2[i] >= 0.8:
-                    self._res.emit(dists[i])
-                else:
-                    self._res.emit(0)
+        for i, p in enumerate(self.prots):
+            x = self.temps
+            y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
+            y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])       
+            rv = fit_np(x, y1, y2, self.method)
+            
+            self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
+            self._res.emit(list(rv))
         self._ind.emit(str(int(100)))
 
 
