@@ -672,7 +672,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         res['Score'] = score
         res = np.round(res, 3)
     
-        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'min_Slope']]
+        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'D1', 'D2', 'min_Slope']]
         TSA_table = res.sort_values(by = 'Score', axis = 0, ascending = False)
         
         self.resultDataTSA = []
