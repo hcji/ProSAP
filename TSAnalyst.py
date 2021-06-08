@@ -419,7 +419,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SaveProteinComplex(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"Save", "","CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"Save", ".csv","CSV Files (*.csv)", options=options)
         if fileName:
             data = self.TakeProteinComplex()
             data.to_csv(fileName)
@@ -809,7 +809,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
     def SaveTSAData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", ".csv","CSV Files (*.csv)", options=options)
         if fileName:
             data = self.TSA_table
             data.to_csv(fileName)

@@ -152,14 +152,6 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             msg.exec_()               
         else:
             X = self.data.loc[:,self.columns]
-            if self.comboBoxLog2.currentText() == 'True':
-                if np.max(np.max(X)) >= 999:
-                    self.ErrorMsg('The data seems not Log2 transformed, please change parameter')
-                    return None
-                else:
-                    X = 2 ** X
-            else:
-                pass
             y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])            
             names = self.data.loc[:,'Accession'].values
             method = self.comboBoxMethod.currentText()
@@ -169,11 +161,21 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             for row in range(X.shape[0]):
                 X.iloc[row,:] = pd.to_numeric(X.iloc[row,:], errors='coerce')
                 nan_row.append(X.iloc[row,:].isnull().sum())
+            X = X.astype(float)
             
             keep = np.where(np.array(nan_row) == 0)[0]
             X = X.iloc[keep,:]
             X = X.reset_index(drop = True)
             names = names[keep]
+
+            if self.comboBoxLog2.currentText() == 'True':
+                if np.max(np.max(X)) >= 999:
+                    self.ErrorMsg('The data seems not Log2 transformed, please change parameter')
+                    return None
+                else:
+                    X = 2 ** X
+            else:
+                pass
             
             result = worker.fit_data(X, y, names)
             result = result.reset_index(drop=True)
@@ -194,7 +196,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", "","All Files (*);;CSV Files (*.csv)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save", ".csv","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
             data = pd.DataFrame(self.tableViewData.model()._data)
             data.to_csv(fileName, index = False)
