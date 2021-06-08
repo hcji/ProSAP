@@ -127,6 +127,8 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         fileNames = fileNames_
         
         columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        if len(columns) == 0:
+            return None
         reference = self.comboBoxReference.currentText()
         
         if None in [self.tableWidgetTemp.item(i,1) for i in range(self.tableWidgetTemp.rowCount())]:

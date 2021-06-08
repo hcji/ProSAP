@@ -222,7 +222,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         keep = np.logical_not(np.isnan(np.sum(np.array(data)[:,1:], axis = 1).astype(float)))
         data = data.iloc[keep,:]
         data = data.reset_index(drop = True)
-        return data 
+        return data
     
     
     def SelectProteinTable(self):
