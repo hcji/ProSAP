@@ -185,7 +185,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             self.tableViewData.setModel(TableModel(result))
             self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres)
-            self.figureHeatmap.HeatMap(X)
+            self.figureHeatmap.CorrHeatMap(X)
             self.figureBarchart.BarChart(X, y)
             try:
                 self.figurePCA.PCAPlot(X, y)

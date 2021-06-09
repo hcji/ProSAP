@@ -10,7 +10,6 @@ import matplotlib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -196,22 +195,27 @@ class MakeFigure(FigureCanvas):
     
     def BarChart(self, X, y):
         self.axes.cla()
-        data = [[], []]
-        for i in range(X.shape[0]):
-            for j in range(X.shape[1]):
-                data[0].append(np.log2(X.iloc[i,j]))
-                data[1].append(X.columns[j])
-        data = pd.DataFrame(data).T
-        data.columns = ['Intensity', 'Sample']
-        sns.boxplot(ax=self.axes, x='Sample', y='Intensity', data = data)
-        self.axes.set_xticklabels(self.axes.get_xticklabels(),rotation = 90) 
+        cm = plt.cm.get_cmap('rainbow')
+        flierprops = dict(markersize = 2)
+        bplot = self.axes.boxplot(np.log2(X), patch_artist=True, flierprops=flierprops)
+        self.axes.set_xticklabels(list(X.columns), rotation = 90) 
         self.axes.set_xlabel('Sample', fontsize = 5)
-        self.axes.set_ylabel('Intensity', fontsize = 5)
+        self.axes.set_ylabel('Log2 Intensity', fontsize = 5)
+        colors = [cm(val / len(X.columns)) for val in range(len(X.columns))]
+        for patch, color in zip(bplot['boxes'], colors):
+            patch.set_facecolor(color)
         
     
-    def HeatMap(self, X):
+    def CorrHeatMap(self, X):
         self.axes.cla()
-        sns.heatmap(ax=self.axes, data=np.log2(X), cmap="YlOrBr", yticklabels=False, cbar=False)
-        self.axes.set_xlabel('Sample', fontsize = 5)
-        self.axes.set_ylabel('Proteins', fontsize = 5)
+        corr = np.round(np.corrcoef(np.log2(X.T)), 2)
+        self.axes.imshow(corr, cmap="YlOrBr")
+        self.axes.set_xticks(np.arange(corr.shape[0]))
+        self.axes.set_yticks(np.arange(corr.shape[0]))
+        self.axes.set_xticklabels(list(X.columns), fontsize = 5, rotation = 90)
+        self.axes.set_yticklabels(list(X.columns), fontsize = 5)
+        for i in range(corr.shape[0]):
+            for j in range(corr.shape[0]):
+                self.axes.text(i, j, corr[i, j], ha="center", va="center", color="black", fontsize=3)
+
     
