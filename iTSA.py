@@ -135,7 +135,6 @@ do_edgeR = robjects.globalenv['do_edgeR']
 estimate_df = robjects.globalenv['estimate_df']
 p_value_adjust = robjects.globalenv['p_value_adjust']
 
-
 class iTSA:
     
     def __init__(self, method = 't-Test'):

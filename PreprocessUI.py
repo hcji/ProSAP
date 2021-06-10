@@ -127,6 +127,16 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         fileNames = fileNames_
         
         columns = [i.text() for i in self.ColumnSelectUI.listWidget.selectedItems()]
+        for c in columns:
+            if '--' in str(c):
+                msg = QtWidgets.QMessageBox()
+                msg.resize(550, 200)
+                msg.setIcon(QtWidgets.QMessageBox.Information)
+                msg.setText("'--' cannot in column names")
+                msg.setWindowTitle("Information")
+                msg.exec_()
+                return None
+        
         if len(columns) == 0:
             return None
         reference = self.comboBoxReference.currentText()
@@ -158,13 +168,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             
             if 'Accession' in data.columns:
                 for j in columns:
-                    for i in data.index:
-                        try:
-                            v = float(data.loc[i, j])
-                        except:
-                            v = np.nan
-                        data.loc[i, j] = v
-                    data.loc[:,j] = data.loc[:,j].astype(float)
+                    data.loc[:,j] = pd.to_numeric(data.loc[:,j], errors='coerce')
                 all_data.append(data)
                 # print(data)
                 
@@ -190,7 +194,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             pass
         else:
             for data_ in all_data[1:]:
-                data = data.merge(data_, 'outer', on = 'Accession')
+                data = data.merge(data_, 'outer', suffixes=('--x', '--y'), on = 'Accession')
         
         if self.comboBoxMerging.currentText() == 'Median':
             fun = np.nanmedian
@@ -201,7 +205,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             
         # normalize by median
         if self.comboBoxNorm.currentText() == 'Median':
-            whs = np.where([c.split('_')[0] in columns for c in list(data.columns)])[0]
+            whs = np.where([c.split('--')[0] in columns for c in list(data.columns)])[0]
             medians = np.nanmedian(data.iloc[:,whs], axis = 0)
             ratios = medians / np.mean(medians)
             data.iloc[:,whs] = data.iloc[:,whs] / ratios

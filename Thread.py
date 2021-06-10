@@ -46,7 +46,7 @@ class PreprocessThread(QtCore.QThread):
             if self.psm_column == 'None':
                 pass
             else:  
-                wh = np.where([self.psm_column == s.split('_')[0] for s in data.columns])[0]
+                wh = np.where([self.psm_column == s.split('--')[0] for s in data.columns])[0]
                 psm = np.nanmean(data.iloc[i, wh].values.astype(float))
                 if psm < self.psm_thres:
                     continue
@@ -54,7 +54,7 @@ class PreprocessThread(QtCore.QThread):
             prot = data.loc[i, 'Accession']
             vals = []
             for c in self.columns:
-                wh = np.where([c == s.split('_')[0] for s in data.columns])[0]
+                wh = np.where([c == s.split('--')[0] for s in data.columns])[0]
                 v = data.iloc[i, wh].values.astype(float)               
                 v = np.round(v, 4)
                 std = np.nanstd(v) / np.nanmean(v)
@@ -67,6 +67,10 @@ class PreprocessThread(QtCore.QThread):
             self._val.emit(list(vals))
             self._prot.emit(prot)
             self._rsd.emit(std)
+            
+            # print(prot)
+            # print(vals)
+            
         self._ind.emit(str(int(100)))
 
 

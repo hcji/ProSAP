@@ -22,13 +22,11 @@ from ColumnSelectUI import ColumnSelectUI
 
 
 '''
-proteinData = pd.read_excel('D:/project/STP-Set of 6 files.xlsx')
-columns = ['Abundance: F1: 127N, Sample',
-       'Abundance: F1: 127C, Sample', 'Abundance: F1: 128N, Sample',
-       'Abundance: F1: 128C, Sample', 'Abundance: F1: 129N, Sample',
-       'Abundance: F1: 129C, Sample', 'Abundance: F1: 130N, Sample',
-       'Abundance: F1: 130C, Sample', 'Abundance: F1: 131N, Sample']
-y = np.array([0,0,0,0,0,1,1,1,1])
+proteinData = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ouabain/iTSA.csv')
+columns = ['sumionarea_protein_128H_Ctrl_1', 'sumionarea_protein_128H_Ctrl_2',
+       'sumionarea_protein_128H_Ctrl_3', 'sumionarea_protein_128H_Ouabain_1',
+       'sumionarea_protein_128H_Ouabain_2', 'sumionarea_protein_128H_Ouabain_3']
+y = np.array([0,0,0,1,1,1])
 X = proteinData.loc[:,columns]
 names = proteinData.loc[:,'Accession'].values
 '''
@@ -160,13 +158,15 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             nan_row = []
             for row in range(X.shape[0]):
                 X.iloc[row,:] = pd.to_numeric(X.iloc[row,:], errors='coerce')
-                nan_row.append(X.iloc[row,:].isnull().sum())
             X = X.astype(float)
+            X[X <= 0] = np.nan
+            for row in range(X.shape[0]):
+                nan_row.append(X.iloc[row,:].isnull().sum())
             
             keep = np.where(np.array(nan_row) == 0)[0]
             X = X.iloc[keep,:]
             X = X.reset_index(drop = True)
-            names = names[keep]
+            names = names[keep].astype(str)
 
             if self.comboBoxLog2.currentText() == 'True':
                 if np.max(np.max(X)) >= 999:
