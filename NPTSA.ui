@@ -80,7 +80,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Nonparametric TPP analysis:</string>
+      <string>Distance-based TPP analysis:</string>
      </property>
     </widget>
    </item>
@@ -144,6 +144,31 @@
      </property>
      <property name="title">
       <string>Thermal shift curves comparison:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>minR2</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QDoubleSpinBox" name="BoxR2">
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.800000000000000</double>
      </property>
     </widget>
    </item>

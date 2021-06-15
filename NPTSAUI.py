@@ -34,7 +34,7 @@ class NPTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutAvg.addWidget(self.figureAvg)
         
         self.tableWidgetProteinList.setSortingEnabled(True)
-        self.comboBox.addItems(['fitness', 'euclidean', 'cityblock', 'chebychev', 'cosine'])
+        self.comboBox.addItems(['euclidean', 'cityblock', 'chebychev', 'cosine'])
 
 
     def FillTable(self, TSA_table):

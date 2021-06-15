@@ -55,7 +55,7 @@ def meltCurve(T, a, b, pl):
     return A / B + pl
 
 
-def fit_np(x, y1, y2, method = 'fitness'):
+def fit_np(x, y1, y2, method = 'fitness', minR2 = 0.8):
     try: 
         paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
         paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
@@ -92,7 +92,8 @@ def fit_np(x, y1, y2, method = 'fitness'):
     
     r1 = max(r2_score(y1, yh1), 0)
     r2 = max(r2_score(y2, yh2), 0)
-        
+    if min(r1, r2) < minR2:
+        diff = np.nan
     
     return r1, r2, rss0, rss1, diff, sl 
 

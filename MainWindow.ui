@@ -30,7 +30,7 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QLabel" name="labelFileList">
@@ -75,7 +75,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QLabel" name="labelDatabase">
@@ -120,7 +120,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
           <widget class="QLabel" name="labelProteinComplex">
@@ -337,9 +337,10 @@
     <property name="title">
      <string>Analysis</string>
     </property>
-    <addaction name="action_CETSA"/>
+    <addaction name="actionCETSA"/>
     <addaction name="actionNPTSA"/>
-    <addaction name="action_iTSA"/>
+    <addaction name="actionExternal"/>
+    <addaction name="actioniTSA"/>
     <addaction name="actionCalcROC"/>
    </widget>
    <addaction name="menuFile"/>
@@ -393,7 +394,7 @@
     <string>Load PPI database...</string>
    </property>
   </action>
-  <action name="action_CETSA">
+  <action name="actionCETSA">
    <property name="text">
     <string>Thermal shift analysis ...</string>
    </property>
@@ -433,7 +434,7 @@
     <string>Protein complex analysis...</string>
    </property>
   </action>
-  <action name="action_iTSA">
+  <action name="actioniTSA">
    <property name="text">
     <string>Isothermal shift analysis...</string>
    </property>
@@ -445,7 +446,17 @@
   </action>
   <action name="actionNPTSA">
    <property name="text">
-    <string>Nonparametric thermal shift analysis...</string>
+    <string>Distance-based analysis...</string>
+   </property>
+  </action>
+  <action name="actionExternal">
+   <property name="text">
+    <string>External tool analysis...</string>
+   </property>
+  </action>
+  <action name="actionInflect">
+   <property name="text">
+    <string>Inflect analysis...</string>
    </property>
   </action>
  </widget>

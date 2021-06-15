@@ -30,7 +30,7 @@ from NPTSAUI import NPTSAUI
 from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, NPTSAThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
-from iTSA import estimate_df
+from iTSA import estimate_df, p_value_adjust
 
 # proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
 # proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
@@ -85,8 +85,8 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionDatabase.triggered.connect(self.LoadProteinComplex)
         self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
-        self.action_iTSA.triggered.connect(self.OpeniTSA)
-        self.action_CETSA.triggered.connect(self.OpenAnalTSA)
+        self.actioniTSA.triggered.connect(self.OpeniTSA)
+        self.actionCETSA.triggered.connect(self.OpenAnalTSA)
         self.actionNPTSA.triggered.connect(self.OpenNPTSA)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
         self.actionContact.triggered.connect(self.ContactMsg)
@@ -636,7 +636,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
         # print(len(self.prots))
         
-        self.NPTSAThread = NPTSAThread(self.prots, temps, data_1, data_2, self.NPTSAUI.comboBox.currentText())
+        self.NPTSAThread = NPTSAThread(self.prots, temps, data_1, data_2, self.NPTSAUI.comboBox.currentText(), self.NPTSAUI.BoxR2.value())
         self.NPTSAThread._ind.connect(self.ProcessBarNPTSA)
         self.NPTSAThread._res.connect(self.ResultDataTSA)
         self.NPTSAThread.start()
@@ -652,27 +652,37 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         columns = self.columns
         
         res = pd.DataFrame(self.resultDataTSA)
-        res.columns = ['Group1_R2', 'Group2_R2', 'D1', 'D2', 'delta_D', 'min_Slope']
+        res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm', 'min_Slope']
+        
+        a = res['Group1_Tm'].values
+        b = res['delta_Tm'].values
         
         if method == 'fitness':
-            [d1, d2, s0_sq] = list(estimate_df(res['D1'], res['delta_D']))
+            [d1, d2, s0_sq] = list(estimate_df(a, b))
         else:
             s0_sq = 1
-        delta_D = res['delta_D'] / s0_sq
+            
+        rssDiff = res['delta_Tm'] / s0_sq
+        rss1 = res['Group2_Tm'] / s0_sq
+        
         p_Val = []
         for i in range(len(res)):
-            s = delta_D[i]
-            pv = stats.t.sf(abs(s - np.nanmean(delta_D)) / np.nanstd(delta_D), len(delta_D)-1)
+            if method == 'fitness':
+                s = (rssDiff[i] / d1) / (rss1[i] / d2)
+                pv = stats.f.sf(s, d1, d2)
+            else:
+                s = rssDiff[i] / (rss1[i] + (10 ** -5))
+                pv = stats.t.sf(s, len(rssDiff)-1)
             p_Val.append(pv)
+        # p_Val = np.array(p_value_adjust(np.array(p_Val)))     
         score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
     
         res['Accession'] = prots
-        res['delta_Tm'] = delta_D
         res['p_Val (-log10)'] = -np.log10(p_Val)
         res['Score'] = score
         res = np.round(res, 3)
     
-        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'D1', 'D2', 'min_Slope']]
+        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'min_Slope']]
         TSA_table = res.sort_values(by = 'Score', axis = 0, ascending = False)
         
         self.resultDataTSA = []

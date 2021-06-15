@@ -9,14 +9,10 @@ Created on Tue Apr 27 09:47:47 2021
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
-from scipy.spatial.distance import pdist
-from scipy.optimize import curve_fit
-from sklearn.metrics import r2_score
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils import TableModel, fit_curve, meltCurve, fit_np
-from iTSA import estimate_df
 
 
 class PreprocessThread(QtCore.QThread):
@@ -111,13 +107,14 @@ class NPTSAThread(QtCore.QThread):
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
-    def __init__(self, prots, temps, data_1, data_2, method):
+    def __init__(self, prots, temps, data_1, data_2, method, minR2):
         super(NPTSAThread, self).__init__()
         self.prots = prots
         self.temps = temps
         self.data_1 = data_1
         self.data_2 = data_2
         self.method = method
+        self.minR2 = minR2
         self.working = True
  
     def __del__(self):
@@ -129,7 +126,7 @@ class NPTSAThread(QtCore.QThread):
             x = self.temps
             y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
             y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])       
-            rv = fit_np(x, y1, y2, self.method)
+            rv = fit_np(x, y1, y2, self.method, self.minR2)
             
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))

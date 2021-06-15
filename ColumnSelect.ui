@@ -39,7 +39,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Select Columns for drawing thermal shift curve:</string>
+    <string>Select Abundance Columns for Analysis:</string>
    </property>
   </widget>
   <widget class="QPushButton" name="ButtonColumnSelect">
