@@ -26,8 +26,8 @@ from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
-from NPTSAUI import NPTSAUI
-from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, NPTSAThread
+from AnalDistUI import AnalDistUI
+from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, AnalDistThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
 from iTSA import estimate_df, p_value_adjust
@@ -58,7 +58,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.ROCThread = None
         self.PairThread = None
         self.ComplexThread = None
-        self.NPTSAThread = None
+        self.AnalDistThread = None
         
         # groupbox
         self.figureG1 = MakeFigure(5, 5)
@@ -79,7 +79,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalTSAUI = AnalTSAUI()
         self.iTSAUI = AnaliTSAUI()
         self.PreprocessUI = PreprocessUI()
-        self.NPTSAUI = NPTSAUI()
+        self.AnalDistUI = AnalDistUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
@@ -87,7 +87,7 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.actionPreprocessing.triggered.connect(self.OpenPreprocessing)
         self.actioniTSA.triggered.connect(self.OpeniTSA)
         self.actionCETSA.triggered.connect(self.OpenAnalTSA)
-        self.actionNPTSA.triggered.connect(self.OpenNPTSA)
+        self.actionAnalDist.triggered.connect(self.OpenAnalDist)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
         self.actionContact.triggered.connect(self.ContactMsg)
         self.actionSave.triggered.connect(self.SaveProject)
@@ -113,10 +113,10 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
         
-        self.NPTSAUI.ButtonConfirm.clicked.connect(self.ShowNPTSA)
-        self.NPTSAUI.ButtonCancel.clicked.connect(self.NPTSAUI.close)
-        self.NPTSAUI.ButtonShow.clicked.connect(self.ShowNPTSACurve)
-        self.NPTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
+        self.AnalDistUI.ButtonConfirm.clicked.connect(self.ShowAnalDist)
+        self.AnalDistUI.ButtonCancel.clicked.connect(self.AnalDistUI.close)
+        self.AnalDistUI.ButtonShow.clicked.connect(self.ShowAnalDistCurve)
+        self.AnalDistUI.pushButtonSave.clicked.connect(self.SaveTSAData)
         
         self.AnalTSAUI.ButtonConfirm.clicked.connect(self.ShowAnalTSA)
         self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
@@ -608,22 +608,22 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.iTSAUI.show()
 
 
-    def OpenNPTSA(self):
+    def OpenAnalDist(self):
         self.resultDataTSA = []
-        self.NPTSAUI.progressBar.setValue(0)
-        self.NPTSAUI.show()
+        self.AnalDistUI.progressBar.setValue(0)
+        self.AnalDistUI.show()
         if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
             self.ErrorMsg('Please input proteomics data')
-            self.NPTSAUI.close()
+            self.AnalDistUI.close()
         else:
-            self.NPTSAUI.tableWidgetProteinList.clear()
+            self.AnalDistUI.tableWidgetProteinList.clear()
     
     
-    def ShowNPTSA(self):
+    def ShowAnalDist(self):
         columns = self.columns
-        self.NPTSAUI.tableWidgetProteinList.clear()
-        self.NPTSAUI.progressBar.setValue(0)
-        self.NPTSAUI.ButtonConfirm.setEnabled(False)
+        self.AnalDistUI.tableWidgetProteinList.clear()
+        self.AnalDistUI.progressBar.setValue(0)
+        self.AnalDistUI.ButtonConfirm.setEnabled(False)
         
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
@@ -636,15 +636,15 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
         # print(len(self.prots))
         
-        self.NPTSAThread = NPTSAThread(self.prots, temps, data_1, data_2, self.NPTSAUI.comboBox.currentText(), self.NPTSAUI.BoxR2.value())
-        self.NPTSAThread._ind.connect(self.ProcessBarNPTSA)
-        self.NPTSAThread._res.connect(self.ResultDataTSA)
-        self.NPTSAThread.start()
-        self.NPTSAThread.finished.connect(self.VisualizeNPTSA)       
+        self.AnalDistThread = AnalDistThread(self.prots, temps, data_1, data_2, self.AnalDistUI.comboBox.currentText(), self.AnalDistUI.BoxR2.value())
+        self.AnalDistThread._ind.connect(self.ProcessBarAnalDist)
+        self.AnalDistThread._res.connect(self.ResultDataTSA)
+        self.AnalDistThread.start()
+        self.AnalDistThread.finished.connect(self.VisualizeAnalDist)       
 
 
-    def VisualizeNPTSA(self):
-        method = self.NPTSAUI.comboBox.currentText()
+    def VisualizeAnalDist(self):
+        method = self.AnalDistUI.comboBox.currentText()
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         
@@ -687,26 +687,26 @@ class TCPA_Main(QMainWindow, Ui_MainWindow):
         
         self.resultDataTSA = []
         self.TSA_table = TSA_table
-        self.NPTSAUI.ButtonConfirm.setEnabled(True)
-        self.NPTSAUI.FillTable(TSA_table)
-        self.NPTSAUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
+        self.AnalDistUI.ButtonConfirm.setEnabled(True)
+        self.AnalDistUI.FillTable(TSA_table)
+        self.AnalDistUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
 
 
-    def ShowNPTSACurve(self):
+    def ShowAnalDistCurve(self):
         columns = self.columns
         proteinData1 = self.tableProtein1.model()._data
         proteinData2 = self.tableProtein2.model()._data
         
-        header = [self.NPTSAUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.NPTSAUI.tableWidgetProteinList.columnCount())]
-        i = self.NPTSAUI.tableWidgetProteinList.selectedItems()[0].row()
+        header = [self.AnalDistUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.AnalDistUI.tableWidgetProteinList.columnCount())]
+        i = self.AnalDistUI.tableWidgetProteinList.selectedItems()[0].row()
         j = header.index('Accession')
-        ProteinAccession = self.NPTSAUI.tableWidgetProteinList.item(i, j).text()
+        ProteinAccession = self.AnalDistUI.tableWidgetProteinList.item(i, j).text()
 
-        self.NPTSAUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
+        self.AnalDistUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
 
 
-    def ProcessBarNPTSA(self, msg):
-        self.NPTSAUI.progressBar.setValue(int(msg))
+    def ProcessBarAnalDist(self, msg):
+        self.AnalDistUI.progressBar.setValue(int(msg))
 
     
     def OpenAnalTSA(self):

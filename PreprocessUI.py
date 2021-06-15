@@ -185,7 +185,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         # devided by reference
         if self.comboBoxNorm.currentText() == 'Reference':
             for i in range(len(all_data)):
-                ref = all_data[i].loc[:,reference].copy()
+                ref = all_data[i].loc[:,reference].copy() + 0.0001
                 for c in columns:
                     all_data[i].loc[:,c] /= ref       
         
@@ -226,7 +226,6 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             val_list_ = pd.DataFrame(knn_imputer.fit_transform(val_list))
             val_list_.columns = val_list.columns
             val_list = val_list_
-            print(val_list)
         elif self.comboBoxMV.currentText() == 'Zero':
             val_list = val_list.fillna(0)
         else:

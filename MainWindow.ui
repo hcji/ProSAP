@@ -338,7 +338,7 @@
      <string>Analysis</string>
     </property>
     <addaction name="actionCETSA"/>
-    <addaction name="actionNPTSA"/>
+    <addaction name="actionAnalDist"/>
     <addaction name="actionExternal"/>
     <addaction name="actioniTSA"/>
     <addaction name="actionCalcROC"/>
@@ -444,7 +444,7 @@
     <string>Contact author...</string>
    </property>
   </action>
-  <action name="actionNPTSA">
+  <action name="actionAnalDist">
    <property name="text">
     <string>Distance-based analysis...</string>
    </property>

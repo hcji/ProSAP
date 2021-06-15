@@ -102,13 +102,13 @@ class CurveFitThread(QtCore.QThread):
         self._ind.emit(str(int(100)))
 
 
-class NPTSAThread(QtCore.QThread):
+class AnalDistThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
     def __init__(self, prots, temps, data_1, data_2, method, minR2):
-        super(NPTSAThread, self).__init__()
+        super(AnalDistThread, self).__init__()
         self.prots = prots
         self.temps = temps
         self.data_1 = data_1
