@@ -124,7 +124,7 @@ def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
     
     if min(r1, r2) < minR2:
         deltaTm = np.nan
-    elif max(np.min(yh1), np.min(yh2)) > h_axis:
+    elif max(np.min(yh1), np.min(yh2)) > h_axis + 0.1:
         deltaTm = np.nan
     else:
         deltaTm = Tm2 - Tm1
