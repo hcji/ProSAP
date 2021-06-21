@@ -54,8 +54,8 @@
   <widget class="QPushButton" name="pushButtonTPP">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>220</y>
+     <x>70</x>
+     <y>340</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -89,30 +89,11 @@
     <string>PISA/iTSA Analysis</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonPPI">
-   <property name="geometry">
-    <rect>
-     <x>70</x>
-     <y>350</y>
-     <width>211</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Times New Roman</family>
-     <pointsize>13</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>PPI Analysis</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonNetwork">
+  <widget class="QPushButton" name="pushButtonTPCA">
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>350</y>
+     <y>340</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -124,7 +105,26 @@
     </font>
    </property>
    <property name="text">
-    <string>Network Analysis</string>
+    <string>TPCA Analysis</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonQC">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>220</y>
+     <width>211</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>13</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>QC Analysis</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">

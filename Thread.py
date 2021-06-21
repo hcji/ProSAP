@@ -70,17 +70,19 @@ class PreprocessThread(QtCore.QThread):
         self._ind.emit(str(int(100)))
 
 
-class CurveFitThread(QtCore.QThread):
+class TPPThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
-    def __init__(self, prots, temps, data_1, data_2, minR2, maxPlateau, h_axis):
-        super(CurveFitThread, self).__init__()
+    def __init__(self, prots, temps, r1p1, r1p2, r2p1, r2p2, minR2, maxPlateau, h_axis):
+        super(TPPThread, self).__init__()
         self.prots = prots
         self.temps = temps
-        self.data_1 = data_1
-        self.data_2 = data_2
+        self.r1p1 = r1p1
+        self.r1p2 = r1p2
+        self.r2p1 = r2p1
+        self.r2p2 = r2p2
         self.minR2 = minR2
         self.maxPlateau = maxPlateau
         self.h_axis = h_axis
@@ -93,9 +95,15 @@ class CurveFitThread(QtCore.QThread):
     def run(self):
         for i, p in enumerate(self.prots):
             x = self.temps
-            y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
-            y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])
-            rv = fit_curve(x, y1, y2, self.minR2, self.maxPlateau, self.h_axis)
+            y1 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
+            y2 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
+            rv = list(fit_curve(x, y1, y2, self.minR2, self.maxPlateau, self.h_axis))
+            
+            if (self.r2p1 is not None) and (self.r2p2 is not None):
+                y1 = np.array(self.r2p1[self.r2p1.iloc[:,0] == p].iloc[0,1:])
+                y2 = np.array(self.r2p1[self.r2p2.iloc[:,0] == p].iloc[0,1:])
+                rv2 = list(fit_curve(x, y1, y2, self.minR2, self.maxPlateau, self.h_axis))
+                rv += rv2
             
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))

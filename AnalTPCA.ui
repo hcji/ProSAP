@@ -306,47 +306,24 @@
      <x>0</x>
      <y>0</y>
      <width>1242</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionQuit"/>
-   </widget>
    <widget class="QMenu" name="menuDatabase">
     <property name="title">
      <string>Data</string>
     </property>
-    <addaction name="actionPreprocessing"/>
     <addaction name="actionProteomics"/>
     <addaction name="actionDatabase"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionCitation"/>
-    <addaction name="actionCheck_liences"/>
-    <addaction name="actionContact"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
     <property name="title">
      <string>Analysis</string>
     </property>
-    <addaction name="actionCETSA"/>
-    <addaction name="actionAnalDist"/>
-    <addaction name="actionExternal"/>
-    <addaction name="actioniTSA"/>
     <addaction name="actionCalcROC"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuDatabase"/>
    <addaction name="menuAnalysis"/>
-   <addaction name="menuHelp"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
