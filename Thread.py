@@ -101,7 +101,7 @@ class TPPThread(QtCore.QThread):
             
             if (self.r2p1 is not None) and (self.r2p2 is not None):
                 y1 = np.array(self.r2p1[self.r2p1.iloc[:,0] == p].iloc[0,1:])
-                y2 = np.array(self.r2p1[self.r2p2.iloc[:,0] == p].iloc[0,1:])
+                y2 = np.array(self.r2p2[self.r2p2.iloc[:,0] == p].iloc[0,1:])
                 rv2 = list(fit_curve(x, y1, y2, self.minR2, self.maxPlateau, self.h_axis))
                 rv += rv2
             
@@ -110,13 +110,13 @@ class TPPThread(QtCore.QThread):
         self._ind.emit(str(int(100)))
 
 
-class AnalDistThread(QtCore.QThread):
+class DistThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
     def __init__(self, prots, temps, data_1, data_2, method, minR2):
-        super(AnalDistThread, self).__init__()
+        super(DistThread, self).__init__()
         self.prots = prots
         self.temps = temps
         self.data_1 = data_1
