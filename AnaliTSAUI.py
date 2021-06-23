@@ -182,7 +182,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             fc_thres = self.doubleSpinBoxFCthres.value()
             pv_thres = self.doubleSpinBoxPthres.value()
-            
+
             self.tableViewData.setModel(TableModel(result))
             self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres)
             self.figureHeatmap.CorrHeatMap(X)

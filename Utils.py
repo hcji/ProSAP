@@ -58,12 +58,12 @@ def meltCurve(T, a, b, pl):
 def fit_NPARC(x, y11, y12, y21, y22, minR2_null = 0.8, minR2_alt = 0.8, maxPlateau = 0.3):
     x_null = np.concatenate([x, x])
     y1_null = np.concatenate([y11, y21])
-    y2_null = np.concatenate([y21, y22])
+    y2_null = np.concatenate([y12, y22])
     try:
         paras1_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
-        paras2_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        paras2_null = curve_fit(meltCurve, x_null, y2_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
         yh1_null = meltCurve(x_null, paras1_null[0], paras1_null[1], paras1_null[2])
-        yh2_null = meltCurve(x_null, paras2_null[0], paras2_null[1], paras1_null[2])
+        yh2_null = meltCurve(x_null, paras2_null[0], paras2_null[1], paras2_null[2])
         rss_null = np.sum((y1_null - yh1_null) ** 2) + np.sum((y2_null - yh2_null) ** 2)
         r1_null = max(r2_score(y1_null, yh1_null), 0)
         r2_null = max(r2_score(y2_null, yh2_null), 0)

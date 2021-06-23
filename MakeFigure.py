@@ -34,7 +34,7 @@ class MakeFigure(FigureCanvas):
         self.axes.spines['top'].set_linewidth(0.5)
         self.axes.tick_params(labelsize=5)
         FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)        
+        FigureCanvas.updateGeometry(self)
 
     
     def ProteinComplexFigure(self, proteinSubunit, proteinData, colNames):

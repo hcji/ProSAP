@@ -26,11 +26,11 @@ from Utils import TableModel, ReplicateCheck
 from iTSA import estimate_df, p_value_adjust
 
 
-r1p1Data = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
-r1p2Data = pd.read_csv('data/TPCA_TableS14_MTX.csv')
-r2p1Data = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
-r2p2Data = pd.read_csv('data/TPCA_TableS14_MTX.csv')
-columns = ['T37', 'T40', 'T43', 'T46', 'T49', 'T52', 'T55', 'T58', 'T61', 'T64']
+r1p1Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/DMSO_1.csv')
+r1p2Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/Stauro_1.csv')
+r2p1Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/DMSO_2.csv')
+r2p2Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/Stauro_2.csv')
+columns = ['T37', 'T41.2', 'T44', 'T46.8', 'T50', 'T53.2', 'T54', 'T56.1', 'T59.1', 'T63.2', 'T66.9']
 
 
 class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
