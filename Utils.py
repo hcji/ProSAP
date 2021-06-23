@@ -55,6 +55,42 @@ def meltCurve(T, a, b, pl):
     return A / B + pl
 
 
+def fit_NPARC(x, y11, y12, y21, y22, minR2_null = 0.8, minR2_alt = 0.8, maxPlateau = 0.3):
+    x_null = np.concatenate([x, x])
+    y1_null = np.concatenate([y11, y21])
+    y2_null = np.concatenate([y21, y22])
+    try:
+        paras1_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        paras2_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        yh1_null = meltCurve(x_null, paras1_null[0], paras1_null[1], paras1_null[2])
+        yh2_null = meltCurve(x_null, paras2_null[0], paras2_null[1], paras1_null[2])
+        rss_null = np.sum((y1_null - yh1_null) ** 2) + np.sum((y2_null - yh2_null) ** 2)
+        r1_null = max(r2_score(y1_null, yh1_null), 0)
+        r2_null = max(r2_score(y2_null, yh2_null), 0)
+        if min(r1_null, r2_null) < minR2_null:
+            rss_null = np.nan
+    except:
+        rss_null = np.nan
+        r1_null = np.nan
+        r2_null = np.nan
+
+    x_alt = np.concatenate([x, x, x, x])
+    y_alt = np.concatenate([y11, y12, y21, y22])
+    try:
+        paras_alt = curve_fit(meltCurve, x_alt, y_alt, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        yh_alt = meltCurve(x_alt, paras_alt[0], paras_alt[1], paras_alt[2])
+        r_alt = max(r2_score(y_alt, yh_alt), 0)
+        if r_alt < minR2_alt:
+            rss_alt = np.nan
+        else:
+            rss_alt = np.sum((y_alt - yh_alt) ** 2) + np.sum((y_alt - yh_alt) ** 2)
+    except:
+        rss_alt = np.nan
+    
+    rss_diff = abs(rss_null - rss_alt)
+    return r1_null, r2_null, rss_null, rss_alt, rss_diff
+    
+
 def fit_np(x, y1, y2, method = 'fitness', minR2 = 0.8):
     try: 
         paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
@@ -143,3 +179,29 @@ def WhittakerSmooth(x, lambda_, differences=1):
     B = csc_matrix(W * X.T)
     background = spsolve(A, B)
     return np.array(background)
+
+
+def ReplicateCheck(tppTable):
+    # tppTable = pd.read_csv('test_tpp.csv', index_col=0)
+    if 'Rep2delta_Tm' not in tppTable.columns:
+        return tppTable
+    for i in tppTable.index:
+        pval_1 = tppTable.loc[i, 'Rep1p_Val (-log10)']
+        pval_2 = tppTable.loc[i, 'Rep2p_Val (-log10)']
+        cond_1 = (max(pval_1, pval_2) > 1.302) and (min(pval_1, pval_2) > 1)
+        
+        delm_1 = tppTable.loc[i, 'Rep1delta_Tm']
+        delm_2 = tppTable.loc[i, 'Rep2delta_Tm']
+        cond_2 = delm_1 * delm_2 > 0
+        
+        tm = abs(tppTable.loc[i, 'Rep1Group1_Tm'] - tppTable.loc[i, 'Rep2Group1_Tm'])
+        cond_3 = min(delm_1, delm_2) > tm
+
+        mins_1 = tppTable.loc[i, 'Rep1min_Slope']
+        mins_2 = tppTable.loc[i, 'Rep2min_Slope']
+        cond_4 = max(mins_1, mins_2) < -0.06
+        
+        if cond_1 and cond_2 and cond_3 and cond_4:
+            tppTable.loc[i, 'Score'] = 0
+    return tppTable
+            

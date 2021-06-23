@@ -20,9 +20,9 @@ from ColumnSelectUI import ColumnSelectUI
 from ParamTSAUI import ParamTSAUI
 from MakeFigure import MakeFigure
 
-from Thread import TPPThread, DistThread
+from Thread import TPPThread, NPARCThread
 from MakeFigure import MakeFigure
-from Utils import TableModel, fit_curve
+from Utils import TableModel, ReplicateCheck
 from iTSA import estimate_df, p_value_adjust
 
 
@@ -62,17 +62,20 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # threads
         self.TPPThread = None
-        self.AnalDistThread = None
+        self.NPARCThread = None
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionTPP.triggered.connect(self.ShowAnalTPP)
+        self.actionNPARC.triggered.connect(self.ShowAnalNPARC)
         
         # button action
         self.ButtonR1P1.clicked.connect(self.SetR1P1)
         self.ButtonR1P2.clicked.connect(self.SetR1P2)
         self.ButtonR2P1.clicked.connect(self.SetR2P1)
         self.ButtonR2P2.clicked.connect(self.SetR2P2)
+        self.ButtonParam.clicked.connect(self.OpenParams)
+        self.ButtonShow.clicked.connect(self.ShowMeltCurve)
         self.ButtonSave.clicked.connect(self.SaveData)
         
         self.ColumnSelectUI = ColumnSelectUI()
@@ -96,7 +99,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.repCheck_TPP = 'True'
         self.minR2_NP_Null = 0.8
         self.minR2_NP_Alt = 0.8
-        self.maxPlateau_NP = 0.
+        self.maxPlateau_NP = 0.3
         self.minR2_Infl = 0.8
         self.numSD_Infl = 2
         self.Metr_Dist = 'cityblock'
@@ -127,7 +130,18 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
     
     
     def SetParams(self):
-        pass
+        self.haxis_TPP = self.ParamTSAUI.BoxHAxis.value()
+        self.minR2_TPP = self.ParamTSAUI.BoxR2.value()
+        self.maxPlateau_TPP = self.ParamTSAUI.BoxPla.value()
+        self.repCheck_TPP = self.ParamTSAUI.BoxCheck.currentText()
+        self.minR2_NP_Null = self.ParamTSAUI.BoxR2_Null.value()
+        self.minR2_NP_Alt = self.ParamTSAUI.BoxR2_Alt.value()
+        self.maxPlateau_NP = self.ParamTSAUI.BoxPlaN.value()
+        self.minR2_Infl = self.ParamTSAUI.BoxR2_Infl.value()
+        self.numSD_Infl = self.ParamTSAUI.BoxNumSD.value()
+        self.Metr_Dist = self.ParamTSAUI.BoxMetrics.currentText()
+        self.minR2_Dist = self.ParamTSAUI.BoxR2_Dist.value()
+        self.maxPlateau_Dist = self.ParamTSAUI.BoxPla_Dist.value()
         self.ParamTSAUI.close()
     
     
@@ -291,17 +305,22 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.resultData.append(msg)
         # print(msg)
     
+    
     # TPP Analysis 
     def ShowAnalTPP(self):
         columns = self.columns
-        self.ColumnSelectUI.close()
         self.tableWidgetProteinList.clear()
         self.progressBar.setValue(0)
+        self.resultData = []
         
         r1p1Data = self.tableRep1Protein1.model()._data
         r1p2Data = self.tableRep1Protein2.model()._data
-        r2p1Data = self.tableRep2Protein1.model()._data
-        r2p2Data = self.tableRep2Protein2.model()._data
+        try:
+            r2p1Data = self.tableRep2Protein1.model()._data
+            r2p2Data = self.tableRep2Protein2.model()._data
+        except:
+            r2p1Data = None
+            r2p2Data = None
 
         haxis = self.haxis_TPP
         minR2 = self.minR2_TPP
@@ -344,8 +363,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def VisualizeTPP(self):   
         prots = self.prots
-        r2p1Data = self.tableRep2Protein1.model()._data
-        r2p2Data = self.tableRep2Protein2.model()._data
+        r2p1Data = self.tableRep2Protein1.model()
+        r2p2Data = self.tableRep2Protein2.model()
         
         res = pd.DataFrame(self.resultData)
         if (r2p1Data is None) or (r2p2Data is None):
@@ -353,7 +372,6 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             res.columns = ['Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm', 'Rep1delta_Tm', 'Rep1min_Slope',
                            'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_Tm', 'Rep2Group2_Tm', 'Rep2delta_Tm', 'Rep2min_Slope']
-        res['Accession'] = prots
     
         delta_Tm = res['Rep1delta_Tm']
         p_Val = []
@@ -361,7 +379,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             s = delta_Tm[i]
             pv = stats.t.sf(abs(s - np.nanmean(delta_Tm)) / np.nanstd(delta_Tm), len(delta_Tm)-1)
             p_Val.append(pv)
-        res['Rep1pVal (-log10)'] = -np.log10(p_Val)
+        res['Rep1pVal (-log10)'] = np.round(-np.log10(p_Val), 3)
         score = -np.log10(np.array(p_Val)) * (res['Rep1Group1_R2'] * res['Rep1Group2_R2']) ** 2
             
         if (r2p1Data is not None) and (r2p2Data is not None):
@@ -371,32 +389,115 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
                 s = delta_Tm[i]
                 pv = stats.t.sf(abs(s - np.nanmean(delta_Tm)) / np.nanstd(delta_Tm), len(delta_Tm)-1)
                 p_Val.append(pv)
-            res['Rep2pVal (-log10)'] = -np.log10(p_Val)
+            res['Rep2pVal (-log10)'] = np.round(-np.log10(p_Val), 3)
             score_2 = -np.log10(np.array(p_Val)) * (res['Rep2Group1_R2'] * res['Rep2Group2_R2']) ** 2
             score += score_2
 
         res['Score'] = score
         res = np.round(res, 3)
-        # res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'min_Slope']]
+        res['Accession'] = prots
+        if (r2p1Data is None) or (r2p2Data is None):
+            res = res[['Accession', 'Score', 'Rep1pVal (-log10)', 'Rep1delta_Tm', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm', 'Rep1min_Slope']]
+        else:
+            res = res[['Accession', 'Score', 'Rep1pVal (-log10)', 'Rep1delta_Tm', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm', 'Rep1min_Slope',
+                       'Rep2pVal (-log10)', 'Rep2delta_Tm', 'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_Tm', 'Rep2Group2_Tm', 'Rep2min_Slope']]
+            if self.repCheck_TPP == 'True':
+                res = ReplicateCheck(res)  
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
-        
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)
 
-    '''
+
+    # NPARC Analysis 
+    def ShowAnalNPARC(self):
+        columns = self.columns
+        self.tableWidgetProteinList.clear()
+        self.progressBar.setValue(0)
+        self.resultData = []
+        
+        r1p1Data = self.tableRep1Protein1.model()._data
+        r1p2Data = self.tableRep1Protein2.model()._data
+        try:
+            r2p1Data = self.tableRep2Protein1.model()._data
+            r2p2Data = self.tableRep2Protein2.model()._data
+        except:
+            r2p1Data = None
+            r2p2Data = None
+        
+        minR2_null = self.minR2_NP_Null
+        minR2_alt = self.minR2_NP_Alt
+        maxPlateau = self.maxPlateau_NP
+        
+        temps = np.array([float(t.replace('T', '')) for t in columns])
+        cols = ['Accession'] + columns
+        
+        if (r2p1Data is None) or (r2p2Data is None):
+            self.ErrorMsg('NPARC must run with two replicates')
+            return None
+        r1p1 = r1p1Data.loc[:, cols]
+        r1p2 = r1p2Data.loc[:, cols]
+        r2p1 = r2p1Data.loc[:, cols]
+        r2p2 = r2p2Data.loc[:, cols]
+        
+        prot_1 = np.intersect1d(list(r1p1.iloc[:,0]), list(r1p2.iloc[:,0]))
+        prot_2 = np.intersect1d(list(r2p1.iloc[:,0]), list(r2p2.iloc[:,0]))
+        self.prots = np.intersect1d(prot_1, prot_2)
+        
+        self.NPARCThread = NPARCThread(self.prots, temps, r1p1, r1p2, r2p1, r2p2, minR2_null, minR2_alt, maxPlateau)
+        self.NPARCThread._ind.connect(self.ProcessBar)
+        self.NPARCThread._res.connect(self.ResultData)
+        self.NPARCThread.start()
+        self.NPARCThread.finished.connect(self.VisualizeNPARC)
+
+
+    def VisualizeNPARC(self):
+        prots = self.prots
+        res = pd.DataFrame(self.resultData)
+        res.columns = ['Group1_R2', 'Group2_R2', 'RSS_Null', 'RSS_Alt', 'RSS_Diff']
+        
+        a = res['RSS_Alt'].values
+        b = res['RSS_Diff'].values
+        [d1, d2, s0_sq] = list(estimate_df(a, b))
+        RSS_Diff = res['RSS_Diff'] / s0_sq
+        RSS_Alt = res['RSS_Alt'] / s0_sq
+
+        p_Val = []
+        for i in range(len(res)):
+            s = (RSS_Diff[i] / d1) / (RSS_Alt[i] / d2)
+            pv = stats.f.sf(s, d1, d2)
+            p_Val.append(pv)
+        score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
+    
+        res['Accession'] = prots
+        res['p_Val (-log10)'] = -np.log10(p_Val)
+        res['Score'] = score
+        res = np.round(res, 3)        
+        
+        res = res[['Accession', 'Score', 'p_Val (-log10)', 'Group1_R2', 'Group2_R2', 'RSS_Null', 'RSS_Alt', 'RSS_Diff']]
+        resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
+        self.resultData = []
+        self.resultTable = resultTable
+        self.FillTable(resultTable)        
+        
+
+    # Common functions
     def ShowMeltCurve(self):
         columns = self.columns
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
+        r1p1Data = self.tableRep1Protein1.model()._data
+        r1p2Data = self.tableRep1Protein2.model()._data
+        r2p1Data = self.tableRep2Protein1.model()._data
+        r2p2Data = self.tableRep2Protein2.model()._data
         
-        header = [self.AnalTSAUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.AnalTSAUI.tableWidgetProteinList.columnCount())]
-        i = self.AnalTSAUI.tableWidgetProteinList.selectedItems()[0].row()
+        header = [self.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.tableWidgetProteinList.columnCount())]
+        i = self.tableWidgetProteinList.selectedItems()[0].row()
         j = header.index('Accession')
-        ProteinAccession = self.AnalTSAUI.tableWidgetProteinList.item(i, j).text()
+        ProteinAccession = self.tableWidgetProteinList.item(i, j).text()
 
-        self.AnalTSAUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
-    '''
+        self.figureTSA1.SingleTSAFigure(r1p1Data, r1p2Data, columns, ProteinAccession)
+        if (r2p1Data is not None) and (r2p2Data is not None):
+            self.figureTSA2.SingleTSAFigure(r2p1Data, r2p2Data, columns, ProteinAccession)
+    
 
     def SaveData(self):
         options = QtWidgets.QFileDialog.Options()

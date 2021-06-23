@@ -11,11 +11,13 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from ParamTSA import Ui_Form
 
 
-class ParamsTSAUI(QtWidgets.QWidget, Ui_Form):
+class ParamTSAUI(QtWidgets.QWidget, Ui_Form):
     
     def __init__(self, parent=None):
-        super(ParamsTSAUI, self).__init__(parent)
+        super(ParamTSAUI, self).__init__(parent)
         self.setupUi(self)
+        self.BoxCheck.addItems(['True', 'False'])
+        self.BoxMetrics.addItems(['euclidean', 'cityblock', 'chebychev', 'cosine'])
 
 
 
@@ -23,6 +25,6 @@ if __name__ == '__main__':
     import sys
     
     app = QApplication(sys.argv)
-    ui = ParamsTSAUI()
+    ui = ParamTSAUI()
     ui.show()
     sys.exit(app.exec_())

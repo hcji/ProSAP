@@ -12,7 +12,7 @@ from scipy.stats import norm
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Utils import TableModel, fit_curve, meltCurve, fit_np
+from Utils import TableModel, fit_curve, meltCurve, fit_NPARC
 
 
 class PreprocessThread(QtCore.QThread):
@@ -110,6 +110,42 @@ class TPPThread(QtCore.QThread):
         self._ind.emit(str(int(100)))
 
 
+class NPARCThread(QtCore.QThread):
+    
+    _ind = QtCore.pyqtSignal(str)
+    _res = QtCore.pyqtSignal(list)
+ 
+    def __init__(self, prots, temps, r1p1, r1p2, r2p1, r2p2, minR2_null, minR2_alt, maxPlateau):
+        super(NPARCThread, self).__init__()
+        self.prots = prots
+        self.temps = temps
+        self.r1p1 = r1p1
+        self.r1p2 = r1p2
+        self.r2p1 = r2p1
+        self.r2p2 = r2p2
+        self.minR2_null = minR2_null
+        self.minR2_alt = minR2_alt
+        self.maxPlateau = maxPlateau
+        self.working = True
+            
+    def __del__(self):
+        self.wait()
+        self.working = False
+ 
+    def run(self):
+        for i, p in enumerate(self.prots):
+            x = self.temps
+            y11 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
+            y12 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
+            y21 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
+            y22 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
+            rv = fit_NPARC(x, y11, y12, y21, y22, self.minR2_null, self.minR2_alt, self.maxPlateau)
+            self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
+            self._res.emit(list(rv))
+        self._ind.emit(str(int(100)))
+    
+
+
 class DistThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
@@ -134,7 +170,7 @@ class DistThread(QtCore.QThread):
             x = self.temps
             y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
             y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])       
-            rv = fit_np(x, y1, y2, self.method, self.minR2)
+            rv = np.nan
             
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))
