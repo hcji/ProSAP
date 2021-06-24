@@ -204,6 +204,7 @@ class MakeFigure(FigureCanvas):
         colors = [cm(val / len(X.columns)) for val in range(len(X.columns))]
         for patch, color in zip(bplot['boxes'], colors):
             patch.set_facecolor(color)
+        self.draw()
         
     
     def CorrHeatMap(self, X):
@@ -217,5 +218,5 @@ class MakeFigure(FigureCanvas):
         for i in range(corr.shape[0]):
             for j in range(corr.shape[0]):
                 self.axes.text(i, j, corr[i, j], ha="center", va="center", color="black", fontsize=3)
-
+        self.draw()
     
