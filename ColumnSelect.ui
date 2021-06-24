@@ -34,8 +34,8 @@
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
-     <pointsize>11</pointsize>
+     <family>Times New Roman</family>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">

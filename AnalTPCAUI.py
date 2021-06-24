@@ -23,14 +23,9 @@ from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationTo
 from AnalTPCA import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
 from AnalROCUI import AnalROCUI
-from AnalTSAUI import AnalTSAUI
-from AnaliTSAUI import AnaliTSAUI
-from PreprocessUI import PreprocessUI
-from AnalDistUI import AnalDistUI
-from Thread import CurveFitThread, ROCThread, PairThread, ComplexThread, AnalDistThread
+from Thread import ROCThread, PairThread, ComplexThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, fit_curve
-from iTSA import estimate_df, p_value_adjust
 
 # proteinData1 = pd.read_csv('data/TPCA_TableS14_DMSO.csv')
 # proteinData2 = pd.read_csv('data/TPCA_TableS14_MTX.csv')
@@ -76,17 +71,11 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         # widgets
         self.ColumnSelectUI = ColumnSelectUI()
         self.AnalROCUI = AnalROCUI()
-        self.AnalTSAUI = AnalTSAUI()
-        self.iTSAUI = AnaliTSAUI()
-        self.PreprocessUI = PreprocessUI()
-        self.AnalDistUI = AnalDistUI()
         
         # menu action
         self.actionProteomics.triggered.connect(self.LoadProteinFile)
         self.actionDatabase.triggered.connect(self.LoadProteinComplex)
         self.actionCalcROC.triggered.connect(self.OpenAnalROC)
-        self.actionSave.triggered.connect(self.SaveProject)
-        self.actionOpen.triggered.connect(self.LoadProject)
         
         # button action
         self.ButtonGroup1.clicked.connect(self.SetProteinTable1)
@@ -108,25 +97,13 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         self.AnalROCUI.pushButtonPval.clicked.connect(self.CalcProteinPairChange)
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
         
-        self.AnalDistUI.ButtonConfirm.clicked.connect(self.ShowAnalDist)
-        self.AnalDistUI.ButtonCancel.clicked.connect(self.AnalDistUI.close)
-        self.AnalDistUI.ButtonShow.clicked.connect(self.ShowAnalDistCurve)
-        self.AnalDistUI.pushButtonSave.clicked.connect(self.SaveTSAData)
-        
-        self.AnalTSAUI.ButtonConfirm.clicked.connect(self.ShowAnalTSA)
-        self.AnalTSAUI.ButtonCancel.clicked.connect(self.AnalTSAUI.close)
-        self.AnalTSAUI.ButtonShow.clicked.connect(self.ShowTSACurve)
-        self.AnalTSAUI.pushButtonSave.clicked.connect(self.SaveTSAData)
-        
         # table sort
         self.tableProteinComplex.setSortingEnabled(True)
         
         # server data
         self.columns = None
         self.prots = None
-        self.TSA_table = pd.DataFrame()
         self.resultDataComplex = []
-        self.resultDataTSA = []
         self.resultDataROC = []
         self.resultProtPair = []
         self.ROCNegValues = []  
@@ -576,115 +553,6 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
 
     def ResultProtPair(self, msg):
         self.resultProtPair.append(msg)
-
-    
-    def OpenPreprocessing(self):
-        self.PreprocessUI.show()
-        
-        
-    def OpeniTSA(self):
-        self.iTSAUI.show()
-
-
-    def OpenAnalDist(self):
-        self.resultDataTSA = []
-        self.AnalDistUI.progressBar.setValue(0)
-        self.AnalDistUI.show()
-        if self.tableProtein1.model() is None or (self.tableProtein2.model() is None):
-            self.ErrorMsg('Please input proteomics data')
-            self.AnalDistUI.close()
-        else:
-            self.AnalDistUI.tableWidgetProteinList.clear()
-    
-    
-    def ShowAnalDist(self):
-        columns = self.columns
-        self.AnalDistUI.tableWidgetProteinList.clear()
-        self.AnalDistUI.progressBar.setValue(0)
-        self.AnalDistUI.ButtonConfirm.setEnabled(False)
-        
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
-        
-        temps = np.array([float(t.replace('T', '')) for t in columns])
-        cols = ['Accession'] + columns
-        data_1 = proteinData1.loc[:, cols]
-        data_2 = proteinData2.loc[:, cols]
-
-        self.prots = np.intersect1d(list(data_1.iloc[:,0]), list(data_2.iloc[:,0]))
-        # print(len(self.prots))
-        
-        self.AnalDistThread = AnalDistThread(self.prots, temps, data_1, data_2, self.AnalDistUI.comboBox.currentText(), self.AnalDistUI.BoxR2.value())
-        self.AnalDistThread._ind.connect(self.ProcessBarAnalDist)
-        self.AnalDistThread._res.connect(self.ResultDataTSA)
-        self.AnalDistThread.start()
-        self.AnalDistThread.finished.connect(self.VisualizeAnalDist)       
-
-
-    def VisualizeAnalDist(self):
-        method = self.AnalDistUI.comboBox.currentText()
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
-        
-        prots = self.prots
-        columns = self.columns
-        
-        res = pd.DataFrame(self.resultDataTSA)
-        res.columns = ['Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'delta_Tm', 'min_Slope']
-        
-        a = res['Group1_Tm'].values
-        b = res['delta_Tm'].values
-        
-        if method == 'fitness':
-            [d1, d2, s0_sq] = list(estimate_df(a, b))
-        else:
-            s0_sq = 1
-            
-        rssDiff = res['delta_Tm'] / s0_sq
-        rss1 = res['Group2_Tm'] / s0_sq
-        
-        p_Val = []
-        for i in range(len(res)):
-            if method == 'fitness':
-                s = (rssDiff[i] / d1) / (rss1[i] / d2)
-                pv = stats.f.sf(s, d1, d2)
-            else:
-                s = rssDiff[i] / (rss1[i] + (10 ** -5))
-                pv = stats.t.sf(s, len(rssDiff)-1)
-            p_Val.append(pv)
-        # p_Val = np.array(p_value_adjust(np.array(p_Val)))     
-        score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
-    
-        res['Accession'] = prots
-        res['p_Val (-log10)'] = -np.log10(p_Val)
-        res['Score'] = score
-        res = np.round(res, 3)
-    
-        res = res[['Accession', 'Score', 'p_Val (-log10)', 'delta_Tm', 'Group1_R2', 'Group2_R2', 'Group1_Tm', 'Group2_Tm', 'min_Slope']]
-        TSA_table = res.sort_values(by = 'Score', axis = 0, ascending = False)
-        
-        self.resultDataTSA = []
-        self.TSA_table = TSA_table
-        self.AnalDistUI.ButtonConfirm.setEnabled(True)
-        self.AnalDistUI.FillTable(TSA_table)
-        self.AnalDistUI.figureAvg.AverageTSAFigure(proteinData1, proteinData2, columns)
-
-
-    def ShowAnalDistCurve(self):
-        columns = self.columns
-        proteinData1 = self.tableProtein1.model()._data
-        proteinData2 = self.tableProtein2.model()._data
-        
-        header = [self.AnalDistUI.tableWidgetProteinList.horizontalHeaderItem(i).text() for i in range(self.AnalDistUI.tableWidgetProteinList.columnCount())]
-        i = self.AnalDistUI.tableWidgetProteinList.selectedItems()[0].row()
-        j = header.index('Accession')
-        ProteinAccession = self.AnalDistUI.tableWidgetProteinList.item(i, j).text()
-
-        self.AnalDistUI.figureTSA.SingleTSAFigure(proteinData1, proteinData2, columns, ProteinAccession)
-
-
-    def ProcessBarAnalDist(self, msg):
-        self.AnalDistUI.progressBar.setValue(int(msg))
 
     
 

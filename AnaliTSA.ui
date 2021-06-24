@@ -30,8 +30,10 @@
           <widget class="QLabel" name="label_1">
            <property name="font">
             <font>
-             <family>Arial</family>
-             <pointsize>13</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -163,8 +165,10 @@
           <widget class="QLabel" name="label_8">
            <property name="font">
             <font>
-             <family>Arial</family>
-             <pointsize>13</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -218,8 +222,8 @@
           <widget class="QLabel" name="label_11">
            <property name="font">
             <font>
-             <family>Arial</family>
-             <pointsize>13</pointsize>
+             <family>Times New Roman</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">
@@ -249,7 +253,7 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>13</pointsize>
+           <pointsize>12</pointsize>
           </font>
          </property>
          <property name="currentIndex">
@@ -371,8 +375,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>tabWidget</zorder>
-  <zorder>splitter_2</zorder>
  </widget>
  <resources/>
  <connections/>
