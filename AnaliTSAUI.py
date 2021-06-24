@@ -19,6 +19,7 @@ from Utils import TableModel
 from iTSA import iTSA
 from MakeFigure import MakeFigure
 from ColumnSelectUI import ColumnSelectUI
+from RunningUI import Running_Win
 
 
 '''
@@ -65,6 +66,8 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.gridlayoutPCA.addWidget(self.figurePCA_ntb)  
         
         self.ColumnSelectUI = ColumnSelectUI()
+        self.Running_Win = Running_Win()
+        
         self.comboBoxMethod.addItems(['t-Test', 'Limma', 'edgeR', 'DESeq2'])
         self.comboBoxLog2.addItems(['True', 'False'])
         
@@ -75,6 +78,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.data = None
         self.columns = None
         self.label = None
+        self.RunningThread = None
     
 
     def WarnMsg(self, Text):
@@ -177,6 +181,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             else:
                 pass
             
+            self.Running_Win.show()
             result = worker.fit_data(X, y, names)
             result = result.reset_index(drop=True)
             
@@ -191,6 +196,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                 self.figurePCA.PCAPlot(X, y)
             except:
                 pass
+            self.Running_Win.close()
     
     
     def SaveData(self):

@@ -354,3 +354,4 @@ class ComplexThread(QtCore.QThread):
                 
             self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinComplex))))
             self._res.emit([n, pm, dm, p1, d1, p2, d2])        
+

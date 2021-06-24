@@ -18,18 +18,20 @@ from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationTo
 from AnalTSA import Ui_MainWindow
 from ColumnSelectUI import ColumnSelectUI
 from ParamTSAUI import ParamTSAUI
+from RunningUI import Running_Win
 
 from Thread import TPPThread, NPAThread, DistThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, ReplicateCheck
+from Inflect import run_inflect
 
-
+'''
 r1p1Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/DMSO_1.csv')
 r1p2Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/Stauro_1.csv')
 r2p1Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/DMSO_2.csv')
 r2p2Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/Stauro_2.csv')
 columns = ['T37', 'T41.2', 'T44', 'T46.8', 'T50', 'T53.2', 'T54', 'T56.1', 'T59.1', 'T63.2', 'T66.9']
-
+'''
 
 class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
     
@@ -68,6 +70,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionTPP.triggered.connect(self.ShowAnalTPP)
         self.actionNPARC.triggered.connect(self.ShowAnalNPARC)
         self.actionDistance.triggered.connect(self.ShowAnalDist)
+        self.actionINFLECT.triggered.connect(self.ShowAnalInflect)
         
         # button action
         self.tableWidgetProteinList.setSortingEnabled(True)
@@ -89,6 +92,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ParamTSAUI = ParamTSAUI()
         self.ParamTSAUI.ButtonConfirm.clicked.connect(self.SetParams)
         self.ParamTSAUI.ButtonCancel.clicked.connect(self.ParamTSAUI.close)
+        
+        self.Running_Win = Running_Win()
         
         # server data
         self.columns = None
@@ -317,8 +322,24 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # print(msg)
     
     
+    def DisableMenu(self):
+        self.actionTPP.setEnabled(False)
+        self.actionNPARC.setEnabled(False)
+        self.actionDistance.setEnabled(False)
+        self.actionINFLECT.setEnabled(False)
+        
+        
+    def EnableMenu(self):
+        self.actionTPP.setEnabled(True)
+        self.actionNPARC.setEnabled(True)
+        self.actionDistance.setEnabled(True)
+        self.actionINFLECT.setEnabled(True)        
+    
+    
     # TPP Analysis 
     def ShowAnalTPP(self):
+        self.DisableMenu()
+        
         columns = self.columns
         self.tableWidgetProteinList.clear()
         self.progressBar.setValue(0)
@@ -358,18 +379,6 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.TPPThread._res.connect(self.ResultData)
         self.TPPThread.start()
         self.TPPThread.finished.connect(self.VisualizeTPP)
-        
-        '''
-        res = []
-        for i, p in enumerate(prots):
-            x = temps
-            y1 = np.array(data_1[data_1.iloc[:,0] == p].iloc[0,1:])
-            y2 = np.array(data_2[data_2.iloc[:,0] == p].iloc[0,1:])
-            res.append(fit_curve(x, y1, y2, minR2, maxPlateau, h_axis))
-            self.AnalTSAUI.progressBar.setValue(int(i / len(prots)))
-        '''
-        # res = Parallel(n_jobs=n_core, backend = 'threading')(delayed(fit_curve)(p) for p in prots)
-        # res = pd.DataFrame(res)
     
     
     def VisualizeTPP(self):   
@@ -418,10 +427,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)
-
+        self.EnableMenu()
+        
 
     # NPARC Analysis 
     def ShowAnalNPARC(self):
+        self.DisableMenu()
+        
         columns = self.columns
         self.tableWidgetProteinList.clear()
         self.progressBar.setValue(0)
@@ -489,10 +501,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)        
-    
+        self.EnableMenu()
+        
     
     # Distance methods
     def ShowAnalDist(self):
+        self.DisableMenu()
+        
         columns = self.columns
         self.tableWidgetProteinList.clear()
         self.progressBar.setValue(0)
@@ -535,6 +550,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
     
     
     def VisualizeDist(self):
+        self.DisableMenu()
+        
         prots = self.prots
         r2p1Data = self.tableRep2Protein1.model()
         r2p2Data = self.tableRep2Protein2.model()
@@ -574,7 +591,43 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
         self.resultData = []
         self.resultTable = resultTable
-        self.FillTable(resultTable)        
+        self.FillTable(resultTable)
+        self.EnableMenu()
+        
+        
+    # Inflect method
+    def ShowAnalInflect(self):
+        columns = self.columns
+        self.tableWidgetProteinList.clear()
+        self.progressBar.setValue(0)
+        self.resultData = []
+        
+        r1p1Data = self.tableRep1Protein1.model()._data
+        r1p2Data = self.tableRep1Protein2.model()._data
+        try:
+            r2p1Data = self.tableRep2Protein1.model()._data
+            r2p2Data = self.tableRep2Protein2.model()._data
+        except:
+            r2p1Data = None
+            r2p2Data = None
+        
+        Rsq = self.minR2_Infl
+        NumSD = self.numSD_Infl
+        
+        temps = np.array([float(t.replace('T', '')) for t in columns])
+        cols = ['Accession'] + columns
+        
+        if (r2p1Data is None) or (r2p2Data is None):
+            self.ErrorMsg('NPARC must run with two replicates')
+            return None
+        r1p1 = r1p1Data.loc[:, cols]
+        r1p2 = r1p2Data.loc[:, cols]
+        r2p1 = r2p1Data.loc[:, cols]
+        r2p2 = r2p2Data.loc[:, cols]
+        
+        self.Running_Win.show()
+        run_inflect(temps, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD)
+        self.Running_Win.close()
         
 
     # Common functions

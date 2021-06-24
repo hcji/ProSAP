@@ -123,7 +123,6 @@ def fit_dist(x, y1, y2, method = 'cityblock', minR2 = 0.8, maxPlateau = 0.3):
     return r1, r2, rss0, rss1, diff, sl 
 
 
-
 def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
     try:
         paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
