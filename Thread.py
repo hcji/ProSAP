@@ -12,7 +12,7 @@ from scipy.stats import norm
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Utils import TableModel, fit_curve, meltCurve, fit_NPARC
+from Utils import TableModel, fit_curve, meltCurve, fit_NPARC, fit_dist
 
 
 class PreprocessThread(QtCore.QThread):
@@ -22,7 +22,7 @@ class PreprocessThread(QtCore.QThread):
     _rsd = QtCore.pyqtSignal(float)
     _prot = QtCore.pyqtSignal(str)
  
-    def __init__(self, data, psm_column, psm_thres, std_thres, columns, fun):
+    def __init__(self, data, psm_column, psm_thres, std_thres, columns, fun, mv_thres):
         super(PreprocessThread, self).__init__()
         self.data = data
         self.psm_column = psm_column
@@ -30,6 +30,7 @@ class PreprocessThread(QtCore.QThread):
         self.std_thres = std_thres
         self.columns = columns
         self.fun = fun
+        self.mv_thres = mv_thres
         self.working = True
  
     def __del__(self):
@@ -39,6 +40,7 @@ class PreprocessThread(QtCore.QThread):
     def run(self):
         data = self.data
         for i in data.index:
+            # PSM filter 
             if self.psm_column == 'None':
                 pass
             else:  
@@ -46,12 +48,19 @@ class PreprocessThread(QtCore.QThread):
                 psm = np.nanmean(data.iloc[i, wh].values.astype(float))
                 if psm < self.psm_thres:
                     continue
-
+            
+            # check missing value
+            wh = np.where([s.split('--')[0] in self.columns for s in data.columns])[0]
+            v = data.iloc[i, wh].values.astype(float)
+            if len(np.where(np.isnan(v))[0]) / len(v) > self.mv_thres:
+                continue
+            
+            # check RSD
             prot = data.loc[i, 'Accession']
             vals = []
             for c in self.columns:
                 wh = np.where([c == s.split('--')[0] for s in data.columns])[0]
-                v = data.iloc[i, wh].values.astype(float)               
+                v = data.iloc[i, wh].values.astype(float)
                 v = np.round(v, 4)
                 std = np.nanstd(v) / np.nanmean(v)
                 vals.append(self.fun(v))
@@ -110,13 +119,13 @@ class TPPThread(QtCore.QThread):
         self._ind.emit(str(int(100)))
 
 
-class NPARCThread(QtCore.QThread):
+class NPAThread(QtCore.QThread):
     
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
     def __init__(self, prots, temps, r1p1, r1p2, r2p1, r2p2, minR2_null, minR2_alt, maxPlateau):
-        super(NPARCThread, self).__init__()
+        super(NPAThread, self).__init__()
         self.prots = prots
         self.temps = temps
         self.r1p1 = r1p1
@@ -137,28 +146,30 @@ class NPARCThread(QtCore.QThread):
             x = self.temps
             y11 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
             y12 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
-            y21 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
-            y22 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
+            y21 = np.array(self.r2p1[self.r2p1.iloc[:,0] == p].iloc[0,1:])
+            y22 = np.array(self.r2p2[self.r2p2.iloc[:,0] == p].iloc[0,1:])
             rv = fit_NPARC(x, y11, y12, y21, y22, self.minR2_null, self.minR2_alt, self.maxPlateau)
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))
         self._ind.emit(str(int(100)))
     
 
-
 class DistThread(QtCore.QThread):
 
     _ind = QtCore.pyqtSignal(str)
     _res = QtCore.pyqtSignal(list)
  
-    def __init__(self, prots, temps, data_1, data_2, method, minR2):
+    def __init__(self, prots, temps, r1p1, r1p2, r2p1, r2p2, method, minR2, maxPlateau):
         super(DistThread, self).__init__()
         self.prots = prots
         self.temps = temps
-        self.data_1 = data_1
-        self.data_2 = data_2
+        self.r1p1 = r1p1
+        self.r1p2 = r1p2
+        self.r2p1 = r2p1
+        self.r2p2 = r2p2
         self.method = method
         self.minR2 = minR2
+        self.maxPlateau = maxPlateau
         self.working = True
  
     def __del__(self):
@@ -168,9 +179,15 @@ class DistThread(QtCore.QThread):
     def run(self):
         for i, p in enumerate(self.prots):
             x = self.temps
-            y1 = np.array(self.data_1[self.data_1.iloc[:,0] == p].iloc[0,1:])
-            y2 = np.array(self.data_2[self.data_2.iloc[:,0] == p].iloc[0,1:])       
-            rv = np.nan
+            y1 = np.array(self.r1p1[self.r1p1.iloc[:,0] == p].iloc[0,1:])
+            y2 = np.array(self.r1p2[self.r1p2.iloc[:,0] == p].iloc[0,1:])
+            rv = list(fit_dist(x, y1, y2, self.method, self.minR2, self.maxPlateau))
+            
+            if (self.r2p1 is not None) and (self.r2p2 is not None):
+                y1 = np.array(self.r2p1[self.r2p1.iloc[:,0] == p].iloc[0,1:])
+                y2 = np.array(self.r2p2[self.r2p2.iloc[:,0] == p].iloc[0,1:])
+                rv2 = list(fit_dist(x, y1, y2, self.method, self.minR2, self.maxPlateau))
+                rv += rv2
             
             self._ind.emit(str(int(100 * (i+1) / len(self.prots))))
             self._res.emit(list(rv))

@@ -114,8 +114,10 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
     
     
     def DoPropress(self):
+        # import os
         # d = 'D:/project/PDFiles'
         # fileNames = os.listdir(d)
+        # fileNames = [d+'/'+f for f in fileNames]
         fileNames = [self.ListFile.item(i).text() for i in range(self.ListFile.count())]
         fileNames_ = []
         if len(fileNames) == 0:
@@ -158,6 +160,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         psm_column = self.comboBoxPSM.currentText()
         psm_thres = self.spinBoxPSMFilter.value()
         std_thres = self.doubleSpinBoxRSDFilter.value()
+        mv_thres = self.doubleSpinBoxMVFilter.value()
             
         all_data = []
         for f in fileNames:
@@ -210,7 +213,7 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             ratios = medians / np.mean(medians)
             data.iloc[:,whs] = data.iloc[:,whs] / ratios
             
-        self.PreprocessThread = PreprocessThread(data, psm_column, psm_thres, std_thres, columns, fun)
+        self.PreprocessThread = PreprocessThread(data, psm_column, psm_thres, std_thres, columns, fun, mv_thres)
         self.PreprocessThread._ind.connect(self.ProcessBar)
         self.PreprocessThread._val.connect(self.ValueData)
         self.PreprocessThread._rsd.connect(self.RSDData)

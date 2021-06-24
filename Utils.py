@@ -60,8 +60,8 @@ def fit_NPARC(x, y11, y12, y21, y22, minR2_null = 0.8, minR2_alt = 0.8, maxPlate
     y1_null = np.concatenate([y11, y21])
     y2_null = np.concatenate([y12, y22])
     try:
-        paras1_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
-        paras2_null = curve_fit(meltCurve, x_null, y2_null, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        paras1_null = curve_fit(meltCurve, x_null, y1_null, bounds=(0, [15000, 250, maxPlateau]))[0]
+        paras2_null = curve_fit(meltCurve, x_null, y2_null, bounds=(0, [15000, 250, maxPlateau]))[0]
         yh1_null = meltCurve(x_null, paras1_null[0], paras1_null[1], paras1_null[2])
         yh2_null = meltCurve(x_null, paras2_null[0], paras2_null[1], paras2_null[2])
         rss_null = np.sum((y1_null - yh1_null) ** 2) + np.sum((y2_null - yh2_null) ** 2)
@@ -83,7 +83,7 @@ def fit_NPARC(x, y11, y12, y21, y22, minR2_null = 0.8, minR2_alt = 0.8, maxPlate
         if r_alt < minR2_alt:
             rss_alt = np.nan
         else:
-            rss_alt = np.sum((y_alt - yh_alt) ** 2) + np.sum((y_alt - yh_alt) ** 2)
+            rss_alt = np.sum((y_alt - yh_alt) ** 2)
     except:
         rss_alt = np.nan
     
@@ -91,12 +91,12 @@ def fit_NPARC(x, y11, y12, y21, y22, minR2_null = 0.8, minR2_alt = 0.8, maxPlate
     return r1_null, r2_null, rss_null, rss_alt, rss_diff
     
 
-def fit_np(x, y1, y2, method = 'fitness', minR2 = 0.8):
+def fit_dist(x, y1, y2, method = 'cityblock', minR2 = 0.8, maxPlateau = 0.3):
     try: 
-        paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
-        paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
+        paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [15000, 250, maxPlateau]))[0]
+        paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [15000, 250, maxPlateau]))[0]
     except:
-        return 0, 0, 0, 0, 0, 0
+        return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
     
     yh1 = meltCurve(x, paras1[0], paras1[1], paras1[2])
     yh2 = meltCurve(x, paras2[0], paras2[1], paras2[2])
@@ -109,28 +109,17 @@ def fit_np(x, y1, y2, method = 'fitness', minR2 = 0.8):
     sl2 = np.min((yy2[1:] - yy2[:-1]) / 0.01)
     sl = min(sl1, sl2)
     
-    if method == 'fitness':
-        x0 = np.concatenate([x, x])
-        y0 = np.concatenate([y1, y2])
-    
-        try:
-            paras0 = curve_fit(meltCurve, x0, y0, bounds=(0, [float('inf'), float('inf'), 1.5]))[0]
-        except:
-            return 0, 0, 0, 0, 0, 0
-    
-        yh0 = meltCurve(x0, paras0[0], paras0[1], paras0[2])
-        rss0 = np.sum((y0 - yh0) ** 2)
-        diff = abs(rss1 - rss0)
-    else:
-        rss0 = np.sum(yh1)
-        rss1 = np.sum(yh2)
-        diff = pdist(np.vstack([yh1, yh2]), metric = method)[0]
+    rss0 = np.sum(yh1)
+    rss1 = np.sum(yh2)
+    diff = pdist(np.vstack([yh1, yh2]), metric = method)[0]
     
     r1 = max(r2_score(y1, yh1), 0)
     r2 = max(r2_score(y2, yh2), 0)
     if min(r1, r2) < minR2:
         diff = np.nan
-    
+        sl = np.nan
+        rss0 = np.nan
+        rss1 = np.nan
     return r1, r2, rss0, rss1, diff, sl 
 
 
@@ -186,8 +175,8 @@ def ReplicateCheck(tppTable):
     if 'Rep2delta_Tm' not in tppTable.columns:
         return tppTable
     for i in tppTable.index:
-        pval_1 = tppTable.loc[i, 'Rep1p_Val (-log10)']
-        pval_2 = tppTable.loc[i, 'Rep2p_Val (-log10)']
+        pval_1 = tppTable.loc[i, 'Rep1pVal (-log10)']
+        pval_2 = tppTable.loc[i, 'Rep2pVal (-log10)']
         cond_1 = (max(pval_1, pval_2) > 1.302) and (min(pval_1, pval_2) > 1)
         
         delm_1 = tppTable.loc[i, 'Rep1delta_Tm']
