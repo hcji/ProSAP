@@ -30,7 +30,7 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QLabel" name="labelFileList">
@@ -65,13 +65,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="ButtonConfirm">
-             <property name="text">
-              <string>Confirm</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="ButtonClear">
              <property name="text">
               <string>Clear</string>
@@ -82,7 +75,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="labelFileList_2">
@@ -114,6 +107,13 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ButtonConfirm">
+             <property name="text">
+              <string>With Missing</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="ButtonExclude">

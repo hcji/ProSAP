@@ -553,9 +553,6 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
 
     def ResultProtPair(self, msg):
         self.resultProtPair.append(msg)
-
-    
-
     
 
 if __name__ == '__main__':

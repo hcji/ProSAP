@@ -19,6 +19,7 @@ matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtGui, QtWidgets
+from seaborn import violinplot, boxplot
 from Utils import meltCurve
 
 
@@ -219,4 +220,15 @@ class MakeFigure(FigureCanvas):
             for j in range(corr.shape[0]):
                 self.axes.text(i, j, corr[i, j], ha="center", va="center", color="black", fontsize=3)
         self.draw()
+        
+        
+    def PlotQCRSD(self, dataRSD):
+        self.axes.cla()
+        violinplot(x="Method", y="RSD", data=dataRSD, ax=self.axes)
+        self.draw()
     
+    
+    def PlotQCBox(self, databox):
+        self.axes.cla()
+        boxplot(x="Method", y="Values", data=databox, ax=self.axes)
+        self.draw()
