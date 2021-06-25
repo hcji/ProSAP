@@ -628,7 +628,35 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Running_Win.show()
         run_inflect(temps, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD)
         self.Running_Win.close()
+        self.VisualizeInflect()
+    
+    
+    def VisualizeInflect(self):
+        try:
+            Rep1Result = pd.read_excel('C:/inflect_tempdir/Rep 1/Results.xlsx')
+            Rep2Result = pd.read_excel('C:/inflect_tempdir/Rep 2/Results.xlsx')
+            Rep1Sig = pd.read_excel('C:/inflect_tempdir/Rep 1/SignificantResults.xlsx')
+            Rep2Sig = pd.read_excel('C:/inflect_tempdir/Rep 2/SignificantResults.xlsx')
+        except:
+            self.ErrorMsg('Unexpected error, try other method')
+            return None
         
+        Rep1Result = Rep1Result[['Accession', 'R2..Control', 'R2..Condition', 'Tm..Control', 'Tm..Condition']]
+        Rep1Result.columns = ['Accession', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm']
+        
+        Rep2Result = Rep2Result[['Accession', 'R2..Control', 'R2..Condition', 'Tm..Control', 'Tm..Condition']]
+        Rep2Result.columns = ['Accession', 'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_Tm', 'Rep2Group2_Tm']
+        
+        all_sig = set(Rep1Sig['Accession']) & set(Rep2Sig['Accession'])
+        
+        res = Rep1Result.merge(Rep2Result, on = 'Accession')
+        Significant = [str(x in all_sig) for x in res['Accession']]
+        res['Significant'] = Significant
+        resultTable = res.sort_values(by = 'Significant', axis = 0, ascending = False)
+        
+        self.FillTable(resultTable)
+        self.EnableMenu()        
+    
 
     # Common functions
     def ShowMeltCurve(self):

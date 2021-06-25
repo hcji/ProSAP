@@ -14,7 +14,6 @@ from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
-from AnalDistUI import AnalDistUI
 from AnalTPCAUI import AnalTPCAUI
 
 
@@ -30,13 +29,11 @@ class TSAnalystUI(QMainWindow, Ui_Form):
         self.AnalTSAUI = AnalTSAUI()
         self.AnaliTSAUI = AnaliTSAUI()
         self.PreprocessUI = PreprocessUI()
-        self.AnalDistUI = AnalDistUI()
         
         self.pushButtonPreprocess.clicked.connect(self.PreprocessUI.show)
         self.pushButtonITSA.clicked.connect(self.AnaliTSAUI.show)
-        self.pushButtonTPCA.clicked.connect(self.AnalTPCAUI.show)
-        
-        
+        self.pushButtonTPP.clicked.connect(self.AnalTSAUI.show)
+        self.pushButtonTPCA.clicked.connect(self.AnalTPCAUI.show)      
         
         
 
