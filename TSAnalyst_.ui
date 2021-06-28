@@ -35,7 +35,7 @@
   <widget class="QPushButton" name="pushButtonPreprocess">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>130</x>
      <y>220</y>
      <width>211</width>
      <height>51</height>
@@ -54,8 +54,8 @@
   <widget class="QPushButton" name="pushButtonTPP">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>340</y>
+     <x>130</x>
+     <y>360</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -73,7 +73,7 @@
   <widget class="QPushButton" name="pushButtonITSA">
    <property name="geometry">
     <rect>
-     <x>610</x>
+     <x>460</x>
      <y>220</y>
      <width>211</width>
      <height>51</height>
@@ -92,8 +92,8 @@
   <widget class="QPushButton" name="pushButtonTPCA">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>340</y>
+     <x>460</x>
+     <y>360</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -106,25 +106,6 @@
    </property>
    <property name="text">
     <string>TPCA Analysis</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonQC">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>220</y>
-     <width>211</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Times New Roman</family>
-     <pointsize>13</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>QC Analysis</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
