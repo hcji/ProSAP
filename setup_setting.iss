@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "TSAnalyst"
-#define MyAppVersion "0.99.0"
+#define MyAppVersion "0.99.2"
 #define MyAppPublisher "InternOmics Lab"
 #define MyAppURL "https://github.com/hcji/TSAnalyst"
 #define MyAppExeName "TSAnalyst.exe"

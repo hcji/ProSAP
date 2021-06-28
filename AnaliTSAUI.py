@@ -110,7 +110,13 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                 self.data = pd.read_excel(fileName)
             else:
                 self.ErrorMsg("Invalid format")
-                
+            
+            if 'Accession' in self.data.columns:
+                pass
+            else:
+                self.ErrorMsg('Accession is not given in the data')
+                return None
+            
             self.tableViewData.setModel(TableModel(self.data))
             self.ColumnSelectUI.listWidget.clear()
             columns = self.data.columns
