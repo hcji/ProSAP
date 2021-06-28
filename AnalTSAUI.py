@@ -652,9 +652,9 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         res = Rep1Result.merge(Rep2Result, on = 'Accession')
         Significant = [str(x in all_sig) for x in res['Accession']]
         res['Significant'] = Significant
-        resultTable = res.sort_values(by = 'Significant', axis = 0, ascending = False)
+        self.resultTable = res.sort_values(by = 'Significant', axis = 0, ascending = False)
         
-        self.FillTable(resultTable)
+        self.FillTable(self.resultTable)
         self.EnableMenu()        
     
 

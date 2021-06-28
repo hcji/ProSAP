@@ -190,6 +190,8 @@ def ReplicateCheck(tppTable):
         cond_4 = max(mins_1, mins_2) < -0.06
         
         if cond_1 and cond_2 and cond_3 and cond_4:
+            pass
+        else:
             tppTable.loc[i, 'Score'] = 0
     return tppTable
             
