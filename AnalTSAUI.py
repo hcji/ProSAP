@@ -564,9 +564,9 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
                            'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_SH', 'Rep2Group2_SH', 'Rep2delta_SH', 'Rep2min_Slope']
         
         if 'Rep2delta_SH' in res.columns:
-            delta_SH_1 = res['Rep1Group2_SH'] - res['Rep1Group1_SH']
-            delta_SH_2 = res['Rep2Group2_SH'] - res['Rep2Group1_SH']
-            delta_SH = np.abs(delta_SH_1 + delta_SH_2)
+            sign_1 = np.sign(res['Rep1Group2_SH'] - res['Rep1Group1_SH'])
+            sign_2 = np.sign(res['Rep2Group2_SH'] - res['Rep2Group1_SH'])
+            delta_SH = np.abs(res['Rep1delta_SH'] * sign_1 + res['Rep2delta_SH'] * sign_2)
         else:
             delta_SH = res['Rep1delta_SH']
         

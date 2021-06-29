@@ -98,6 +98,7 @@ def fit_dist(x, y1, y2, method = 'cityblock', minR2 = 0.8, maxPlateau = 0.3):
     except:
         return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
     
+    # print(method)
     yh1 = meltCurve(x, paras1[0], paras1[1], paras1[2])
     yh2 = meltCurve(x, paras2[0], paras2[1], paras2[2])
     rss1 = np.sum((y1 - yh1) ** 2) + np.sum((y2 - yh2) ** 2)
@@ -125,8 +126,8 @@ def fit_dist(x, y1, y2, method = 'cityblock', minR2 = 0.8, maxPlateau = 0.3):
 
 def fit_curve(x, y1, y2, minR2 = 0.8, maxPlateau = 0.3, h_axis = 0.5):
     try:
-        paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
-        paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [float('inf'), float('inf'), maxPlateau]))[0]
+        paras1 = curve_fit(meltCurve, x, y1, bounds=(0, [15000, 250, maxPlateau]))[0]
+        paras2 = curve_fit(meltCurve, x, y2, bounds=(0, [15000, 250, maxPlateau]))[0]
     except:
         return 0, 0, 0, 0, 0, 0
     
