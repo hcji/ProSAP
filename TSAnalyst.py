@@ -10,7 +10,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from TSAnalyst_ import Ui_Form
-from AnalROCUI import AnalROCUI
 from AnalTSAUI import AnalTSAUI
 from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
