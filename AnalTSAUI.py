@@ -412,7 +412,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             res['Rep2pVal (-log10)'] = np.round(-np.log10(p_Val), 3)
             score_2 = -np.log10(np.array(p_Val)) * (res['Rep2Group1_R2'] * res['Rep2Group2_R2']) ** 2
             score += score_2
-
+        
+        score[np.isnan(score)] = 0
         res['Score'] = score
         res = np.round(res, 3)
         res['Accession'] = prots
@@ -422,7 +423,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             res = res[['Accession', 'Score', 'Rep1pVal (-log10)', 'Rep1delta_Tm', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm', 'Rep1min_Slope',
                        'Rep2pVal (-log10)', 'Rep2delta_Tm', 'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_Tm', 'Rep2Group2_Tm', 'Rep2min_Slope']]
             if self.repCheck_TPP == 'True':
-                res = ReplicateCheck(res)  
+                res = ReplicateCheck(res)
+                
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
         self.resultData = []
         self.resultTable = resultTable
@@ -490,7 +492,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             pv = stats.f.sf(s, d1, d2)
             p_Val.append(pv)
         score = -np.log10(np.array(p_Val)) * (res['Group1_R2'] * res['Group2_R2']) ** 2
-    
+        
+        score[np.isnan(score)] = 0
         res['Accession'] = prots
         res['p_Val (-log10)'] = -np.log10(p_Val)
         res['Score'] = score
@@ -578,6 +581,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         res['pVal (-log10)'] = np.round(-np.log10(p_Val), 3)
         score = -np.log10(np.array(p_Val)) * (res['Rep1Group1_R2'] * res['Rep1Group2_R2']) ** 2
         
+        score[np.isnan(score)] = 0
         res['Score'] = score
         res = np.round(res, 3)
         res['Accession'] = prots
@@ -655,7 +659,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.resultTable = res.sort_values(by = 'Significant', axis = 0, ascending = False)
         
         self.FillTable(self.resultTable)
-        self.EnableMenu()        
+        self.EnableMenu()
     
 
     # Common functions

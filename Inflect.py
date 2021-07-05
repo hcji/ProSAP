@@ -9,6 +9,9 @@ numpy2ri.activate()
 pandas2ri.activate()
 
 r_codes = '''
+if (! 'BiocManager' %in% installed.packages()){
+  install.packages('BiocManager')
+}
 
 if (!'Inflect' %in% installed.packages()){
   BiocManager::install('Inflect')
