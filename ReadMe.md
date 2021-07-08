@@ -23,16 +23,31 @@ Then, download the gzip file, unzip to any folder and execute TSAnalyst.
 Windows: [TSAnalyst-0.99.2-win64.exe](https://zenodo.org/record/5077939#.YOZHmDPitPY)
 Linux: [TSAnalyst-0.99.2-Linux.tar.gz](https://zenodo.org/record/5077939#.YOZHmDPitPY)
 
-
 ### Compile with source
 
 Advanced users and Mac users can compile the source codes. Required dependencies:
 
-1. [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)
-2. [R (>= 4.0)](https://www.r-project.org/)
-3. [PyQt5](https://pypi.org/project/PyQt5/)
-4. [RPy2](https://pypi.org/project/rpy2/)
+* [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)    
+* [R (>= 4.0)](https://www.r-project.org/)    
+* [PyQt5](https://pypi.org/project/PyQt5/)    
+* [RPy2](https://pypi.org/project/rpy2/)    
 
-	pyinstaller TSAnalyst.py -w -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
-	
+Then, clone the repository and enter:
+        
+        git clone https://github.com/hcji/TSAnalyst.git
 
+Next, compile the source   
+        
+        pyinstaller TSAnalyst.py -w -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
+
+Just run */dist/TSAnalyst.exe*
+
+
+### Document
+
+The detailed usage is included in the [help document](https://github.com/hcji/TSAnalyst/blob/master/TSAnalyst%20Desktop%20Tutorial.docx)
+
+
+### Contact
+
+E-mail: ji.hongchao@foxmail.com
