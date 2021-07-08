@@ -20,13 +20,13 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 "software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
 Then, download the gzip file, unzip to any folder and execute TSAnalyst.
 
-Windows: [TSAnalyst-0.99.2-win64.exe](https://zenodo.org/record/5069060#.YOJ6LjPitPZ)
-Linux: 
+Windows: [TSAnalyst-0.99.2-win64.exe](https://zenodo.org/record/5077939#.YOZHmDPitPY)
+Linux: [TSAnalyst-0.99.2-Linux.tar.gz](https://zenodo.org/record/5077939#.YOZHmDPitPY)
 
 
 ### Compile with source
 
-Advanced users can also choose to compile the source codes. Required dependencies:
+Advanced users and Mac users can compile the source codes. Required dependencies:
 
 1. [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)
 2. [R (>= 4.0)](https://www.r-project.org/)
