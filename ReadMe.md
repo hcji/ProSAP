@@ -45,7 +45,7 @@ Just run */dist/TSAnalyst.exe*
 
 ### Document
 
-The detailed usage is included in the [help document](https://github.com/hcji/TSAnalyst/blob/master/TSAnalyst%20Desktop%20Tutorial.docx)
+The detailed usage is included in the [TSAnalyst website](https://hcji.shinyapps.io/tsanalyst_page/)
 
 
 ### Contact
