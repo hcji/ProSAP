@@ -29,7 +29,7 @@
     </font>
    </property>
    <property name="text">
-    <string>TSAnalyst</string>
+    <string>ProSAP</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonPreprocess">
@@ -144,6 +144,25 @@
    </property>
    <property name="text">
     <string>E-mail: ji.hongchao@foxmail.com</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>80</y>
+     <width>341</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>-- Protein Stability Analysis Pod</string>
    </property>
   </widget>
  </widget>

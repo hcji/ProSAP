@@ -1,7 +1,7 @@
-## TSAnalyst
+## ProSAP
 
-TSAnalyst is standalone and user-friendly software with graphical user interface (GUI). TSAnalyst 
-TSAnalyst provides an integrated analysis workflow for thermal shift assay, which includes five 
+ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
+ProSAP provides an integrated analysis workflow for thermal shift assay, which includes five 
 modules: data preprocessing, data visualization, TPP analysis, NPARC analysis and iTSA analysis. 
 With the assistance of the user-friendly interface, researchers can easily compare several statistical 
 strategies, analyze the results and draw the conclusion from the proteomics quantitative table obtained 
@@ -9,7 +9,7 @@ by Proteome Discoverer or MaxQuant. Users would also benefit from a comprehensiv
 performance of different algorithms, and apply appropriate algorithms to their dataset easily.
 
 <div align="center">
-<img src="https://github.com/hcji/TSAnalyst/blob/master/figure.png">
+<img src="https://github.com/hcji/ProSAP/blob/master/figure.png">
 </div>
 
 
@@ -18,10 +18,10 @@ performance of different algorithms, and apply appropriate algorithms to their d
 For Windows, the installer version should be preferred but might require administrator permissions. 
 Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
 "software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
-Then, download the gzip file, unzip to any folder and execute TSAnalyst.
+Then, download the gzip file, unzip to any folder and execute ProSAP.
 
-Windows: [TSAnalyst-0.99.2-win64.exe](https://zenodo.org/record/5077939#.YOZHmDPitPY)    
-Linux: [TSAnalyst-0.99.2-Linux.tar.gz](https://zenodo.org/record/5077939#.YOZHmDPitPY)
+Windows: [ProSAP-0.99.2-win64.exe](https://zenodo.org/api/files/de3590cb-0a28-4616-ae09-e8134f7a2aa9/TSAnalyst-0.99.2-win64.exe?versionId=17f0df92-0a5d-4ad3-8b29-25b55c26fdad)    
+Linux: [ProSAP-0.99.2-Linux.tar.gz](https://zenodo.org/api/files/de3590cb-0a28-4616-ae09-e8134f7a2aa9/TSAnalyst-0.99.2-Linux.tar.gz?versionId=431af2d1-016c-4d07-8150-db0f260854d6)
 
 ### Compile with source
 
@@ -34,18 +34,18 @@ Advanced users and Mac users can compile the source codes. Required dependencies
 
 Then, clone the repository and enter:
         
-        git clone https://github.com/hcji/TSAnalyst.git
+        git clone https://github.com/hcji/ProSAP.git
 
 Next, compile the source   
         
-        pyinstaller TSAnalyst.py -w -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
+        pyinstaller ProSAP.py -w -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
 
-Just run */dist/TSAnalyst.exe*
+Just run */dist/ProSAP.exe*
 
 
 ### Document
 
-The detailed usage is included in the [TSAnalyst website](https://hcji.shinyapps.io/tsanalyst_page/)
+The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/)
 
 
 ### Contact

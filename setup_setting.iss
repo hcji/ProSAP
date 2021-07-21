@@ -4,7 +4,7 @@
 #define MyAppName "TSAnalyst"
 #define MyAppVersion "0.99.2"
 #define MyAppPublisher "InternOmics Lab"
-#define MyAppURL "https://github.com/hcji/TSAnalyst"
+#define MyAppURL "https://github.com/hcji/ProSAP"
 #define MyAppExeName "TSAnalyst.exe"
 
 [Setup]
@@ -21,12 +21,12 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=D:\project\TSAnalyst\LICENSE.rtf
+LicenseFile=D:\project\ProSAP\LICENSE.rtf
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=D:\project\TSAnalyst\setup
-OutputBaseFilename=TSAnalyst_setup
-SetupIconFile=D:\project\TSAnalyst\img\TPCA.ico
+OutputDir=D:\project\ProSAP\setup
+OutputBaseFilename=ProSAP_setup
+SetupIconFile=D:\project\ProSAP\img\ProSAP.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

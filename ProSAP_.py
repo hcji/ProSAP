@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'TSAnalyst_.ui'
+# Form implementation generated from reading ui file 'ProSAP_.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -61,6 +61,13 @@ class Ui_Form(object):
         font.setPointSize(12)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(Form)
+        self.label_4.setGeometry(QtCore.QRect(190, 80, 341, 21))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(16)
+        self.label_4.setFont(font)
+        self.label_4.setObjectName("label_4")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -68,13 +75,14 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", "TSAnalyst"))
+        self.label.setText(_translate("Form", "ProSAP"))
         self.pushButtonPreprocess.setText(_translate("Form", "Preprocess"))
         self.pushButtonTPP.setText(_translate("Form", "TPP Analysis"))
         self.pushButtonITSA.setText(_translate("Form", "PISA/iTSA Analysis"))
         self.pushButtonTPCA.setText(_translate("Form", "TPCA Analysis"))
         self.label_2.setText(_translate("Form", "Author: Ji Hongchao, Lu Xue, Chris Tan"))
         self.label_3.setText(_translate("Form", "E-mail: ji.hongchao@foxmail.com"))
+        self.label_4.setText(_translate("Form", "-- Protein Stability Analysis Pod"))
 
 
 if __name__ == "__main__":
