@@ -38,7 +38,7 @@ Then, clone the repository and enter:
 
 Next, compile the source   
         
-        pyinstaller ProSAP.py -w -i ./img/TPCA.ico --hidden-import=“sklearn.utils._weight_vector” 
+        pyinstaller ProSAP.py -i ./img/ProSAP.ico --hidden-import=“sklearn.utils._weight_vector” 
 
 Just run */dist/ProSAP.exe*
 
