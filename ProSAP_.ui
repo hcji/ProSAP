@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,28 +13,21 @@
     <height>638</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>948</width>
+    <height>638</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>948</width>
+    <height>638</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>50</y>
-     <width>231</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial Black</family>
-     <pointsize>24</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>ProSAP</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButtonPreprocess">
    <property name="geometry">
     <rect>
@@ -146,24 +142,43 @@
     <string>E-mail: ji.hongchao@foxmail.com</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>80</y>
-     <width>341</width>
-     <height>21</height>
+     <x>40</x>
+     <y>50</y>
+     <width>525</width>
+     <height>58</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Times New Roman</family>
-     <pointsize>16</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>-- Protein Stability Analysis Pod</string>
-   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <family>Arial Black</family>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>ProSAP</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_4">
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>-- Protein Stability Analysis Pod</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
