@@ -6,7 +6,7 @@ Created on Wed Apr 14 09:29:07 2021
 """
 
 import ctypes
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TPCA")
+# ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TPCA")
 
 import numpy as np
 import pandas as pd
