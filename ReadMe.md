@@ -20,8 +20,12 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 "software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
 Then, download the gzip file, unzip to any folder and execute ProSAP.
 
-Windows: [ProSAP-0.99.2-win64.exe](https://zenodo.org/api/files/de3590cb-0a28-4616-ae09-e8134f7a2aa9/TSAnalyst-0.99.2-win64.exe?versionId=17f0df92-0a5d-4ad3-8b29-25b55c26fdad)    
-Linux: [ProSAP-0.99.2-Linux.tar.gz](https://zenodo.org/api/files/de3590cb-0a28-4616-ae09-e8134f7a2aa9/TSAnalyst-0.99.2-Linux.tar.gz?versionId=431af2d1-016c-4d07-8150-db0f260854d6)
+Windows: [ProSAP-0.99.2-win64.exe](https://zenodo.org/record/5118040/files/ProSAP-0.99.2-win64.zip?download=1)    
+Linux: [ProSAP-0.99.2-Linux.tar.gz](https://zenodo.org/record/5118040/files/ProSAP-0.99.2-Linux.tar.gz?download=1)
+
+Linux users need install extra dependency of QT:
+
+        sudo apt-get install libxcb-xinerama0
 
 ### Compile with source
 
@@ -40,13 +44,13 @@ Next, compile the source
         
         pyinstaller ProSAP.py -i ./img/ProSAP.ico --hidden-import=“sklearn.utils._weight_vector” 
 
-Just run */dist/ProSAP.exe*
+Just run ./dist/ProSAP
 
 
 ### Document
 
 The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/)
-
+The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video)
 
 ### Contact
 
