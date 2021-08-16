@@ -49,8 +49,8 @@ Just run ./dist/ProSAP
 
 ### Document
 
-The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/)
-The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video)
+The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/).    
+The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
 ### Contact
 
