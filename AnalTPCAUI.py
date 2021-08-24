@@ -56,13 +56,13 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         self.AnalDistThread = None
         
         # groupbox
-        self.figureG1 = MakeFigure(5, 5)
+        self.figureG1 = MakeFigure(10, 10)
         self.figureG1_ntb = NavigationToolbar(self.figureG1, self)
         self.gridlayoutG1 = QGridLayout(self.groupBox)
         self.gridlayoutG1.addWidget(self.figureG1)
         self.gridlayoutG1.addWidget(self.figureG1_ntb)
         
-        self.figureG2 = MakeFigure(5, 5)
+        self.figureG2 = MakeFigure(10, 10)
         self.figureG2_ntb = NavigationToolbar(self.figureG2, self)
         self.gridlayoutG2 = QGridLayout(self.groupBox_2)
         self.gridlayoutG2.addWidget(self.figureG2)
