@@ -64,7 +64,7 @@ procedure InstallR;
 var
   ResultCode: Integer;
 begin
-  if not Exec(ExpandConstant('{tmp}\R-4.0.5-win.exe'), '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  if not Exec(ExpandConstant('{tmp}\R-4.1.0-win.exe'), '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
   begin
     MsgBox('R failed with code: ' + IntToStr(ResultCode) + '.',
       mbError, MB_OK);
