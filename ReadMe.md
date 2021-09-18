@@ -9,7 +9,7 @@ by Proteome Discoverer or MaxQuant. Users would also benefit from a comprehensiv
 performance of different algorithms, and apply appropriate algorithms to their dataset easily.
 
 <div align="center">
-<img src="https://github.com/hcji/ProSAP/blob/master/figure.png">
+<img src="https://github.com/hcji/ProSAP/blob/master/figure.png" width="50%">
 </div>
 
 
@@ -20,8 +20,8 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 "software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
 Then, download the gzip file, unzip to any folder and execute ProSAP.
 
-Windows: [ProSAP-0.99.2-win64.exe](https://zenodo.org/record/5118040/files/ProSAP-0.99.2-win64.zip?download=1)    
-Linux: [ProSAP-0.99.2-Linux.tar.gz](https://zenodo.org/record/5118040/files/ProSAP-0.99.2-Linux.tar.gz?download=1)
+Windows: [ProSAP-0.99.3-win64.exe](https://zenodo.org/record/5513410/files/ProSAP-0.99.3-win64.zip?download=1)    
+Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5513410/files/ProSAP-0.99.3-Linux.tar.gz?download=1)
 
 Linux users need install extra dependency of QT:
 
