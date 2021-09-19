@@ -1,5 +1,6 @@
 # ProSAP
 
+![GitHub](https://img.shields.io/badge/platform-windows%7Clinux-brightgreen)
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
