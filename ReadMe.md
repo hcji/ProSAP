@@ -5,7 +5,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5513410.svg)](https://doi.org/10.5281/zenodo.5513410)
 
-=======
+***
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
 ProSAP provides an integrated analysis workflow for thermal shift assay, which includes five 
