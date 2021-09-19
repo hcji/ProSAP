@@ -1,11 +1,9 @@
-## ProSAP
-***
+# ProSAP
 
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5513410.svg)](https://doi.org/10.5281/zenodo.5513410)
-
 
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
@@ -21,7 +19,7 @@ performance of different algorithms, and apply appropriate algorithms to their d
 </div>
 
 
-### Installation
+## Installation
 
 For Windows, the installer version should be preferred but might require administrator permissions. 
 Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
@@ -35,7 +33,7 @@ Linux users need install extra dependency of QT:
 
         sudo apt-get install libxcb-xinerama0
 
-### Compile with source
+## Compile with source
 
 Advanced users and Mac users can compile the source codes. Required dependencies:
 
@@ -55,12 +53,12 @@ Next, compile the source
 Just run ./dist/ProSAP
 
 
-### Document
+## Document
 
 The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/).    
 The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
-### Contact
+## Contact
 
 E-mail: ji.hongchao@foxmail.com
 
