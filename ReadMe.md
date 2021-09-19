@@ -1,7 +1,11 @@
 ## ProSAP
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/hcji/ProSAP)
 
-===
+![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
+![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5513410.svg)](https://doi.org/10.5281/zenodo.5513410)
+
+=======
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
 ProSAP provides an integrated analysis workflow for thermal shift assay, which includes five 
@@ -58,3 +62,5 @@ The videos for using the software are available at the [video folder](https://gi
 ### Contact
 
 E-mail: ji.hongchao@foxmail.com
+
+<div itemscope itemtype="https://schema.org/Person"><a itemprop="sameAs" content="https://orcid.org/0000-0002-7364-0741" href="https://orcid.org/0000-0002-7364-0741" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">https://orcid.org/0000-0002-7364-0741</a></div>
