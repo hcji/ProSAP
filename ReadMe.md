@@ -27,6 +27,8 @@ Linux users need install extra dependency of QT:
 
         sudo apt-get install libxcb-xinerama0
 
+ProSAP has been test on Windows 7, Windows 10, Windows 11 and Ubuntu 20.04. However, it does not work on Windows XP.
+
 ### Compile with source
 
 Advanced users and Mac users can compile the source codes. Required dependencies:
