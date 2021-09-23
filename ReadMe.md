@@ -1,4 +1,4 @@
-## ProSAP
+# ProSAP
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
 ProSAP provides an integrated analysis workflow for thermal shift assay, which includes five 
@@ -13,7 +13,7 @@ performance of different algorithms, and apply appropriate algorithms to their d
 </div>
 
 
-### Installation
+## Installation
 
 For Windows, the installer version should be preferred but might require administrator permissions. 
 Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
@@ -29,7 +29,7 @@ Linux users need install extra dependency of QT:
 
 ProSAP has been test on Windows 7, Windows 10, Windows 11 and Ubuntu 20.04. However, it does not work on Windows XP.
 
-### Compile with source
+## Compile with source
 
 Advanced users and Mac users can compile the source codes. Required dependencies:
 
@@ -49,11 +49,11 @@ Next, compile the source
 Just run ./dist/ProSAP
 
 
-### Document
+## Document
 
 The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/).    
 The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
-### Contact
+## Contact
 
 E-mail: ji.hongchao@foxmail.com
