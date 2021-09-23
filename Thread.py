@@ -333,7 +333,7 @@ class ComplexThread(QtCore.QThread):
                 if len(a) > 0:
                     l.append(a[0])
             if len(l) <= 2:
-                pm, dm, p1, d1, p2, d2 = np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
+                n, pm, dm, p1, d1, p2, d2 = np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
             else:
                 dist1_sub = dist1_align[l,:][:,l]
                 dist2_sub = dist2_align[l,:][:,l]
@@ -353,5 +353,5 @@ class ComplexThread(QtCore.QThread):
                 pm = round(norm.sf(zm),3)
                 
             self._ind.emit(str(50 + int( 50 * (i + 1) / len(self.proteinComplex))))
-            self._res.emit([n, pm, dm, p1, d1, p2, d2])        
+            self._res.emit([n, pm, dm, p1, d1, p2, d2])
 
