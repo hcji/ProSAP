@@ -1,10 +1,10 @@
 # ProSAP
 
-![GitHub](https://img.shields.io/badge/platform-windows%7Clinux-brightgreen)
+![GitHub](https://img.shields.io/badge/platform-Windows%7CLinux%7CMacOS-brightgreen)
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5513410.svg)](https://doi.org/10.5281/zenodo.5513410)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5525802.svg)](https://doi.org/10.5281/zenodo.5525802)
 
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
@@ -27,8 +27,10 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 "software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
 Then, download the gzip file, unzip to any folder and execute ProSAP.
 
-Windows: [ProSAP-0.99.3-win64.exe](https://zenodo.org/record/5513410/files/ProSAP-0.99.3-win64.zip?download=1)    
-Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5513410/files/ProSAP-0.99.3-Linux.tar.gz?download=1)
+Windows: [ProSAP-0.99.3-win64.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-win64.zip?download=1)    
+Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Linux.tar.gz?download=1)
+MacOS: [ProSAP-0.99.3-Mac.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Mac.zip?download=1)
+
 
 Linux users need install extra dependency of QT:
 
@@ -38,7 +40,7 @@ ProSAP has been test on Windows 7, Windows 10, Windows 11 and Ubuntu 20.04. Howe
 
 ## Compile with source
 
-Advanced users and Mac users can compile the source codes. Required dependencies:
+Advanced users can compile the source codes. Required dependencies:
 
 * [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)    
 * [R (>= 4.0)](https://www.r-project.org/)    
