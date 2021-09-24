@@ -28,7 +28,7 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 Then, download the gzip file, unzip to any folder and execute ProSAP.
 
 Windows: [ProSAP-0.99.3-win64.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-win64.zip?download=1)    
-Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Linux.tar.gz?download=1)
+Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Linux.tar.gz?download=1)    
 MacOS: [ProSAP-0.99.3-Mac.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Mac.zip?download=1)
 
 
