@@ -70,7 +70,6 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionTPP.triggered.connect(self.ShowAnalTPP)
         self.actionNPARC.triggered.connect(self.ShowAnalNPARC)
         self.actionDistance.triggered.connect(self.ShowAnalDist)
-        self.actionINFLECT.triggered.connect(self.ShowAnalInflect)
         
         # button action
         self.tableWidgetProteinList.setSortingEnabled(True)

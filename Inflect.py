@@ -1,3 +1,6 @@
+#-*- coding : utf-8-*-
+# coding:unicode_escape
+
 import numpy as np
 import pandas as pd
 
@@ -21,7 +24,7 @@ if (!'writexl' %in% installed.packages()){
   BiocManager::install('writexl')
 }
 
-library(Inflect)
+suppressMessages(library(Inflect))
 
 run_inflect <- function(Temperature, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD){
     try(unlink('C:/inflect_tempdir', recursive =TRUE))
@@ -31,7 +34,7 @@ run_inflect <- function(Temperature, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD){
     writexl::write_xlsx(r1p1, 'C:/inflect_tempdir/Control 1.xlsx')
     writexl::write_xlsx(r2p1, 'C:/inflect_tempdir/Control 2.xlsx')
 
-    TRresults <- Inflect:::Inflect('C:/inflect_tempdir', Temperature, Rsq, NumSD, 2)
+    TRresults <- suppressMessages(Inflect:::Inflect('C:/inflect_tempdir', Temperature, Rsq, NumSD, 2))
 }
 '''
 

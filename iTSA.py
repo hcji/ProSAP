@@ -1,3 +1,6 @@
+#-*- coding : utf-8-*-
+# coding:unicode_escape
+
 import numpy as np
 import pandas as pd
 
@@ -26,9 +29,9 @@ if (!'DESeq2' %in% installed.packages()){
   BiocManager::install('DESeq2')
 }
 
-library(limma)
-library(edgeR)
-library(DESeq2)
+suppressMessages(library(limma))
+suppressMessages(library(edgeR))
+suppressMessages(library(DESeq2))
 
 
 p_value_adjust <- function(pvals, method = 'BH'){
@@ -37,9 +40,8 @@ p_value_adjust <- function(pvals, method = 'BH'){
 }
 
 
-do_limma <- function(X, y, names){
+do_limma <- function(X, y, names, lbs){
   X <- as.matrix(X)
-  lbs <- unique(y)
   y[y==lbs[1]] <- 'G1'
   y[y==lbs[2]] <- 'G2'
   design <- model.matrix(~0+factor(y))
@@ -55,8 +57,8 @@ do_limma <- function(X, y, names){
 }
 
 
-do_edgeR <- function(X, y, names){
-  lbs <- unique(y)
+do_edgeR <- function(X, y, names, lbs){
+
   y[y==lbs[1]] <- 'G1'
   y[y==lbs[2]] <- 'G2'
   
@@ -81,8 +83,8 @@ do_edgeR <- function(X, y, names){
 }
 
 
-do_DESeq2 <- function(X, y, names){
-  lbs <- unique(y)
+do_DESeq2 <- function(X, y, names, lbs){
+
   y[y==lbs[1]] <- 'G1'
   y[y==lbs[2]] <- 'G2'
   
@@ -96,11 +98,11 @@ do_DESeq2 <- function(X, y, names){
   data <- round(data / r)
   condition <- factor(y)
   coldata <- data.frame(row.names = colnames(X), condition)
-  dds <- DESeqDataSetFromMatrix(countData = data,
+  dds <- suppressMessages(DESeqDataSetFromMatrix(countData = data,
                                 colData = coldata,
-                                design = ~condition)
-  dds$condition<- relevel(dds$condition, ref = "G1")
-  dds <- DESeq(dds)
+                                design = ~condition))
+  dds$condition<- suppressMessages(relevel(dds$condition, ref = "G1"))
+  dds <- suppressMessages(DESeq(dds))
   dds <- as.data.frame(results(dds))
   dds$ID <- names
   return(dds)
@@ -148,7 +150,7 @@ class iTSA:
         self.lbs = np.unique(y)
         
         if self.method == 'Limma':
-            res = do_limma(np.log2(self.X), self.y, self.names)
+            res = do_limma(np.log2(self.X), self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
             for i, c in enumerate(res.columns):
@@ -162,7 +164,7 @@ class iTSA:
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval']         
             
         elif self.method == 'edgeR':
-            res = do_edgeR(self.X, self.y, self.names)
+            res = do_edgeR(self.X, self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'PValue', 'FDR']]
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval'] 
@@ -171,7 +173,7 @@ class iTSA:
             res['logFC'] = np.round(res['logFC'], 4)
             
         elif self.method == 'DESeq2':
-            res = do_DESeq2(self.X, self.y, self.names)
+            res = do_DESeq2(self.X, self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'log2FoldChange', 'pvalue', 'padj']]
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval'] 

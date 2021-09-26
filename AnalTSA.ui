@@ -390,7 +390,6 @@
     </property>
     <addaction name="actionTPP"/>
     <addaction name="actionNPARC"/>
-    <addaction name="actionINFLECT"/>
     <addaction name="actionDistance"/>
    </widget>
    <addaction name="menuDatabase"/>
