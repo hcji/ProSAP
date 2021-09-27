@@ -5,11 +5,12 @@ Created on Wed Apr 14 09:29:07 2021
 @author: hcji
 """
 
-import ctypes
+# import ctypes
 # ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TPCA")
 
 import numpy as np
 import pandas as pd
+from platform import system
 
 from scipy import stats
 from sklearn import metrics
@@ -47,6 +48,11 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         self.move(75, 50)
         self.setWindowTitle("TPCA Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
+        
+        # fix macos menu
+        if system() == 'Darwin':
+            menubar = self.menuBar()
+            menubar.setNativeMenuBar(False)
         
         # threads
         self.CurveFitThread = None

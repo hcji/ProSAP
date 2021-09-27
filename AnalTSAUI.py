@@ -8,6 +8,7 @@ Created on Thu Apr 15 15:57:14 2021
 import numpy as np
 import pandas as pd
 from scipy import stats
+from platform import system
 
 from PyQt5.QtCore import Qt, QVariant
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -39,6 +40,11 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("TPP Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
+        
+        # fix macos menu
+        if system() == 'Darwin':
+            menubar = self.menuBar()
+            menubar.setNativeMenuBar(False)
         
         # main window
         self.resize(1500, 900)
