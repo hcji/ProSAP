@@ -42,11 +42,8 @@ unzip to any folder and execute ProSAP. You may also need install extra dependen
         sudo apt-get install libxcb-xinerama0
 
 For MacOS, you should install [R](https://cran.r-project.org/) first, Then, download the zip file, 
-unzip to any folder and execute ProSAP. You may also need install extra dependency of numpy:
-        
-        pip install mkl
-
-Since we do not pay Apple for certification, you might have to allow software from unknown developers:
+unzip to any folder and execute ProSAP. Since we do not pay Apple for certification, 
+you might have to allow software from unknown developers:
 
         sudo spctl --master-disable
 
@@ -60,7 +57,9 @@ Advanced users can compile the source codes. Required dependencies:
 * [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)    
 * [R (>= 4.0)](https://www.r-project.org/)    
 * [PyQt5](https://pypi.org/project/PyQt5/)    
-* [RPy2](https://pypi.org/project/rpy2/)    
+* [RPy2](https://pypi.org/project/rpy2/)
+* [pyinstaller](https://www.pyinstaller.org/)    
+* [mkl](https://pypi.org/project/mkl/) **(for MacOS only)**
 
 Then, clone the repository and enter:
         
