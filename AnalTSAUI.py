@@ -23,7 +23,6 @@ from RunningUI import Running_Win
 from Thread import TPPThread, NPAThread, DistThread
 from MakeFigure import MakeFigure
 from Utils import TableModel, ReplicateCheck
-from Inflect import run_inflect
 
 '''
 r1p1Data = pd.read_csv('D:/project/CETSA_Benchmark/Data/Ball_STS/DMSO_1.csv')
