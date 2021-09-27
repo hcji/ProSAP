@@ -22,21 +22,33 @@ performance of different algorithms, and apply appropriate algorithms to their d
 
 ## Installation
 
-For Windows, the installer version should be preferred but might require administrator permissions. 
-Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
-"software from an unknown source". For Linux, you should install [R](https://cran.r-project.org/) first, 
-Then, download the gzip file, unzip to any folder and execute ProSAP.
+Download links:
 
 Windows: [ProSAP-0.99.3-win64.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-win64.zip?download=1)    
 Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Linux.tar.gz?download=1)    
 MacOS: [ProSAP-0.99.3-Mac.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Mac.zip?download=1)
 
+For Windows, the installer version should be preferred but might require administrator permissions. 
+Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
+"software from an unknown source". 
 
-Linux users need install extra dependency of QT:
+
+For Linux, you should install [R](https://cran.r-project.org/) first, Then, download the tgz file, 
+unzip to any folder and execute ProSAP. You may also need install extra dependency of QT:
 
         sudo apt-get install libxcb-xinerama0
 
-ProSAP has been test on Windows 7, Windows 10, Windows 11 and Ubuntu 20.04. However, it does not work on Windows XP.
+For MacOS, you should install [R](https://cran.r-project.org/) first, Then, download the zip file, 
+unzip to any folder and execute ProSAP. You may also need install extra dependency of numpy:
+        
+        pip install mkl
+
+Since we do not pay Apple for certification, you might have to allow software from unknown developers:
+
+        sudo spctl --master-disable
+
+
+ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.
 
 ## Compile with source
 
