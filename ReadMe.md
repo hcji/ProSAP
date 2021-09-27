@@ -30,7 +30,10 @@ MacOS: [ProSAP-0.99.3-Mac.zip](https://zenodo.org/record/5525802/files/ProSAP-0.
 
 For Windows, the installer version should be preferred but might require administrator permissions. 
 Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
-"software from an unknown source". 
+"software from an unknown source".   
+
+**Note**: We observed unknown errors happened if you have installed multiple versions of R. Uninstall all version of R
+and reinstall the latest version will fix the error. 
 
 
 For Linux, you should install [R](https://cran.r-project.org/) first, Then, download the tgz file, 
