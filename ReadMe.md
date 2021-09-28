@@ -24,9 +24,9 @@ performance of different algorithms, and apply appropriate algorithms to their d
 
 Download links:
 
-Windows: [ProSAP-0.99.3-win64.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-win64.zip?download=1)    
-Linux: [ProSAP-0.99.3-Linux.tar.gz](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Linux.tar.gz?download=1)    
-MacOS: [ProSAP-0.99.3-Mac.zip](https://zenodo.org/record/5525802/files/ProSAP-0.99.3-Mac.zip?download=1)
+Windows: [ProSAP-0.99.4-Windows.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Windows.zip?download=1)    
+Linux: [ProSAP-0.99.4-Linux.tar.xz](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Linux.tar.xz?download=1)    
+MacOS: [ProSAP-0.99.4-Mac.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Mac.zip?download=1)
 
 For Windows, the installer version should be preferred but might require administrator permissions. 
 Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
@@ -34,7 +34,6 @@ Since we do not pay Microsoft for certification, you might have to confirm that 
 
 **Note**: We observed unknown errors happened if you have installed multiple versions of R. Uninstall all version of R
 and reinstall the latest version will fix the error. 
-
 
 For Linux, you should install [R](https://cran.r-project.org/) first, Then, download the tgz file, 
 unzip to any folder and execute ProSAP. You may also need install extra dependency of QT:
@@ -79,7 +78,7 @@ The videos for using the software are available at the [video folder](https://gi
 
 ## Contact
 
-Ji Hongchao ![Twitter URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Ftwitter.com%2FHongchaoJ%2Fstatus%2F1440875003478564866)    
-E-mail: ji.hongchao@foxmail.com   
+Ji Hongchao   E-mail: [ji.hongchao@foxmail.com](ji.hongchao@foxmail.com)    
+   
 
 <div itemscope itemtype="https://schema.org/Person"><a itemprop="sameAs" content="https://orcid.org/0000-0002-7364-0741" href="https://orcid.org/0000-0002-7364-0741" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">https://orcid.org/0000-0002-7364-0741</a></div>
