@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ProSAP"
-#define MyAppVersion "0.99.2"
+#define MyAppVersion "0.99.4"
 #define MyAppPublisher "InternOmics Lab"
 #define MyAppURL "https://github.com/hcji/ProSAP"
 #define MyAppExeName "ProSAP.exe"
