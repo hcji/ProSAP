@@ -634,7 +634,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         r2p2 = r2p2Data.loc[:, cols]
         
         self.Running_Win.show()
-        run_inflect(temps, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD)
+        # run_inflect(temps, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD)
         self.Running_Win.close()
         self.VisualizeInflect()
     

@@ -142,7 +142,7 @@ class iTSA:
     def __init__(self, method = 't-Test'):
         self.method = method
         
-        
+    
     def fit_data(self, X, y, names):
         self.X = X
         self.y = np.array(y)
@@ -206,4 +206,32 @@ class iTSA:
         case_val = np.nanmean(X.loc[:, y == lbs[1]], axis = 1)
         cont_val = np.nanmean(X.loc[:, y == lbs[0]], axis = 1)
         return np.round(np.log2(case_val / cont_val), 4)
+
+
+
+def data_balance(X, y):
+    y_uni = np.unique(y)
+    n = min(np.where(y == y_uni[0])[0][0], np.where(y == y_uni[1])[0][0])
+    
+    k1 = np.where(y == y_uni[0])[0]
+    k2 = np.where(y == y_uni[1])[0]
+    
+    X1 = np.sort(X.iloc[:, k1], axis = 1)
+    X2 = np.sort(X.iloc[:, k2], axis = 1)
+    
+    l1 = np.arange( int(len(k1) / 2 - 0.5 * n) , int(len(k1) / 2 + 0.5 * n))
+    l2 = np.arange( int(len(k2) / 2 - 0.5 * n) , int(len(k2) / 2 + 0.5 * n))
+    
+    X1 = X1[:, l1]
+    X2 = X2[:, l2]
+    
+    X_new = pd.DataFrame(np.hstack((X1, X2)))
+    y_new = np.array([y_uni[0]] * n + [y_uni[1]] * n)
+    return X_new, y_new
+
+
+        
+        
+    
+        
     
