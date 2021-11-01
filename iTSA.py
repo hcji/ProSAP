@@ -210,8 +210,8 @@ class iTSA:
 
 
 def data_balance(X, y):
-    y_uni = np.unique(y)
-    n = min(np.where(y == y_uni[0])[0][0], np.where(y == y_uni[1])[0][0])
+    y_uni = list(set(y))
+    n = min(len(np.where(y == y_uni[0])[0]), len(np.where(y == y_uni[1])[0]))
     
     k1 = np.where(y == y_uni[0])[0]
     k2 = np.where(y == y_uni[1])[0]
@@ -225,13 +225,9 @@ def data_balance(X, y):
     X1 = X1[:, l1]
     X2 = X2[:, l2]
     
+    colnames = ['Group_1_Sample_{}'.format(i) for i in range(n)] + ['Group_2_Sample_{}'.format(i) for i in range(n)]
     X_new = pd.DataFrame(np.hstack((X1, X2)))
+    X_new.columns = colnames
     y_new = np.array([y_uni[0]] * n + [y_uni[1]] * n)
     return X_new, y_new
 
-
-        
-        
-    
-        
-    
