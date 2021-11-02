@@ -41,7 +41,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle("iTSA Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-        self.figureVolcano = MakeFigure(10, 10, dpi = 250)
+        self.figureVolcano = MakeFigure(20, 20, dpi = 300)
         self.figureVolcano_ntb = NavigationToolbar(self.figureVolcano, self)
         self.gridlayoutVolcano = QGridLayout(self.groupBoxVolcano)
         self.gridlayoutVolcano.addWidget(self.figureVolcano)
