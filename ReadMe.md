@@ -56,9 +56,9 @@ Preview version is only support Windows platform, which includes new features un
 * R software is no longer necessary
 * Better volcano figure with labels
 
-Preview version is upload via Baidu cloud drive, and will update very frequently.
-Download link：https://pan.baidu.com/s/1EFgDzwhXxM1nr4LNcigkWQ 
-Password：md0r 
+Preview version is upload via Baidu cloud drive, and will update very frequently.   
+Download link：https://pan.baidu.com/s/1EFgDzwhXxM1nr4LNcigkWQ    
+Password：md0r    
 
 
 ## Compile with source
