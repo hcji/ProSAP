@@ -22,7 +22,7 @@ performance of different algorithms, and apply appropriate algorithms to their d
 
 ## Installation
 
-**Stable version:**:
+**Stable version:**
 
 Windows: [ProSAP-0.99.4-Windows.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Windows.zip?download=1)    
 Linux: [ProSAP-0.99.4-Linux.tar.xz](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Linux.tar.xz?download=1)    
