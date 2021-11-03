@@ -22,7 +22,7 @@ performance of different algorithms, and apply appropriate algorithms to their d
 
 ## Installation
 
-### Download links:
+**Stable version:**:
 
 Windows: [ProSAP-0.99.4-Windows.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Windows.zip?download=1)    
 Linux: [ProSAP-0.99.4-Linux.tar.xz](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Linux.tar.xz?download=1)    
@@ -50,7 +50,7 @@ you might have to allow software from unknown developers:
 ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.
 
 
-### Preview version
+**Preview version:**
 
 Preview version is only support Windows platform, which includes new features under testing:
 * R software is no longer necessary
