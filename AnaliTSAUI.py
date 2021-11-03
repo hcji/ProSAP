@@ -195,6 +195,11 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             self.Running_Win.show()
             result = worker.fit_data(X, y, names)
+            if result is None:
+                self.ErrorMsg('There is something wrong with R, only t-test is support')
+                self.Running_Win.close()
+                return
+            
             result = result.reset_index(drop=True)
             
             fc_thres = self.doubleSpinBoxFCthres.value()

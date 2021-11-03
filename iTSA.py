@@ -5,28 +5,25 @@ import numpy as np
 import pandas as pd
 
 from scipy.stats import ttest_ind
-from rpy2 import robjects
-from rpy2.robjects import numpy2ri, pandas2ri
 
-numpy2ri.activate()
-pandas2ri.activate()
+R_isavailable = False
 
 r_codes = '''
 
 if (! 'BiocManager' %in% installed.packages()){
-  install.packages('BiocManager')
+  suppressMessages(install.packages('BiocManager'))
 }
 
 if (!'limma' %in% installed.packages()){
-  BiocManager::install('limma')
+  suppressMessages(BiocManager::install('limma'))
 }
 
 if (!'edgeR' %in% installed.packages()){
-  BiocManager::install('edgeR')
+  suppressMessages(BiocManager::install('edgeR'))
 }
 
 if (!'DESeq2' %in% installed.packages()){
-  BiocManager::install('DESeq2')
+  suppressMessages(BiocManager::install('DESeq2'))
 }
 
 suppressMessages(library(limma))
@@ -128,21 +125,33 @@ estimate_df <- function(rss1, rssDiff){
 
 '''
 
+try:
 
-robjects.r(r_codes)
+    from rpy2 import robjects
+    from rpy2.robjects import numpy2ri, pandas2ri
 
-do_limma = robjects.globalenv['do_limma']
-do_DESeq2 = robjects.globalenv['do_DESeq2']
-do_edgeR = robjects.globalenv['do_edgeR']
-estimate_df = robjects.globalenv['estimate_df']
-p_value_adjust = robjects.globalenv['p_value_adjust']
+    numpy2ri.activate()
+    pandas2ri.activate()
+
+    robjects.r(r_codes)
+
+    do_limma = robjects.globalenv['do_limma']
+    do_DESeq2 = robjects.globalenv['do_DESeq2']
+    do_edgeR = robjects.globalenv['do_edgeR']
+    estimate_df = robjects.globalenv['estimate_df']
+    # p_value_adjust = robjects.globalenv['p_value_adjust']
+    
+    R_isavailable = True
+
+except: 
+    pass
+    
 
 class iTSA:
     
     def __init__(self, method = 't-Test'):
         self.method = method
-        
-    
+         
     def fit_data(self, X, y, names):
         self.X = X
         self.y = np.array(y)
@@ -150,6 +159,8 @@ class iTSA:
         self.lbs = np.unique(y)
         
         if self.method == 'Limma':
+            if not R_isavailable:
+                return None
             res = do_limma(np.log2(self.X), self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'P.Value', 'adj.P.Val']]
@@ -164,6 +175,8 @@ class iTSA:
             res.columns = ['Accession', 'logFC', '-logPval', '-logAdjPval']         
             
         elif self.method == 'edgeR':
+            if not R_isavailable:
+                return None
             res = do_edgeR(self.X, self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'logFC', 'PValue', 'FDR']]
@@ -173,6 +186,8 @@ class iTSA:
             res['logFC'] = np.round(res['logFC'], 4)
             
         elif self.method == 'DESeq2':
+            if not R_isavailable:
+                return None
             res = do_DESeq2(self.X, self.y, self.names, self.lbs)
             res = pd.DataFrame(res)
             res = res[['ID', 'log2FoldChange', 'pvalue', 'padj']]
@@ -195,6 +210,7 @@ class iTSA:
             
         else:
             raise IOError('{} is not a support method'.format(self.method))
+            
         X_ = X.copy()
         X_['Accession'] = names
         res = pd.merge(res, X_)
@@ -231,3 +247,32 @@ def data_balance(X, y):
     y_new = np.array([y_uni[0]] * n + [y_uni[1]] * n)
     return X_new, y_new
 
+
+def p_value_adjust(pvalues, correction_type = "Benjamini-Hochberg"):
+    pvalues = np.array(pvalues)
+    n = pvalues.shape[0]
+    new_pvalues = np.empty(n)
+    if correction_type == "Bonferroni":
+        new_pvalues = n * pvalues
+    elif correction_type == "Bonferroni-Holm":
+        values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
+        values.sort()
+        for rank, vals in enumerate(values):
+            pvalue, i = vals
+            new_pvalues[i] = (n-rank) * pvalue
+    elif correction_type == "Benjamini-Hochberg":
+        values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
+        values.sort()
+        values.reverse()
+        new_values = []
+        for i, vals in enumerate(values):
+            rank = n - i
+            pvalue, index = vals
+            new_values.append((n/rank) * pvalue)
+        for i in np.arange(0, int(n)-1):
+            if new_values[i] < new_values[i+1]:
+                new_values[i+1] = new_values[i]
+        for i, vals in enumerate(values):
+            pvalue, index = vals
+            new_pvalues[index] = new_values[i]
+    return new_pvalues
