@@ -47,13 +47,14 @@ you might have to allow software from unknown developers:
         sudo spctl --master-disable
 
 
-ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.
+ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.    
+**If you have trouble in installation, the most possible reason is from the R program. Then you can try the Preview version**
 
 
 **Preview version:**
 
 Preview version is only support Windows platform, which includes new features under testing:
-* R software is no longer necessary
+* R software is no longer necessary (but functional limited)
 * Better volcano figure with labels
 
 Preview version is upload via Baidu cloud drive, and will update very frequently.   
