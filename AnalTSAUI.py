@@ -169,7 +169,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             for fileName in fileNames:
                 if fileName:
-                    if fileName.split('.')[1] in ['csv', 'xlsx']:
+                    if fileName.split('.')[-1] in ['csv', 'xlsx']:
                         self.ListFile.addItem(fileName)
                     else:
                         pass
@@ -218,11 +218,12 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.ErrorMsg('No item is selected')
             return None
         try:
-            if selectItem.text().split('.')[1] == 'csv':
+            if selectItem.text().split('.')[-1] == 'csv':
                 selectData = pd.read_csv(selectItem.text())
-            elif selectItem.text().split('.')[1] == 'xlsx':
+            elif selectItem.text().split('.')[-1] == 'xlsx':
                 selectData = pd.read_excel(selectItem.text())
             else:
+                self.ErrorMsg("Invalid format")
                 return None
         except:
             self.ErrorMsg('Cannot be load the selected file')
