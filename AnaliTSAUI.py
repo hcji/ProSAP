@@ -16,7 +16,7 @@ from MakeFigure import MakeFigure
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 
 from Utils import TableModel
-from iTSA import iTSA
+from iTSA import iTSA, data_balance
 from MakeFigure import MakeFigure
 from ColumnSelectUI import ColumnSelectUI
 from RunningUI import Running_Win
@@ -41,7 +41,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle("iTSA Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
 
-        self.figureVolcano = MakeFigure(10, 10, dpi = 250)
+        self.figureVolcano = MakeFigure(20, 20, dpi = 300)
         self.figureVolcano_ntb = NavigationToolbar(self.figureVolcano, self)
         self.gridlayoutVolcano = QGridLayout(self.groupBoxVolcano)
         self.gridlayoutVolcano.addWidget(self.figureVolcano)
@@ -70,6 +70,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         
         self.comboBoxMethod.addItems(['t-Test', 'Limma', 'edgeR', 'DESeq2'])
         self.comboBoxLog2.addItems(['True', 'False'])
+        self.comboBoxBalance.addItems(['False', 'True'])
         
         self.pushButtonData.clicked.connect(self.LoadProteinFile)
         self.pushButtonOK.clicked.connect(self.DoPropress)
@@ -161,6 +162,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         else:
             X = self.data.loc[:,self.columns]
             y = np.array([str(self.tableWidgetLabel.item(i,1).text()) for i in range(self.tableWidgetLabel.rowCount())])            
+                        
             names = self.data.loc[:,'Accession'].values
             method = self.comboBoxMethod.currentText()
             worker = iTSA(method = method)
@@ -170,6 +172,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                 X.iloc[row,:] = pd.to_numeric(X.iloc[row,:], errors='coerce')
             X = X.astype(float)
             X[X <= 0] = np.nan
+            
             for row in range(X.shape[0]):
                 nan_row.append(X.iloc[row,:].isnull().sum())
             
@@ -177,6 +180,9 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             X = X.iloc[keep,:]
             X = X.reset_index(drop = True)
             names = names[keep].astype(str)
+
+            if self.comboBoxBalance.currentText() == 'True':
+                X, y = data_balance(X, y)
 
             if self.comboBoxLog2.currentText() == 'True':
                 if np.max(np.max(X)) >= 999:
@@ -189,6 +195,11 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             self.Running_Win.show()
             result = worker.fit_data(X, y, names)
+            if result is None:
+                self.ErrorMsg('There is something wrong with R, only t-test is support')
+                self.Running_Win.close()
+                return
+            
             result = result.reset_index(drop=True)
             
             fc_thres = self.doubleSpinBoxFCthres.value()

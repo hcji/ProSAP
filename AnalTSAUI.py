@@ -602,42 +602,6 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.FillTable(resultTable)
         self.EnableMenu()
         
-        
-    # Inflect method
-    def ShowAnalInflect(self):
-        columns = self.columns
-        self.tableWidgetProteinList.clear()
-        self.progressBar.setValue(0)
-        self.resultData = []
-        
-        r1p1Data = self.tableRep1Protein1.model()._data
-        r1p2Data = self.tableRep1Protein2.model()._data
-        try:
-            r2p1Data = self.tableRep2Protein1.model()._data
-            r2p2Data = self.tableRep2Protein2.model()._data
-        except:
-            r2p1Data = None
-            r2p2Data = None
-        
-        Rsq = self.minR2_Infl
-        NumSD = self.numSD_Infl
-        
-        temps = np.array([float(t.replace('T', '')) for t in columns])
-        cols = ['Accession'] + columns
-        
-        if (r2p1Data is None) or (r2p2Data is None):
-            self.ErrorMsg('NPARC must run with two replicates')
-            return None
-        r1p1 = r1p1Data.loc[:, cols]
-        r1p2 = r1p2Data.loc[:, cols]
-        r2p1 = r2p1Data.loc[:, cols]
-        r2p2 = r2p2Data.loc[:, cols]
-        
-        self.Running_Win.show()
-        run_inflect(temps, r1p1, r1p2, r2p1, r2p2, Rsq, NumSD)
-        self.Running_Win.close()
-        self.VisualizeInflect()
-    
     
     def VisualizeInflect(self):
         try:

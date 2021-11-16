@@ -14,12 +14,13 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
+from adjustText import adjust_text
 
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtGui, QtWidgets
-from seaborn import violinplot, boxplot
+from seaborn import violinplot, boxplot, scatterplot, color_palette
 from Utils import meltCurve
 
 
@@ -164,14 +165,39 @@ class MakeFigure(FigureCanvas):
     def iTSA_Volcano(self, iTSA_result, fc_thres, pv_thres):        
         fc = iTSA_result['logFC']
         pv = iTSA_result['-logAdjPval']
-        sig = np.where(np.logical_and(np.abs(fc) >= np.log2(fc_thres), pv >= -np.log10(pv_thres)))[0]
+        lb = iTSA_result['Accession']
+        
+        group = []
+        for i in range(len(pv)):
+            if (abs(fc[i]) < np.log2(fc_thres)) and (pv[i] < -np.log10(pv_thres)):
+                group.append('Not sig')
+            elif (abs(fc[i]) >= np.log2(fc_thres)) and (pv[i] < -np.log10(pv_thres)):
+                group.append('Fold change')
+            elif (abs(fc[i]) < np.log2(fc_thres)) and (pv[i] >= -np.log10(pv_thres)):
+                group.append('Score')
+            else:
+                group.append('Both sig')
+        pltdata = pd.DataFrame({'LB':lb, 'FC': fc, 'PV': pv, 'G': group})
+        # sig = np.where(np.logical_and(np.abs(fc) >= np.log2(fc_thres), pv >= -np.log10(pv_thres)))[0]
         
         self.axes.cla()
-        self.axes.scatter(fc, pv, color = 'gray', marker = '.', s = 10)
-        self.axes.scatter(fc[sig], pv[sig], color = 'red', marker = '.', s = 10)
-        self.axes.axvline(x = np.log2(fc_thres),ls = '-', color = 'black', lw=1)
-        self.axes.axvline(x = -np.log2(fc_thres),ls = '-', color = 'black', lw=1)
-        self.axes.axhline(y = -np.log10(pv_thres), ls = '-', color = 'black', lw=1)
+        scatterplot(data=pltdata, x="FC", y="PV", hue="G", palette='tab10', legend=False, alpha=0.9, marker='.', ax=self.axes)   
+        # self.axes.scatter(fc, pv, color = 'gray', marker = '.', s = 10)
+        # self.axes.scatter(fc[sig], pv[sig], color = 'red', marker = '.', s = 10)
+        markers = pltdata[pltdata['G'] == 'Both sig']
+        markers = markers.iloc[:min(len(markers), 10),:]
+        texts = []
+        for i in markers.index:
+            x, y, s = markers.loc[i, 'FC'], markers.loc[i, 'PV'], markers.loc[i, 'LB'].split(';')[0]
+            texts.append(self.axes.text(x, y, s, fontsize=3))
+    
+        adjust_text(texts, force_points=0.2, force_text=0.2,
+                    expand_points=(1, 1), expand_text=(1, 1),
+                    arrowprops=dict(arrowstyle="-", color='black', lw=0.5), ax=self.axes)
+        
+        self.axes.axvline(x = np.log2(fc_thres),ls = '--', color = 'black', lw=0.5)
+        self.axes.axvline(x = -np.log2(fc_thres),ls = '--', color = 'black', lw=0.5)
+        self.axes.axhline(y = -np.log10(pv_thres), ls = '--', color = 'black', lw=0.5)
         self.axes.set_xlabel('Log FC', fontsize = 4)
         self.axes.set_ylabel('-Log Adj P', fontsize = 4)
         self.axes.tick_params(labelsize=4)
