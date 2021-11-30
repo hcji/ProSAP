@@ -20,7 +20,7 @@ matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtGui, QtWidgets
-from seaborn import violinplot, boxplot, scatterplot, color_palette
+from seaborn import violinplot, boxplot, scatterplot, color_palette, heatmap
 from Utils import meltCurve
 
 
@@ -181,9 +181,8 @@ class MakeFigure(FigureCanvas):
         # sig = np.where(np.logical_and(np.abs(fc) >= np.log2(fc_thres), pv >= -np.log10(pv_thres)))[0]
         
         self.axes.cla()
-        scatterplot(data=pltdata, x="FC", y="PV", hue="G", palette='tab10', legend=False, alpha=0.9, marker='.', ax=self.axes)   
-        # self.axes.scatter(fc, pv, color = 'gray', marker = '.', s = 10)
-        # self.axes.scatter(fc[sig], pv[sig], color = 'red', marker = '.', s = 10)
+        scatterplot(data=pltdata, x="FC", y="PV", hue="G", palette='tab10', legend=False, alpha=0.9, marker='.', ax=self.axes)
+        '''
         markers = pltdata[pltdata['G'] == 'Both sig']
         markers = markers.iloc[:min(len(markers), 10),:]
         texts = []
@@ -194,7 +193,7 @@ class MakeFigure(FigureCanvas):
         adjust_text(texts, force_points=0.2, force_text=0.2,
                     expand_points=(1, 1), expand_text=(1, 1),
                     arrowprops=dict(arrowstyle="-", color='black', lw=0.5), ax=self.axes)
-        
+        '''
         self.axes.axvline(x = np.log2(fc_thres),ls = '--', color = 'black', lw=0.5)
         self.axes.axvline(x = -np.log2(fc_thres),ls = '--', color = 'black', lw=0.5)
         self.axes.axhline(y = -np.log10(pv_thres), ls = '--', color = 'black', lw=0.5)
@@ -258,3 +257,56 @@ class MakeFigure(FigureCanvas):
         self.axes.cla()
         boxplot(x="Method", y="Values", data=databox, ax=self.axes)
         self.draw()
+        
+        
+    def TPP2D_Volcano(self, fdr_df, hits):
+        x = np.sign(fdr_df['slopeH1']) * np.sqrt(fdr_df['rssH0'] - fdr_df['rssH1'])
+        y = np.log2(fdr_df['F_statistic'] + 1)
+        l = fdr_df['clustername'].values
+        
+        group = []
+        for ll in l:
+            if ll in hits['clustername'].values:
+                group.append('Hits')
+            else:
+                group.append('Others')
+        pltdata = pd.DataFrame({'x':x, 'y': y, 'l':l, 'G': group})
+        # sig = np.where(np.logical_and(np.abs(fc) >= np.log2(fc_thres), pv >= -np.log10(pv_thres)))[0]
+        
+        self.axes.cla()
+        scatterplot(data=pltdata, x="x", y="y", hue="G", palette='tab10', legend=False, alpha=0.9, marker='.', ax=self.axes)   
+        '''
+        markers = pltdata[pltdata['G'] == 'Hits']
+        markers = markers.iloc[:min(len(markers), 10),:]
+        texts = []
+        for i in markers.index:
+            x, y, s = markers.loc[i, 'x'], markers.loc[i, 'y'], markers.loc[i, 'l'].split(';')[0]
+            texts.append(self.axes.text(x, y, s, fontsize=3))
+        
+        p = adjust_text(texts, force_points=0.2, force_text=0.2,
+                    expand_points=(1, 1), expand_text=(1, 1),
+                    arrowprops=dict(arrowstyle="-", color='black', lw=0.5), ax=self.axes)
+        '''
+        self.axes.set_xlabel('sign(k) sqrt(RSS0-RSS1)', fontsize = 4)
+        self.axes.set_ylabel('np.log2 (F_statistic + 1)', fontsize = 4)
+        self.axes.tick_params(labelsize=4)
+        self.draw()
+        
+        
+    def TPP2D_protHeatmap(self, data, ProteinAccession):
+        pltdata = data[data['clustername'] == ProteinAccession]
+        conc = np.unique(pltdata['conc'])
+        temp = np.unique(pltdata['temperature'])
+        img = np.zeros((len(conc), len(temp)))
+        for i in pltdata.index:
+            a = np.where(conc == pltdata.loc[i,'conc'])[0][0]
+            b = np.where(temp == pltdata.loc[i,'temperature'])[0][0]
+            img[a, b] = pltdata.loc[i,'rel_value']
+        img = pd.DataFrame(img)
+        img.index = conc
+        img.columns = temp
+        heatmap(img, ax=self.axes)
+        self.axes.set_xlabel('drug concentration', fontsize = 5)
+        self.axes.set_ylabel('temperture', fontsize = 5)
+        self.draw()
+        

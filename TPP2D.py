@@ -10,8 +10,6 @@ import pandas as pd
 
 R_isavailable = False
 
-# data = pd.read_csv('data/TPP2D/panobinostat_tpp2d_extract.csv')
-
 r_codes = '''
 
 if (! 'BiocManager' %in% installed.packages()){
@@ -24,26 +22,25 @@ if (!'TPP2D' %in% installed.packages()){
 
 suppressMessages(library(TPP2D))
 
-estimate_TPP2D <- function(data, maxit=200, B=20){
+estimate_TPP2D <- function(data, maxit=200, B=20, alpha=0.1){
   suppressMessages({
     data <- resolveAmbiguousProteinNames(data)
-    data <- recomputeSignalFromRatios(data)
-    params_df <- getModelParamsDf(data, maxit = 500)
+    params_df <- getModelParamsDf(data, maxit = maxit)
     fstat_df <- computeFStatFromParams(params_df)
     
     null_df <- bootstrapNullAlternativeModel(
       df = data, params_df = params_df, 
-      maxit = 500, B = 20,
+      maxit = maxit, B = B,
       verbose = FALSE)
     
     fdr_df <- getFDR(df_out = fstat_df,
                      df_null = null_df,
                      squeezeDenominator = TRUE)
-    
-    hits_df <- findHits(fdr_df, alpha = 0.1)
   })
   return(fdr_df)
 }
+
+findHits <- findHits
 
 '''
 
@@ -57,6 +54,7 @@ try:
     robjects.r(r_codes)
 
     estimate_TPP2D = robjects.globalenv['estimate_TPP2D']
+    findHits = robjects.globalenv['findHits']
     R_isavailable = True
 
 except: 
@@ -68,13 +66,19 @@ class TPP2D:
     
     def __init__(self, data):
         self.data = data
-        
+        self.fdr_df = None
         
     def check(self):
         X = self.data
-        for col in ['log_conc', 'log2_value']:
-            X.loc[:,col] = pd.to_numeric(X.loc[:,col], errors='coerce')
+        cols = ['representative', 'clustername', 'experiment', 'temperature', 'conc', 'raw_value', 'rel_value']
+        for c in cols:
+            if c not in X.columns:
+                return False
+        
+        X.loc[:,'log_conc'] = np.log10(X.loc[:,'conc'])
+        X.loc[:,'log2_value'] = np.log2(X.loc[:,'rel_value'])
         self.data = X
+        return True
         
         
     def fit_data(self, maxit = 200, B = 20):
@@ -84,9 +88,17 @@ class TPP2D:
         
         else:
             try:
-                return estimate_TPP2D(self.data, maxit, B)
+                self.fdr_df = pd.DataFrame(estimate_TPP2D(self.data, maxit, B))
+                self.fdr_df = self.fdr_df[self.fdr_df['dataset'] == 'true']
+                return self.fdr_df
             except:
-                return np.nan
-        
+                return pd.DataFrame()
+            
+            
+    def find_hits(self, alpha = 0.1):
+        if self.fdr_df is None:
+            return None
+        else:
+            return pd.DataFrame(findHits(self.fdr_df, alpha))
         
         
