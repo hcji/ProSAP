@@ -102,6 +102,7 @@ Password：md0r
         conda create -n ProSAP python=3.8
         conda activate ProSAP
 
+**Note:** MacBook Pro with **M1** chip may need python=3.9 and make sure R version is suitable.
 4. Clone the repository and enter:  
 
         git clone https://github.com/hcji/ProSAP.git
