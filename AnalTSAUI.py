@@ -43,6 +43,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # fix macos menu
         if system() == 'Darwin':
+            import _sysconfigdata__darwin_darwin
             menubar = self.menuBar()
             menubar.setNativeMenuBar(False)
         
