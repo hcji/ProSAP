@@ -22,7 +22,7 @@ performance of different algorithms, and apply appropriate algorithms to their d
 
 ## Installation
 
-Download links:
+**Stable version:**
 
 Windows: [ProSAP-0.99.4-Windows.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Windows.zip?download=1)    
 Linux: [ProSAP-0.99.4-Linux.tar.xz](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Linux.tar.xz?download=1)    
@@ -72,6 +72,21 @@ Please follow the following installation steps and refer the video of the instal
         ./ProSAP
         
 5. When running for the first time, it may need a long time to install the R package. There will be some requirements showing in the command prompt window, you should just follow the instructions.  
+
+
+ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.    
+**If you have trouble in installation, the most possible reason is from the R program. Then you can try the Preview version**
+
+
+**Preview version:**
+
+Preview version is only support Windows platform, which includes new features under testing:
+* R software is no longer necessary (but functional limited)
+* Better volcano figure with labels
+
+Preview version is upload via Baidu cloud drive, and will update very frequently.   
+Download link：https://pan.baidu.com/s/1EFgDzwhXxM1nr4LNcigkWQ    
+Password：md0r    
 
 
 **Note:** ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.
