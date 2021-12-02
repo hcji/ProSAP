@@ -95,6 +95,7 @@ Password：md0r
 
 ### For Windows or MacOS::  
 1. Install [Anaconda](https://www.anaconda.com/)  or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)   
+2. Install [R](https://cran.r-project.org/)  
 2. Install [Git](https://git-scm.com/downloads)  
 3. Open commond line, create environment and enter with the following commands:  
 
@@ -124,8 +125,12 @@ Password：md0r
 1. Most Linux distributions have included git and conda, but you may need install extra dependency of QT:  
 
         sudo apt-get install libxcb-xinerama0
+        
+2. Install [R](https://cran.r-project.org/)
 
-2. Refer the step 3 ~ step 7 of Windows or MacOS.  
+        sudo apt-get install r-base
+        
+3. Refer the step 3 ~ step 7 of Windows or MacOS.  
 
 
 ## Document

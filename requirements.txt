@@ -8,4 +8,3 @@ PyQt5
 mkl
 adjustText
 rpy2
-r-base
