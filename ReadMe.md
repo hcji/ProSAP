@@ -28,23 +28,50 @@ Windows: [ProSAP-0.99.4-Windows.zip](https://zenodo.org/record/5529497/files/Pro
 Linux: [ProSAP-0.99.4-Linux.tar.xz](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Linux.tar.xz?download=1)    
 MacOS: [ProSAP-0.99.4-Mac.zip](https://zenodo.org/record/5529497/files/ProSAP-0.99.4-Mac.zip?download=1)
 
-For Windows, the installer version should be preferred but might require administrator permissions. 
-Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
-"software from an unknown source". When installing, please do **not** change the default path.   
+### For Windows: 
+The installer version should be preferred but might require administrator permissions. 
+Please follow the video of the installation at [video folder](https://github.com/hcji/ProSAP/tree/master/video).
 
-**Note**: We observed unknown errors happened if you have installed multiple versions of R. Uninstall all version of R
-and reinstall the latest version will fix the error. 
+**Note**: 
+1. Since we do not pay Microsoft for certification, you might have to confirm that you want to trust 
+"software from an unknown source". 
+2. When installing, please do **not** change the default path, because sometimes we find it does not run correctly with customized path.  
+3. We observed unknown errors happened if you have installed multiple versions of R. Uninstall all version of R and reinstall the latest version will fix the error.  
+4. When running for the first time, it may need a long time to install the R package. There will be some requirements showing in the command prompt window, you should just follow the instructions.  
 
-For Linux, you should install [R](https://cran.r-project.org/) first, Then, download the tgz file, 
-unzip to any folder and execute ProSAP. You may also need install extra dependency of QT:
+### For Linux:  
+Please follow the following installation steps and refer the video of the installation at [video folder](https://github.com/hcji/ProSAP/tree/master/video):   
+
+1. Install [R](https://cran.r-project.org/)
+
+        sudo apt-get install r-base
+  
+2. Install extra dependency of QT:
 
         sudo apt-get install libxcb-xinerama0
 
-For MacOS, you should install [R](https://cran.r-project.org/) first, Then, download the zip file, 
-unzip to any folder and execute ProSAP. Since we do not pay Apple for certification, 
-you might have to allow software from unknown developers:
+3. Download the tgz file and unzip to any folder and execute ProSAP.  
+4. Execute the binary file:
+
+        ./ProSAP
+        
+5. When running for the first time, it may need a long time to install the R package. There will be some requirements showing in the command prompt window, you should just follow the instructions.  
+        
+        
+### For MacOS:  
+Please follow the following installation steps and refer the video of the installation at [video folder](https://github.com/hcji/ProSAP/tree/master/video): 
+
+1. Allow software from unknown developers:  
 
         sudo spctl --master-disable
+        
+2. Install [R](https://cran.r-project.org/)
+3. Download the zip file and unzip to any folder and execute ProSAP.
+4. Execute the binary file:
+
+        ./ProSAP
+        
+5. When running for the first time, it may need a long time to install the R package. There will be some requirements showing in the command prompt window, you should just follow the instructions.  
 
 
 ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.    
@@ -62,26 +89,43 @@ Download link：https://pan.baidu.com/s/1EFgDzwhXxM1nr4LNcigkWQ
 Password：md0r    
 
 
-## Compile with source
+**Note:** ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 10.15.7. However, it does not work on Windows XP.
 
-Advanced users can compile the source codes. Required dependencies:
+## Development version
 
-* [Anaconda for python (python version >= 3.6)](https://www.anaconda.com/)    
-* [R (>= 4.0)](https://www.r-project.org/)    
-* [PyQt5](https://pypi.org/project/PyQt5/)    
-* [RPy2](https://pypi.org/project/rpy2/)
-* [pyinstaller](https://www.pyinstaller.org/)    
-* [mkl](https://pypi.org/project/mkl/) **(for MacOS only)**
+### For Windows or MacOS::  
+1. Install [Anaconda](https://www.anaconda.com/)  or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)   
+2. Install [Git](https://git-scm.com/downloads)  
+3. Open commond line, create environment and enter with the following commands:  
 
-Then, clone the repository and enter:
-        
+        conda create -n ProSAP python=3.8
+        conda activate ProSAP
+
+4. Clone the repository and enter:  
+
         git clone https://github.com/hcji/ProSAP.git
+        cd ProSAP
 
-Next, compile the source   
+5. Install dependency with the following commands:  
         
-        pyinstaller ProSAP.py -i ./img/ProSAP.ico --hidden-import=“sklearn.utils._weight_vector” 
+        pip install requirements.txt
+        
+6. Run ProSAP.py:  
 
-Just run ./dist/ProSAP
+        python ProSAP.py
+        
+7. Or, you may want to compile binary and run exe:  
+
+        pyinstaller ProSAP.py -i ./img/ProSAP.ico --hidden-import=“sklearn.utils._weight_vector” 
+        cd dist/ProSAP
+        ProSAP.exe
+        
+### For Linux: 
+1. Most Linux distributions have included git and conda, but you may need install extra dependency of QT:  
+
+        sudo apt-get install libxcb-xinerama0
+
+2. Refer the step 3 ~ step 7 of Windows or MacOS.  
 
 
 ## Document

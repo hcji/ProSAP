@@ -110,11 +110,14 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.minR2_TPP = 0.8
         self.maxPlateau_TPP = 0.3
         self.repCheck_TPP = 'True'
+        self.pthres1_TPP = 0.05
+        self.pthres2_TPP = 0.1
+        self.min_slope_TPP = -0.06
         self.minR2_NP_Null = 0.8
         self.minR2_NP_Alt = 0.8
         self.maxPlateau_NP = 0.3
-        self.minR2_Infl = 0.8
-        self.numSD_Infl = 2
+        # self.minR2_Infl = 0.8
+        # self.numSD_Infl = 2
         self.Metr_Dist = 'cityblock'
         self.minR2_Dist = 0.8
         self.maxPlateau_Dist = 0.3
@@ -147,11 +150,14 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.minR2_TPP = self.ParamTSAUI.BoxR2.value()
         self.maxPlateau_TPP = self.ParamTSAUI.BoxPla.value()
         self.repCheck_TPP = self.ParamTSAUI.BoxCheck.currentText()
+        self.pthres1_TPP = self.ParamTSAUI.BoxPval1.value()
+        self.pthres2_TPP = self.ParamTSAUI.BoxPval2.value()
+        self.min_slope_TPP = self.ParamTSAUI.BoxMinSlope.value()
         self.minR2_NP_Null = self.ParamTSAUI.BoxR2_Null.value()
         self.minR2_NP_Alt = self.ParamTSAUI.BoxR2_Alt.value()
         self.maxPlateau_NP = self.ParamTSAUI.BoxPlaN.value()
-        self.minR2_Infl = self.ParamTSAUI.BoxR2_Infl.value()
-        self.numSD_Infl = self.ParamTSAUI.BoxNumSD.value()
+        # self.minR2_Infl = self.ParamTSAUI.BoxR2_Infl.value()
+        # self.numSD_Infl = self.ParamTSAUI.BoxNumSD.value()
         self.Metr_Dist = self.ParamTSAUI.BoxMetrics.currentText()
         self.minR2_Dist = self.ParamTSAUI.BoxR2_Dist.value()
         self.maxPlateau_Dist = self.ParamTSAUI.BoxPla_Dist.value()
@@ -169,7 +175,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             for fileName in fileNames:
                 if fileName:
-                    if fileName.split('.')[1] in ['csv', 'xlsx']:
+                    if fileName.split('.')[-1] in ['csv', 'xlsx']:
                         self.ListFile.addItem(fileName)
                     else:
                         pass
@@ -218,11 +224,12 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.ErrorMsg('No item is selected')
             return None
         try:
-            if selectItem.text().split('.')[1] == 'csv':
+            if selectItem.text().split('.')[-1] == 'csv':
                 selectData = pd.read_csv(selectItem.text())
-            elif selectItem.text().split('.')[1] == 'xlsx':
+            elif selectItem.text().split('.')[-1] == 'xlsx':
                 selectData = pd.read_excel(selectItem.text())
             else:
+                self.ErrorMsg("Invalid format")
                 return None
         except:
             self.ErrorMsg('Cannot be load the selected file')
@@ -427,7 +434,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             res = res[['Accession', 'Score', 'Rep1pVal (-log10)', 'Rep1delta_Tm', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_Tm', 'Rep1Group2_Tm', 'Rep1min_Slope',
                        'Rep2pVal (-log10)', 'Rep2delta_Tm', 'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_Tm', 'Rep2Group2_Tm', 'Rep2min_Slope']]
             if self.repCheck_TPP == 'True':
-                res = ReplicateCheck(res)
+                res = ReplicateCheck(res, self.pthres1_TPP, self.pthres2_TPP, self.min_slope_TPP)
                 
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
         self.resultData = []
@@ -595,7 +602,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             res = res[['Accession', 'Score', 'pVal (-log10)', 'Rep1delta_SH', 'Rep2delta_SH', 'Rep1Group1_R2', 'Rep1Group2_R2', 'Rep1Group1_SH', 'Rep1Group2_SH', 'Rep1min_Slope',
                        'Rep2Group1_R2', 'Rep2Group2_R2', 'Rep2Group1_SH', 'Rep2Group2_SH', 'Rep2min_Slope']]
             if self.repCheck_TPP == 'True':
-                res = ReplicateCheck(res)  
+                res = ReplicateCheck(res, self.pthres1_TPP, self.pthres2_TPP, self.min_slope_TPP)  
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
         self.resultData = []
         self.resultTable = resultTable

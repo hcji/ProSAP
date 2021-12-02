@@ -192,15 +192,16 @@ def WhittakerSmooth(x, lambda_, differences=1):
     return np.array(background)
 
 
-def ReplicateCheck(tppTable):
+def ReplicateCheck(tppTable, pthres1, pthres2, min_slope):
     # tppTable = pd.read_csv('test_tpp.csv', index_col=0)
     if 'Rep2delta_Tm' not in tppTable.columns:
         return tppTable
     for i in tppTable.index:
         pval_1 = tppTable.loc[i, 'Rep1pVal (-log10)']
-        pval_2 = tppTable.loc[i, 'Rep2pVal (-log10)']
-        cond_1 = (max(pval_1, pval_2) > 1.302) and (min(pval_1, pval_2) > 1)
-        
+        pval_2 = tppTable.loc[i, 'Rep2pVal (-log10)']        
+        t1 = max(-np.log10(pthres1), -np.log10(pthres2))
+        t2 = min(-np.log10(pthres1), -np.log10(pthres2))
+        cond_1 = (max(pval_1, pval_2) > t1) and (min(pval_1, pval_2) > t2)
         delm_1 = tppTable.loc[i, 'Rep1delta_Tm']
         delm_2 = tppTable.loc[i, 'Rep2delta_Tm']
         cond_2 = delm_1 * delm_2 > 0
@@ -210,7 +211,7 @@ def ReplicateCheck(tppTable):
 
         mins_1 = tppTable.loc[i, 'Rep1min_Slope']
         mins_2 = tppTable.loc[i, 'Rep2min_Slope']
-        cond_4 = max(mins_1, mins_2) < -0.06
+        cond_4 = max(mins_1, mins_2) < min_slope
         
         if cond_1 and cond_2 and cond_3 and cond_4:
             pass

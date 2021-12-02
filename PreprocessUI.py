@@ -54,6 +54,24 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         self.rsdData = []
         self.protData = []
     
+
+    def WarnMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setText(Text)
+        msg.setWindowTitle("Warning")
+        msg.exec_()    
+    
+    
+    def ErrorMsg(self, Text):
+        msg = QtWidgets.QMessageBox()
+        msg.resize(550, 200)
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(Text)
+        msg.setWindowTitle("Error")
+        msg.exec_()
+
     
     def ClearProteinFile(self):
         self.ListFile.clear()
@@ -72,10 +90,10 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
         
         else:
             for fileName in fileNames:
-                if fileName.split('.')[1] in ['csv', 'xls', 'xlsx']:
+                if fileName.split('.')[-1] in ['csv', 'xls', 'xlsx']:
                     self.ListFile.addItem(fileName)
                 else:
-                    pass
+                    self.WarnMsg("Find file with invalid format, only csv and xlsx are support")
                 
             if self.ListFile.count() == 0:
                 pass

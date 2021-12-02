@@ -14,6 +14,7 @@ from AnalTSAUI import AnalTSAUI
 from AnaliTSAUI import AnaliTSAUI
 from PreprocessUI import PreprocessUI
 from AnalTPCAUI import AnalTPCAUI
+from AnalTPP2DUI import AnalTPP2DUI
 
 
 class ProSAPUI(QMainWindow, Ui_Form):
@@ -28,11 +29,13 @@ class ProSAPUI(QMainWindow, Ui_Form):
         self.AnalTSAUI = AnalTSAUI()
         self.AnaliTSAUI = AnaliTSAUI()
         self.PreprocessUI = PreprocessUI()
+        self.AnalTPP2DUI = AnalTPP2DUI()
         
         self.pushButtonPreprocess.clicked.connect(self.PreprocessUI.show)
         self.pushButtonITSA.clicked.connect(self.AnaliTSAUI.show)
         self.pushButtonTPP.clicked.connect(self.AnalTSAUI.show)
-        self.pushButtonTPCA.clicked.connect(self.AnalTPCAUI.show)      
+        self.pushButtonTPCA.clicked.connect(self.AnalTPCAUI.show)
+        self.pushButton2DTPP.clicked.connect(self.AnalTPP2DUI.show)   
         
         
 

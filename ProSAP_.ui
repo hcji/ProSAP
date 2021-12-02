@@ -31,8 +31,8 @@
   <widget class="QPushButton" name="pushButtonPreprocess">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>220</y>
+     <x>100</x>
+     <y>230</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -50,8 +50,8 @@
   <widget class="QPushButton" name="pushButtonTPP">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>360</y>
+     <x>360</x>
+     <y>230</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -69,8 +69,8 @@
   <widget class="QPushButton" name="pushButtonITSA">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>220</y>
+     <x>360</x>
+     <y>340</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -88,8 +88,8 @@
   <widget class="QPushButton" name="pushButtonTPCA">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>360</y>
+     <x>620</x>
+     <y>230</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -142,10 +142,29 @@
     <string>E-mail: ji.hongchao@foxmail.com</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton2DTPP">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>340</y>
+     <width>211</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>13</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>2D-TPP Analysis</string>
+   </property>
+  </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>41</x>
      <y>50</y>
      <width>525</width>
      <height>58</height>

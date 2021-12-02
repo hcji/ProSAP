@@ -105,12 +105,13 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
-            if fileName.split('.')[1] == 'csv':
+            if fileName.split('.')[-1] == 'csv':
                 self.data = pd.read_csv(fileName)
-            elif fileName.split('.')[1] == 'xlsx':
+            elif fileName.split('.')[-1] == 'xlsx':
                 self.data = pd.read_excel(fileName)
             else:
                 self.ErrorMsg("Invalid format")
+                return None
             
             if 'Accession' in self.data.columns:
                 pass

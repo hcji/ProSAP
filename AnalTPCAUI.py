@@ -144,10 +144,10 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         else:
             for fileName in fileNames:
                 if fileName:
-                    if fileName.split('.')[1] in ['csv', 'xlsx']:
+                    if fileName.split('.')[-1] in ['csv', 'xlsx']:
                         self.ListFile.addItem(fileName)
                     else:
-                        pass
+                        self.WarnMsg("Invalid format")
 
 
     def ClearProteinFile(self):
@@ -159,10 +159,11 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
-            if fileName.split('.')[1] in ['csv', 'xlsx']:
+            if fileName.split('.')[-1] in ['csv', 'xlsx']:
                 self.ListDatabase.addItem(fileName)
             else:
                 self.ErrorMsg("Invalid format")
+                return None
         else:
             pass
         
@@ -192,11 +193,12 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
             self.ErrorMsg('No item is selected')
             return None
         try:
-            if selectItem.text().split('.')[1] == 'csv':
+            if selectItem.text().split('.')[-1] == 'csv':
                 selectData = pd.read_csv(selectItem.text())
-            elif selectItem.text().split('.')[1] == 'xlsx':
+            elif selectItem.text().split('.')[-1] == 'xlsx':
                 selectData = pd.read_excel(selectItem.text())
             else:
+                self.ErrorMsg("Invalid format")
                 return None
         except:
             self.ErrorMsg('Cannot be load the selected file')
@@ -290,12 +292,13 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
     def SetProteinComplex(self):
         selectItem = self.ListDatabase.currentItem()
         try:
-            if selectItem.text().split('.')[1] == 'csv':
+            if selectItem.text().split('.')[-1] == 'csv':
                 selectData = pd.read_csv(selectItem.text())
-            elif selectItem.text().split('.')[1] == 'xlsx':
+            elif selectItem.text().split('.')[-1] == 'xlsx':
                 selectData = pd.read_excel(selectItem.text())
             else:
-                pass
+                self.ErrorMsg("Invalid format")
+                return None
         
             if 'Subunits_UniProt_IDs' not in selectData.columns:
                 self.ErrorMsg("Subunits_UniProt_IDs' not in columns")
@@ -391,18 +394,19 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"Load", "","All Files (*);;CSV Files (*.csv)", options=options)
         if fileName:
-            if fileName.split('.')[1] == 'csv':
+            if fileName.split('.')[-1] == 'csv':
                 proteinPair = pd.read_csv(fileName)
                 header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
                 proteinPair = proteinPair.loc[:, header]
                 self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
-            elif fileName.split('.')[1] == 'xlsx':
+            elif fileName.split('.')[-1] == 'xlsx':
                 proteinPair = pd.read_excel(fileName)
                 header = [c for c in proteinPair.columns if c in ['Protein A', 'Protein B', 'Publications']]
                 proteinPair = proteinPair.loc[:, header]
                 self.AnalROCUI.tableView.setModel(TableModel(proteinPair))
             else:
                 self.ErrorMsg("Invalid format")
+                return None
             self.AnalROCUI.spinBoxRandom.setProperty("value", len(proteinPair))
         
     
