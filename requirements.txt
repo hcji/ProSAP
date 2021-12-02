@@ -1,0 +1,11 @@
+numpy
+scipy
+matplotlib
+pandas
+scikit-learn
+seaborn
+PyQt5
+mkl
+adjustText
+rpy2
+r-base

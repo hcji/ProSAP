@@ -28,10 +28,10 @@ data = pd.read_csv('data/TPP2D/small_example.csv')
 '''
 
 
-class AnalTPP2D(QtWidgets.QWidget, Ui_Form):
+class AnalTPP2DUI(QtWidgets.QWidget, Ui_Form):
     
     def __init__(self, parent=None): 
-        super(AnalTPP2D, self).__init__(parent)
+        super(AnalTPP2DUI, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("TPP2D Analysis")
         self.setWindowIcon(QtGui.QIcon("img/TPCA.ico"))
