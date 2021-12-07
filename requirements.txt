@@ -1,8 +1,8 @@
 numpy
 scipy
-matplotlib
+matplotlib==3.3.4
 pandas
-scikit-learn
+scikit-learn==0.24.1
 seaborn
 PyQt5
 mkl

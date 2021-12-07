@@ -75,10 +75,13 @@ Please follow the following installation steps and refer the video of the instal
 
 
 #### For MacOS with M1 chip:
-If you are using MacBook Pro with M1 chip, you should install [Rosetta](https://machow2.com/rosetta-mac/) first.    
-Then, you should install [R](https://www.r-project.org/) of **High Sierra version** (Inter 64 based). This is because rpy2 has not support ARM64 based R yet. 
+1. If you are using MacBook Pro with M1 chip, you should install [Rosetta](https://machow2.com/rosetta-mac/).    
+
+        softwareupdate --install-rosetta --agree-to-license
+
+2. Install [R](https://www.r-project.org/) of **High Sierra version** (Inter 64 based). This is because rpy2 has not support ARM64 based R yet. 
 We will update if rpy2 support it in the future.  
-Next, you can follow the same step 1 ~ step 5 of MacOS.  
+3. Follow the same step 1 ~ step 5 of MacOS.  
 
 
 **Note:** ProSAP has been test on Windows 7, Windows 10, Windows 11, Ubuntu 20.04 and MacOS 11.6.1. However, it does not work on Windows XP.
@@ -88,27 +91,27 @@ Next, you can follow the same step 1 ~ step 5 of MacOS.
 #### For Windows or MacOS::  
 1. Install [Anaconda](https://www.anaconda.com/)  or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)   
 2. Install [R](https://cran.r-project.org/)  
-2. Install [Git](https://git-scm.com/downloads)  
-3. Open commond line, create environment and enter with the following commands:  
+3. Install [Git](https://git-scm.com/downloads)  
+4. Open commond line, create environment and enter with the following commands:  
 
         conda create -n ProSAP python=3.8
         conda activate ProSAP
 
-**Note:** MacBook Pro with **M1** chip may need python=3.9 and make sure R version is suitable.
-4. Clone the repository and enter:  
+**Note:** MacBook Pro with **M1** chip may need python=3.9 and make sure R version is suitable.  
+5. Clone the repository and enter:  
 
         git clone https://github.com/hcji/ProSAP.git
         cd ProSAP
 
-5. Install dependency with the following commands:  
+6. Install dependency with the following commands:  
         
         pip install requirements.txt
         
-6. Run ProSAP.py:  
+7. Run ProSAP.py:  
 
         python ProSAP.py
         
-7. Or, you may want to compile binary and run exe:  
+8. Or, you may want to compile binary and run exe:  
 
         pyinstaller ProSAP.py -i ./img/ProSAP.ico --hidden-import=“sklearn.utils._weight_vector” 
         cd dist/ProSAP
