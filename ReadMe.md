@@ -1,4 +1,6 @@
-# ProSAP
+<div align="center">
+<img src="https://github.com/hcji/ProSAP/blob/master/figure.png" width="50%">
+</div>
 
 ![GitHub](https://img.shields.io/badge/platform-Windows%7CLinux%7CMacOS-brightgreen)
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
@@ -14,10 +16,6 @@ With the assistance of the user-friendly interface, researchers can easily compa
 strategies, analyze the results and draw the conclusion from the proteomics quantitative table obtained 
 by Proteome Discoverer or MaxQuant. Users would also benefit from a comprehensive overview of the 
 performance of different algorithms, and apply appropriate algorithms to their dataset easily.
-
-<div align="center">
-<img src="https://github.com/hcji/ProSAP/blob/master/figure.png" width="50%">
-</div>
 
 
 ## Installation
