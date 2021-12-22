@@ -129,7 +129,7 @@ We will update if rpy2 support it in the future.
 
 ## Document
 
-The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/).    
+The detailed usage is included in the [ProSAP website](https://hcji.github.io/ProSAP_Pages/).    
 The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
 ## Contact
