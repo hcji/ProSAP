@@ -54,13 +54,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.move(75, 50)
         
         # figure box
-        self.figureTSA1 = MakeFigure(10, 10, dpi = 250)
+        self.figureTSA1 = MakeFigure(20, 20, dpi = 300)
         self.figureTSA1_ntb = NavigationToolbar(self.figureTSA1, self)
         self.gridlayoutTSA = QGridLayout(self.groupBox1)
         self.gridlayoutTSA.addWidget(self.figureTSA1)
         self.gridlayoutTSA.addWidget(self.figureTSA1_ntb)
         
-        self.figureTSA2 = MakeFigure(10, 10, dpi = 250)
+        self.figureTSA2 = MakeFigure(20, 20, dpi = 300)
         self.figureTSA2_ntb = NavigationToolbar(self.figureTSA2, self)
         self.gridlayoutTSA2 = QGridLayout(self.groupBox2)
         self.gridlayoutTSA2.addWidget(self.figureTSA2)
@@ -357,8 +357,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(0)
         self.resultData = []
         
-        r1p1Data = self.tableRep1Protein1.model()._data
-        r1p2Data = self.tableRep1Protein2.model()._data
+        try:
+            r1p1Data = self.tableRep1Protein1.model()._data
+            r1p2Data = self.tableRep1Protein2.model()._data
+        except:
+            self.EnableMenu()
+            return
+        
         try:
             r2p1Data = self.tableRep2Protein1.model()._data
             r2p2Data = self.tableRep2Protein2.model()._data
@@ -438,6 +443,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
                 res = ReplicateCheck(res, self.pthres1_TPP, self.pthres2_TPP, self.min_slope_TPP)
                 
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
+        self.figureTSA2.RankTSAResults(resultTable)
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)
@@ -453,8 +459,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(0)
         self.resultData = []
         
-        r1p1Data = self.tableRep1Protein1.model()._data
-        r1p2Data = self.tableRep1Protein2.model()._data
+        try:
+            r1p1Data = self.tableRep1Protein1.model()._data
+            r1p2Data = self.tableRep1Protein2.model()._data
+        except:
+            self.EnableMenu()
+            return
+        
         try:
             r2p1Data = self.tableRep2Protein1.model()._data
             r2p2Data = self.tableRep2Protein2.model()._data
@@ -513,6 +524,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         
         res = res[['Accession', 'Score', 'p_Val (-log10)', 'Group1_R2', 'Group2_R2', 'RSS_Null', 'RSS_Alt', 'RSS_Diff']]
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
+        self.figureTSA2.RankTSAResults(resultTable)
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)        
@@ -528,8 +540,13 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(0)
         self.resultData = []
         
-        r1p1Data = self.tableRep1Protein1.model()._data
-        r1p2Data = self.tableRep1Protein2.model()._data
+        try:
+            r1p1Data = self.tableRep1Protein1.model()._data
+            r1p2Data = self.tableRep1Protein2.model()._data
+        except:
+            self.EnableMenu()
+            return
+        
         try:
             r2p1Data = self.tableRep2Protein1.model()._data
             r2p2Data = self.tableRep2Protein2.model()._data
@@ -605,6 +622,7 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.repCheck_TPP == 'True':
                 res = ReplicateCheck(res, self.pthres1_TPP, self.pthres2_TPP, self.min_slope_TPP)  
         resultTable = res.sort_values(by = 'Score', axis = 0, ascending = False)
+        self.figureTSA2.RankTSAResults(resultTable)
         self.resultData = []
         self.resultTable = resultTable
         self.FillTable(resultTable)
@@ -654,9 +672,8 @@ class AnalTSAUI(QtWidgets.QMainWindow, Ui_MainWindow):
         j = header.index('Accession')
         ProteinAccession = self.tableWidgetProteinList.item(i, j).text()
 
-        self.figureTSA1.SingleTSAFigure(r1p1Data, r1p2Data, columns, ProteinAccession)
-        if (r2p1Data is not None) and (r2p2Data is not None):
-            self.figureTSA2.SingleTSAFigure(r2p1Data, r2p2Data, columns, ProteinAccession)
+        self.figureTSA1.SingleTSAFigure(r1p1Data, r1p2Data, columns, ProteinAccession, r2p1Data, r2p2Data)
+    
     
 
     def SaveData(self):

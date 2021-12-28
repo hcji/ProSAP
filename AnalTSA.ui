@@ -228,7 +228,13 @@
               </attribute>
               <layout class="QGridLayout" name="gridLayout_3">
                <item row="0" column="0">
-                <widget class="QTableView" name="tableRep1Protein2"/>
+                <widget class="QTableView" name="tableRep1Protein2">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -259,7 +265,7 @@
               </font>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="R2P1">
               <attribute name="title">
@@ -290,7 +296,13 @@
               </attribute>
               <layout class="QGridLayout" name="gridLayout_5">
                <item row="0" column="0">
-                <widget class="QTableView" name="tableRep2Protein2"/>
+                <widget class="QTableView" name="tableRep2Protein2">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -317,7 +329,7 @@
            </font>
           </property>
           <property name="title">
-           <string>Replicate #1 Thermal Shift Curve</string>
+           <string>Thermal Shift Curve</string>
           </property>
          </widget>
          <widget class="QGroupBox" name="groupBox2">
@@ -334,7 +346,7 @@
            </font>
           </property>
           <property name="title">
-           <string>Replicate #2 Thermal Shift Curve</string>
+           <string>Rank of targets</string>
           </property>
          </widget>
         </widget>

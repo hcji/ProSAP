@@ -90,7 +90,7 @@ class MakeFigure(FigureCanvas):
         self.draw()
         
     
-    def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession):
+    def SingleTSAFigure(self, proteinData1, proteinData2, colNames, ProteinAccession, proteinData3=None, proteinData4=None):
         try:
             temps = np.array([float(t.replace('T', '')) for t in colNames])
             temps_ = np.arange(temps[0], temps[-1], 0.1)
@@ -104,15 +104,35 @@ class MakeFigure(FigureCanvas):
         paras2 = curve_fit(meltCurve, temps, vec_2, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
         
         self.axes.cla()
-        self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession), s = 10)
-        self.axes.scatter(temps, vec_2, marker='.', label = 'Group 2_{}'.format(ProteinAccession), s = 10)
-        self.axes.plot(temps_, meltCurve(temps_, paras1[0], paras1[1], paras1[2]))
-        self.axes.plot(temps_, meltCurve(temps_, paras2[0], paras2[1], paras2[2]))
+        self.axes.scatter(temps, vec_1, marker='.', label = 'Group 1_{}'.format(ProteinAccession), color='b', s = 10)
+        self.axes.scatter(temps, vec_2, marker='.', label = 'Group 2_{}'.format(ProteinAccession), color='r', s = 10)
+        self.axes.plot(temps_, meltCurve(temps_, paras1[0], paras1[1], paras1[2]), color='b', lw=1)
+        self.axes.plot(temps_, meltCurve(temps_, paras2[0], paras2[1], paras2[2]), color='r', lw=1)
+        
+        if (proteinData3 is not None) and (proteinData4 is not None):
+            vec_3 = proteinData3.loc[proteinData3.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
+            vec_4 = proteinData4.loc[proteinData4.loc[:, 'Accession'] == ProteinAccession, colNames].values[0,:]
+            paras3 = curve_fit(meltCurve, temps, vec_3, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+            paras4 = curve_fit(meltCurve, temps, vec_4, bounds=(0, [float('inf'), float('inf'), 0.3]))[0]
+            self.axes.scatter(temps, vec_3, marker='.', label = 'Group 1_r2_{}'.format(ProteinAccession), color='b', s = 10)
+            self.axes.scatter(temps, vec_4, marker='.', label = 'Group 2_r2_{}'.format(ProteinAccession), color='r', s = 10)
+            self.axes.plot(temps_, meltCurve(temps_, paras3[0], paras3[1], paras3[2]), color='b', linestyle='--', lw=1)
+            self.axes.plot(temps_, meltCurve(temps_, paras4[0], paras4[1], paras4[2]), color='r', linestyle='--', lw=1)    
         
         self.axes.tick_params(labelsize=4)
         self.axes.set_xlabel('Temperature (℃)', fontsize=5)
         self.axes.set_ylabel('Abundances', fontsize=5)
         self.axes.legend(fontsize=3)
+        self.draw()
+        
+        
+    def RankTSAResults(self, resultTable):
+        self.axes.cla()
+        self.axes.scatter(1 + np.arange(len(resultTable)), resultTable.loc[:,'Score'], s = 3)
+        for i in range(min(len(resultTable.index), 10)):
+            j = resultTable.index[i]
+            x, y, s = i, resultTable.loc[j, 'Score'], resultTable.loc[j, 'Accession'].split(';')[0]
+            self.axes.text(x, y, s, fontsize = 4, color='r')
         self.draw()
     
     
