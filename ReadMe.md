@@ -6,7 +6,7 @@
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/hcji/ProSAP)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5525802.svg)](https://doi.org/10.5281/zenodo.5525802)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5763315.svg)](https://doi.org/10.5281/zenodo.5763315)
 
 
 ProSAP (Protein Stability Analysis Pod) is standalone and user-friendly software with graphical user interface (GUI). 
@@ -129,7 +129,7 @@ We will update if rpy2 support it in the future.
 
 ## Document
 
-The detailed usage is included in the [ProSAP website](https://hcji.shinyapps.io/prosap_page/).    
+The detailed usage is included in the [ProSAP website](https://hcji.github.io/ProSAP_Pages/).    
 The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
 ## Contact
