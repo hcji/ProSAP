@@ -166,6 +166,9 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
                         
             names = self.data.loc[:,'Accession'].values
             method = self.comboBoxMethod.currentText()
+            if method in ['edgeR', 'DESeq2']:
+                self.WarnMsg('Careful! The selected method is designed for transcriptomics with negative binomial distribution assumption. Whether the proteomics data are warranted for the mathematical assumption needs further validation')
+            
             worker = iTSA(method = method)
             
             nan_row = []
