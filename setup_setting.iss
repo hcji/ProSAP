@@ -43,6 +43,7 @@ Source: "D:\project\ProSAP\dist\ProSAP\*"; DestDir: "{app}"; Flags: ignoreversio
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{userdesktop}\{#MyAppName}";Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
