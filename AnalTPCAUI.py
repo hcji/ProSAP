@@ -105,6 +105,7 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
         self.AnalROCUI.pushButtonCurve.clicked.connect(self.PlotProteinPairCurve)
         
         # table sort
+        self.ButtonCalcComplex.setEnabled(False)
         self.tableProteinComplex.setSortingEnabled(True)
         
         # server data
@@ -305,6 +306,7 @@ class AnalTPCAUI(QMainWindow, Ui_MainWindow):
                 self.ErrorMsg("Subunits_UniProt_IDs' not in columns")
             else:
                 self.FillProteinComplex(selectData)
+                self.ButtonCalcComplex.setEnabled(True)
         except:
             self.ErrorMsg("Cannot load the selected file")
         
