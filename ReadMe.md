@@ -103,7 +103,7 @@ We will update if rpy2 support it in the future.
 
 6. Install dependency with the following commands:  
         
-        pip install requirements.txt
+        pip install -r requirements.txt
         
 7. Run ProSAP.py:  
 
