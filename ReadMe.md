@@ -2,7 +2,6 @@
 <img src="https://github.com/hcji/ProSAP/blob/master/figure.png" width="50%">
 </div>
 
-![visitors](https://visitor-badge.glitch.me/badge?page_id=hcji/ProSAP)
 ![GitHub](https://img.shields.io/badge/platform-Windows%7CLinux%7CMacOS-brightgreen)
 ![GitHub](https://img.shields.io/github/license/hcji/ProSAP)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/hcji/ProSAP?include_prereleases)
