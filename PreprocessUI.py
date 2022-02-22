@@ -9,6 +9,7 @@ Created on Thu Apr 15 15:57:14 2021
 import numpy as np
 import pandas as pd
 
+from scipy.optimize import curve_fit
 from sklearn.impute import KNNImputer
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
@@ -19,6 +20,7 @@ from ColumnSelectUI import ColumnSelectUI
 from Utils import TableModel
 from Thread import PreprocessThread
 from MakeFigure import MakeFigure
+from Utils import fit_curve, meltCurve
 
 
 class PreprocessUI(QtWidgets.QWidget, Ui_Form):
@@ -208,7 +210,14 @@ class PreprocessUI(QtWidgets.QWidget, Ui_Form):
             for i in range(len(all_data)):
                 ref = all_data[i].loc[:,reference].copy() + 0.0001
                 for c in columns:
-                    all_data[i].loc[:,c] /= ref       
+                    all_data[i].loc[:,c] /= ref
+                if not self.tempertures:
+                    meds = np.nanmedian(all_data[i], axis = 0)
+                    paras = curve_fit(meltCurve, self.tempertures, meds, bounds=(0, [15000, 250, 0.3]))[0]
+                    meds_ = meltCurve(self.tempertures, paras[0], paras[1], paras[2])
+                    norm_ = meds_ - meds
+                    all_data[i] = all_data[i] + norm_
+                    
         
         data = all_data[0]
         if len(all_data) == 1:
