@@ -71,6 +71,7 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
         self.comboBoxMethod.addItems(['t-Test', 'Limma', 'edgeR', 'DESeq2'])
         self.comboBoxLog2.addItems(['True', 'False'])
         self.comboBoxBalance.addItems(['False', 'True'])
+        self.comboBoxShowLab.addItems(['True', 'False'])
         
         self.pushButtonData.clicked.connect(self.LoadProteinFile)
         self.pushButtonOK.clicked.connect(self.DoPropress)
@@ -185,10 +186,10 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             X = X.reset_index(drop = True)
             names = names[keep].astype(str)
 
-            if self.comboBoxBalance.currentText() == 'True':
+            if bool(self.comboBoxBalance.currentText()):
                 X, y = data_balance(X, y)
 
-            if self.comboBoxLog2.currentText() == 'True':
+            if not bool(self.comboBoxLog2.currentText()):
                 if np.max(np.max(X)) >= 999:
                     self.ErrorMsg('The data seems not Log2 transformed, please change parameter')
                     return None
@@ -208,9 +209,10 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             
             fc_thres = self.doubleSpinBoxFCthres.value()
             pv_thres = self.doubleSpinBoxPthres.value()
+            sh_marker = bool(self.comboBoxBalance.currentText())
 
             self.tableViewData.setModel(TableModel(result))
-            self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres)
+            self.figureVolcano.iTSA_Volcano(result, fc_thres, pv_thres, sh_marker)
             self.figureHeatmap.CorrHeatMap(X)
             self.figureBarchart.BarChart(X, y)
             try:

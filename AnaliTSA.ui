@@ -25,7 +25,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -109,6 +109,13 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Show marker label</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
              <item>
@@ -138,6 +145,9 @@
                </item>
                <item>
                 <widget class="QComboBox" name="comboBoxBalance"/>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBoxShowLab"/>
                </item>
               </layout>
              </item>
@@ -231,7 +241,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">

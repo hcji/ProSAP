@@ -183,7 +183,7 @@ class MakeFigure(FigureCanvas):
         self.draw()
         
         
-    def iTSA_Volcano(self, iTSA_result, fc_thres, pv_thres):        
+    def iTSA_Volcano(self, iTSA_result, fc_thres, pv_thres, show_marker=False):        
         fc = iTSA_result['logFC']
         pv = iTSA_result['-logAdjPval']
         lb = iTSA_result['Accession']
@@ -203,14 +203,16 @@ class MakeFigure(FigureCanvas):
         
         self.axes.cla()
         scatterplot(data=pltdata, x="FC", y="PV", hue="G", palette='tab10', legend=False, marker='.', alpha=0.7, edgecolor='none', ax=self.axes)
+        
+        if show_marker:
+            markers = pltdata[pltdata['G'] == 'Both sig']
+            markers = markers.iloc[:min(len(markers), 10),:]
+            texts = []
+            for i in markers.index:
+                x, y, s = markers.loc[i, 'FC'], markers.loc[i, 'PV'], markers.loc[i, 'LB'].split(';')[0]
+                texts.append(self.axes.text(x, y, s, fontsize=3.5))
+        
         '''
-        markers = pltdata[pltdata['G'] == 'Both sig']
-        markers = markers.iloc[:min(len(markers), 10),:]
-        texts = []
-        for i in markers.index:
-            x, y, s = markers.loc[i, 'FC'], markers.loc[i, 'PV'], markers.loc[i, 'LB'].split(';')[0]
-            texts.append(self.axes.text(x, y, s, fontsize=3))
-    
         adjust_text(texts, force_points=0.2, force_text=0.2,
                     expand_points=(1, 1), expand_text=(1, 1),
                     arrowprops=dict(arrowstyle="-", color='black', lw=0.5), ax=self.axes)
@@ -256,7 +258,11 @@ class MakeFigure(FigureCanvas):
     
     def CorrHeatMap(self, X):
         self.axes.cla()
-        corr = np.round(np.corrcoef(np.log2(X.T)), 2)
+        X_copy = X.copy()
+        for i in range(X.shape[0]):
+            X_copy.iloc[i,:] /= np.nanmax(X_copy.iloc[i,:])
+        
+        corr = np.round(np.corrcoef(X_copy.T), 2)
         self.axes.imshow(corr, cmap="YlOrBr")
         self.axes.set_xticks(np.arange(corr.shape[0]))
         self.axes.set_yticks(np.arange(corr.shape[0]))
