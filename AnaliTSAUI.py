@@ -186,10 +186,10 @@ class AnaliTSAUI(QtWidgets.QWidget, Ui_Form):
             X = X.reset_index(drop = True)
             names = names[keep].astype(str)
 
-            if bool(self.comboBoxBalance.currentText()):
+            if self.comboBoxBalance.currentText() == 'Ture':
                 X, y = data_balance(X, y)
 
-            if not bool(self.comboBoxLog2.currentText()):
+            if self.comboBoxLog2.currentText() == 'True':
                 if np.max(np.max(X)) >= 999:
                     self.ErrorMsg('The data seems not Log2 transformed, please change parameter')
                     return None
