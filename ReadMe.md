@@ -131,6 +131,22 @@ We will update if rpy2 support it in the future.
 The detailed usage is included in the [ProSAP website](https://hcji.github.io/ProSAP_Pages/).    
 The videos for using the software are available at the [video folder](https://github.com/hcji/ProSAP/tree/master/video).    
 
+## Citation
+
+        @article{10.1093/bib/bbac057,
+        author = {Ji, Hongchao and Lu, Xue and Zheng, Zhenxiang and Sun, Siyuan and Tan, Chris Soon Heng},
+        title = "{ProSAP: a GUI software tool for statistical analysis and assessment of thermal stability data}",
+        journal = {Briefings in Bioinformatics},
+        year = {2022},
+        month = {03}
+        issn = {1477-4054},
+        doi = {10.1093/bib/bbac057},
+        url = {https://doi.org/10.1093/bib/bbac057},
+        eprint = {https://academic.oup.com/bib/advance-article-pdf/doi/10.1093/bib/bbac057/42704881/bbac057.pdf},
+        }
+        
+        
+
 ## Contact
 
 Ji Hongchao   
