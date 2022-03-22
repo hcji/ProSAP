@@ -133,7 +133,7 @@ The videos for using the software are available at the [video folder](https://gi
 
 ## Citation
 
-        @article{10.1093/bib/bbac057,
+    @article{10.1093/bib/bbac057,
         author = {Ji, Hongchao and Lu, Xue and Zheng, Zhenxiang and Sun, Siyuan and Tan, Chris Soon Heng},
         title = "{ProSAP: a GUI software tool for statistical analysis and assessment of thermal stability data}",
         journal = {Briefings in Bioinformatics},
@@ -142,8 +142,7 @@ The videos for using the software are available at the [video folder](https://gi
         issn = {1477-4054},
         doi = {10.1093/bib/bbac057},
         url = {https://doi.org/10.1093/bib/bbac057},
-        eprint = {https://academic.oup.com/bib/advance-article-pdf/doi/10.1093/bib/bbac057/42704881/bbac057.pdf},
-        }
+        eprint = {https://academic.oup.com/bib/advance-article-pdf/doi/10.1093/bib/bbac057/42704881/bbac057.pdf}}
         
         
 
